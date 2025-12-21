@@ -1,2 +1,15 @@
 {
+  "default-registry": {
+    "kind": "git",
+    "repository": "https://github.com/microsoft/vcpkg",
+    "baseline": "37dcabc43809a960f41758e00e615cc6e26e8bbf"
+  },
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "git@192.168.178.20:claw/vcpkg-ports.git",
+      "baseline": "436d6c2f671aef4e2cde06cddb72f04723091813",
+      "packages": ["claw-core", "claw-utility"]
+    }
+  ]
 }
