@@ -16,7 +16,6 @@ public:
 
   void Initialize() override;
   void Update() override;
-  void Quit() override;
 private:
   core::Application& app_;
   boost::asio::io_context io_context_{};

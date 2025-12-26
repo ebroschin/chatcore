@@ -8,7 +8,7 @@
     {
       "kind": "git",
       "repository": "git@192.168.178.20:claw/vcpkg-ports.git",
-      "baseline": "436d6c2f671aef4e2cde06cddb72f04723091813",
+      "baseline": "35193d779039f6cb89a067e7601529555de5c431",
       "packages": ["claw-core", "claw-utility"]
     }
   ]
