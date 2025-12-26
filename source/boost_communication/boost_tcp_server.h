@@ -21,11 +21,17 @@ public:
   void Deinitialize() override;
 
 private:
+  void BufferResponse(const std::string& message);
+  void SendResponse(const std::string& message);
+  void ProcessMessage(const std::string& message);
+  std::string ReadMessage();
+
   boost::asio::io_context io_context_{};
   tcp::acceptor acceptor_;
   tcp::socket socket_{io_context_};
 
   SQLite::Database db_;
+  std::string response_message_buffer_{};
 };
 
 }
