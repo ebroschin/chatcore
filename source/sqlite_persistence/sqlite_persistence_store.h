@@ -15,7 +15,7 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
-  const SQLite::Database& Database() { return db_; }
+  SQLite::Database& Database() { return db_; }
 private:
   SQLite::Database db_;
 };

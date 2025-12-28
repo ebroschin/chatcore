@@ -37,7 +37,7 @@ public:
     const std::string& address,
     unsigned short port)
     : TCPServerSystemBase(ctx, app, std::make_unique<TServer>(address, port))
-  { }
+  {}
 };
 
 }

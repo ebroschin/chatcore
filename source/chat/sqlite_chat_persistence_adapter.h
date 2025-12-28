@@ -2,15 +2,16 @@
 
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "chat_persistence_adapter.h"
+#include "../persistence/persistence_adapter.h"
 
 using namespace claw::persistence::sqlite;
 
 namespace claw::chat::server {
 
-class SqliteChatPersistenceAdapter final : public ChatPersistenceAdapter {
+class SqliteChatPersistenceAdapter final : public persistence::PersistenceAdapter<SqlitePersistenceStore, ChatPersistenceAdapter> {
 public:
-  explicit SqliteChatPersistenceAdapter(SqlitePersistenceStore* store)
-  : ChatPersistenceAdapter(store)
+  explicit SqliteChatPersistenceAdapter(SqlitePersistenceStore& store)
+  : PersistenceAdapter(store)
   {}
 
   void CreateChatChannel(const std::string &name) override;

@@ -20,7 +20,6 @@ add_executable(chat-server source/main.cc
         source/communication/tcp_server_system.cpp
         source/boost_communication/boost_tcp_server.cpp
         source/boost_communication/boost_tcp_server.h
-        source/persistence/persistence_system.cpp
         source/persistence/persistence_system.h
         source/persistence/persistence_store.h
         source/persistence/persistence_adapter.h

@@ -15,7 +15,7 @@ public:
   void CreateMessage(std::int64_t channel_id, const std::string& message);
 
 private:
-  ChatPersistenceAdapter* adapter_;
+  ChatPersistenceAdapter& adapter_;
 };
 
 }

@@ -2,6 +2,7 @@
 
 #include "../boost_communication/boost_tcp_server.h"
 #include "../chat/chat_server_system.h"
+#include "../chat/sqlite_chat_persistence_adapter.h"
 #include "../communication/tcp_server_system.h"
 #include "../persistence/persistence_system.h"
 #include "../prototyping/client_communication_system.h"
@@ -12,6 +13,7 @@
 #include <iostream>
 
 using namespace std::literals::string_literals;
+using namespace claw::persistence::sqlite;
 
 #define SERVER_SIDE
 
@@ -21,7 +23,9 @@ void ChatServerApplication::Initialize() {
   ctx_->Register<prototyping::PrototypingSystem>(argument_);
 
 #ifdef SERVER_SIDE
-  ctx_->Register<persistence::PersistenceSystemBase, persistence::PersistenceSystem<SqlitePersistenceStore>>("sqlite.db3");
+  auto* persistence_system = ctx_->Register<persistence::PersistenceSystemBase, persistence::PersistenceSystem<SqlitePersistenceStore>>("sqlite.db3");
+  static_cast<persistence::PersistenceSystem<SqlitePersistenceStore>*>(persistence_system)->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
+
   ctx_->Register<communication::TCPServerSystemBase, communication::TCPServerSystem<communication::BoostTCPServer>>(*this, "0.0.0.0", 1338);
   ctx_->Register<ChatServerSystem>();
 #else
