@@ -23,6 +23,11 @@ public:
   void Update() override;
   void Deinitialize() override;
 
+  template<typename TMessageHandler>
+  void RegisterMessageHandler(const std::string& key) {
+    server_->Register<TMessageHandler>(key);
+  }
+
 protected:
   core::Application& app_;
   std::unique_ptr<TCPServer> server_;

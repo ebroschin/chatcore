@@ -2,6 +2,7 @@
 
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <iostream>
+#include <ranges>
 
 namespace claw::communication {
 
@@ -44,27 +45,31 @@ void BoostTCPServer::SendResponse(const std::string& message) {
 void BoostTCPServer::ProcessMessage(const std::string& message) {
   std::cout << "[RECEIVED] " << message << std::endl;
 
-  // if (message.starts_with("write ")) {
-  //   const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
-  //
-  //   int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
-  //   BufferResponse("modified " + std::to_string(nb) + " rows");
-  //   return;
-  // }
-  //
-  // if (message.starts_with("get")) {
-  //   SQLite::Statement query(db_, "SELECT * FROM test");
-  //
-  //   std::stringstream string_stream;
-  //   while (query.executeStep()) {
-  //     for (int i = 0; i < query.getColumnCount(); i++) {
-  //       string_stream << query.getColumn(i).getString() << "\n";
-  //     }
-  //   }
-  //
-  //   BufferResponse(string_stream.str());
-  //   return;
-  // }
+  if (message.starts_with("write ")) {
+    const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
+
+    Handle("write", content);
+
+    // int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
+    // BufferResponse("modified " + std::to_string(nb) + " rows");
+    return;
+  }
+
+  if (message.starts_with("get")) {
+    // SQLite::Statement query(db_, "SELECT * FROM test");
+    //
+    // std::stringstream string_stream;
+    // while (query.executeStep()) {
+    //   for (int i = 0; i < query.getColumnCount(); i++) {
+    //     string_stream << query.getColumn(i).getString() << "\n";
+    //   }
+    // }
+
+    Handle("get", "");
+
+    //BufferResponse(string_stream.str());
+    return;
+  }
 }
 
 std::string BoostTCPServer::ReadMessage() {

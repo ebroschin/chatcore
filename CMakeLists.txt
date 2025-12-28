@@ -30,6 +30,7 @@ add_executable(chat-server source/main.cc
         source/chat/sqlite_chat_persistence_adapter.h
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
+        source/communication/server.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

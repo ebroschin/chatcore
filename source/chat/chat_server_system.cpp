@@ -11,7 +11,11 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   adapter_{*ctx.Get<persistence::PersistenceSystemBase>()->Get<ChatPersistenceAdapter>()}
 {}
 
-void ChatServerSystem::CreateMessage(std::int64_t channel_id, const std::string& message) {
+void ChatServerSystem::CreateChatChannel(const std::string& name) {
+  adapter_.CreateChatChannel(name);
+}
+
+void ChatServerSystem::CreateChatMessage(std::int64_t channel_id, const std::string& message) {
   adapter_.CreateChatMessage(channel_id, message);
 }
 

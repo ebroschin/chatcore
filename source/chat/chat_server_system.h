@@ -12,7 +12,8 @@ class ChatServerSystem final : public core::System {
 public:
   explicit ChatServerSystem(const core::SystemContext& ctx);
 
-  void CreateMessage(std::int64_t channel_id, const std::string& message);
+  void CreateChatChannel(const std::string& message);
+  void CreateChatMessage(std::int64_t channel_id, const std::string& message);
 
 private:
   ChatPersistenceAdapter& adapter_;

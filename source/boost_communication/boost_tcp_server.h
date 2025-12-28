@@ -3,8 +3,6 @@
 #include "../communication/tcp_server.h"
 #include "boost/asio.hpp"
 
-#include <SQLiteCpp/SQLiteCpp.h>
-
 using boost::asio::ip::tcp;
 
 namespace claw::communication {
