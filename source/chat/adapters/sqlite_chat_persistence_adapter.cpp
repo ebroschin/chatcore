@@ -34,4 +34,23 @@ void SqliteChatPersistenceAdapter::CreateChatMessage(std::int64_t channel_id, co
   query.exec();
 }
 
+std::vector<std::string> SqliteChatPersistenceAdapter::GetChatMessages(std::int64_t channel_id) {
+  std::vector<std::string> result;
+  const auto& db = store_.Database();
+
+  SQLite::Statement query(db,
+      "SELECT message FROM chat_messages "
+      "WHERE channel_id = ? "
+      "ORDER BY id ASC;"
+  );
+
+  query.bind(1, channel_id);
+
+  while (query.executeStep()) {
+    result.push_back(query.getColumn(0).getString());
+  }
+
+  return result;
+}
+
 }

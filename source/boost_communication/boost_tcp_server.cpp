@@ -19,7 +19,7 @@ void BoostTCPServer::Update() {
 
   const std::string message = ReadMessage();
   ProcessMessage(message);
-  BufferResponse("you wrote: " + message);
+  SendMessage("you wrote: " + message);
   SendResponse(response_message_buffer_);
 }
 
@@ -27,7 +27,7 @@ void BoostTCPServer::Deinitialize() {
   std::cout << "server shutdown" << std::endl;
 }
 
-void BoostTCPServer::BufferResponse(const std::string &message) {
+void BoostTCPServer::SendMessage(const std::string &message) {
   response_message_buffer_ += message + "\n";
 }
 
@@ -50,32 +50,6 @@ void BoostTCPServer::ProcessMessage(const std::string& message) {
   const std::string content{std::string_view(message) | std::views::drop(index + 1)};
 
   HandleMessage(message_type, content);
-
-  // if (message.starts_with("create_chat_channel")) {
-  //   const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
-  //
-  //   Handle("write", content);
-  //
-  //   // int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
-  //   // BufferResponse("modified " + std::to_string(nb) + " rows");
-  //   return;
-  // }
-  //
-  // if (message.starts_with("get")) {
-  //   // SQLite::Statement query(db_, "SELECT * FROM test");
-  //   //
-  //   // std::stringstream string_stream;
-  //   // while (query.executeStep()) {
-  //   //   for (int i = 0; i < query.getColumnCount(); i++) {
-  //   //     string_stream << query.getColumn(i).getString() << "\n";
-  //   //   }
-  //   // }
-  //
-  //   Handle("get", "");
-  //
-  //   //BufferResponse(string_stream.str());
-  //   return;
-  // }
 }
 
 std::string BoostTCPServer::ReadMessage() {

@@ -21,7 +21,7 @@ void ClientCommunicationSystem::Update() {
   boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)));
   boost::asio::write(socket_, boost::asio::buffer(message));
 
-  do {
+  while (socket_.available()) {
     uint32_t network_response_length;
     boost::asio::read(socket_, boost::asio::buffer(&network_response_length, sizeof(network_response_length)));
 
@@ -31,18 +31,7 @@ void ClientCommunicationSystem::Update() {
 
     std::cout << "[message length] " << host_response_length << std::endl
     << "[message] " << std::string_view(read_buffer.data(), host_response_length) << std::endl;
-  } while (socket_.available());
-
-  // if (error == boost::asio::error::eof) {
-  //   //app_.Quit();
-  //   return;
-  // }
-  // else if (error) {
-  //   app_.Quit();
-  //   return;
-  // }
-
-
+  };
 }
 
 }

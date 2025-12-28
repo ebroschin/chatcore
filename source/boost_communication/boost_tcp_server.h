@@ -17,8 +17,9 @@ public:
   void Update() override;
   void Deinitialize() override;
 
+  void SendMessage(const std::string& message) override;
+
 private:
-  void BufferResponse(const std::string& message);
   void SendResponse(const std::string& message);
   void ProcessMessage(const std::string& message);
   std::string ReadMessage();

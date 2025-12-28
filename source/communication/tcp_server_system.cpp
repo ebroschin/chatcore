@@ -14,4 +14,8 @@ void TCPServerSystemBase::Deinitialize() {
   server_->Deinitialize();
 }
 
+void TCPServerSystemBase::SendMessage(const std::string& message) {
+  server_->SendMessage(message);
+}
+
 }

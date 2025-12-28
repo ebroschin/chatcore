@@ -28,6 +28,8 @@ public:
     server_->Register<TMessageHandler>(key, std::forward<TArgs>(args)...);
   }
 
+  void SendMessage(const std::string& message);
+
 protected:
   core::Application& app_;
   std::unique_ptr<TCPServer> server_;

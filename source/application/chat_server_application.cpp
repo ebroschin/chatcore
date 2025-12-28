@@ -1,8 +1,8 @@
 #include "chat_server_application.h"
 
 #include "../boost_communication/boost_tcp_server.h"
+#include "../chat/adapters/sqlite_chat_persistence_adapter.h"
 #include "../chat/chat_server_system.h"
-#include "../chat/sqlite_chat_persistence_adapter.h"
 #include "../communication/tcp_server_system.h"
 #include "../persistence/persistence_system.h"
 #include "../prototyping/client_communication_system.h"

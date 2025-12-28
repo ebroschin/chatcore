@@ -14,7 +14,6 @@ add_executable(chat-server source/main.cc
         source/application/chat_server_application.h
         source/prototyping/client_communication_system.cpp
         source/prototyping/client_communication_system.h
-        source/prototyping/prototyping_system.cpp
         source/prototyping/prototyping_system.h
         source/communication/tcp_server.h
         source/communication/tcp_server_system.cpp
@@ -23,11 +22,11 @@ add_executable(chat-server source/main.cc
         source/persistence/persistence_system.h
         source/persistence/persistence_store.h
         source/persistence/persistence_adapter.h
-        source/chat/chat_persistence_adapter.h
+        source/chat/adapters/chat_persistence_adapter.h
         source/sqlite_persistence/sqlite_persistence_store.cpp
         source/sqlite_persistence/sqlite_persistence_store.h
-        source/chat/sqlite_chat_persistence_adapter.cpp
-        source/chat/sqlite_chat_persistence_adapter.h
+        source/chat/adapters/sqlite_chat_persistence_adapter.cpp
+        source/chat/adapters/sqlite_chat_persistence_adapter.h
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
         source/communication/server.h
@@ -37,6 +36,9 @@ add_executable(chat-server source/main.cc
         source/communication/server.cpp
         source/chat/message_handler/create_chat_message_message_handler.cpp
         source/chat/message_handler/create_chat_message_message_handler.h
+        source/chat/message_handler/get_chat_messages_message_handler.cpp
+        source/chat/message_handler/get_chat_messages_message_handler.h
+        source/chat/message_handler/chat_system_message_handler.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
