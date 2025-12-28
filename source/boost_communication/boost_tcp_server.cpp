@@ -45,31 +45,37 @@ void BoostTCPServer::SendResponse(const std::string& message) {
 void BoostTCPServer::ProcessMessage(const std::string& message) {
   std::cout << "[RECEIVED] " << message << std::endl;
 
-  if (message.starts_with("write ")) {
-    const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
+  const auto index = message.find_first_of(':');
+  const std::string message_type = message.substr(0, index);
+  const std::string content{std::string_view(message) | std::views::drop(index + 1)};
 
-    Handle("write", content);
+  HandleMessage(message_type, content);
 
-    // int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
-    // BufferResponse("modified " + std::to_string(nb) + " rows");
-    return;
-  }
-
-  if (message.starts_with("get")) {
-    // SQLite::Statement query(db_, "SELECT * FROM test");
-    //
-    // std::stringstream string_stream;
-    // while (query.executeStep()) {
-    //   for (int i = 0; i < query.getColumnCount(); i++) {
-    //     string_stream << query.getColumn(i).getString() << "\n";
-    //   }
-    // }
-
-    Handle("get", "");
-
-    //BufferResponse(string_stream.str());
-    return;
-  }
+  // if (message.starts_with("create_chat_channel")) {
+  //   const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
+  //
+  //   Handle("write", content);
+  //
+  //   // int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
+  //   // BufferResponse("modified " + std::to_string(nb) + " rows");
+  //   return;
+  // }
+  //
+  // if (message.starts_with("get")) {
+  //   // SQLite::Statement query(db_, "SELECT * FROM test");
+  //   //
+  //   // std::stringstream string_stream;
+  //   // while (query.executeStep()) {
+  //   //   for (int i = 0; i < query.getColumnCount(); i++) {
+  //   //     string_stream << query.getColumn(i).getString() << "\n";
+  //   //   }
+  //   // }
+  //
+  //   Handle("get", "");
+  //
+  //   //BufferResponse(string_stream.str());
+  //   return;
+  // }
 }
 
 std::string BoostTCPServer::ReadMessage() {

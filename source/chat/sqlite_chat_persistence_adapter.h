@@ -14,6 +14,8 @@ public:
   : PersistenceAdapter(store)
   {}
 
+  void Initialize() override;
+  void Deinitialize() override;
   void CreateChatChannel(const std::string &name) override;
   void CreateChatMessage(std::int64_t channel_id, const std::string &message) override;
 };

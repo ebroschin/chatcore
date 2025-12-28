@@ -8,11 +8,10 @@
 #include "../prototyping/client_communication_system.h"
 #include "../prototyping/prototyping_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
-#include <boost/stacktrace.hpp>
 
+#include <boost/stacktrace.hpp>
 #include <iostream>
 
-using namespace std::literals::string_literals;
 using namespace claw::persistence::sqlite;
 
 #define SERVER_SIDE

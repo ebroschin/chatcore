@@ -10,11 +10,13 @@ class PersistenceStore;
 class PersistenceAdapterBase {
 public:
   virtual ~PersistenceAdapterBase() = default;
+  virtual void Initialize() = 0;
+  virtual void Deinitialize() = 0;
 };
 
 template<typename TPersistenceStore, typename TAdapterInterface>
 requires std::derived_from<TPersistenceStore, PersistenceStore>
-&& std::derived_from<TAdapterInterface, PersistenceAdapterBase>
+  && std::derived_from<TAdapterInterface, PersistenceAdapterBase>
 class PersistenceAdapter : public virtual PersistenceAdapterBase, public TAdapterInterface {
 public:
   explicit PersistenceAdapter(TPersistenceStore& store):

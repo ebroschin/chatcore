@@ -6,6 +6,8 @@
 #include <memory>
 #include "persistence_store.h"
 
+#include <algorithm>
+#include <ranges>
 #include <typeindex>
 #include <unordered_map>
 
@@ -38,10 +40,12 @@ public:
 
   void Initialize() override {
     store_->Initialize();
+    std::ranges::for_each(adapters_ | std::views::values, &PersistenceAdapterBase::Initialize);
   }
 
   void Deinitialize() override {
     store_->Deinitialize();
+    std::ranges::for_each(adapters_ | std::views::values, &PersistenceAdapterBase::Deinitialize);
   }
 
   template <typename TAdapterInterface, typename TAdapter, typename... TArgs>

@@ -23,9 +23,9 @@ public:
   void Update() override;
   void Deinitialize() override;
 
-  template<typename TMessageHandler>
-  void RegisterMessageHandler(const std::string& key) {
-    server_->Register<TMessageHandler>(key);
+  template<typename TMessageHandler, typename... TArgs>
+  void RegisterMessageHandler(const std::string& key, TArgs&&... args) {
+    server_->Register<TMessageHandler>(key, std::forward<TArgs>(args)...);
   }
 
 protected:
