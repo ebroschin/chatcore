@@ -7,11 +7,10 @@ class TcpConnection;
 
 template<typename TTcpConnection>
 requires std::derived_from<TTcpConnection, TcpConnection>
-class TcpServer {
+class TcpConnector {
 public:
   typedef TTcpConnection ConnectionType;
-
-  virtual std::unique_ptr<TTcpConnection> AcceptClientConnection() = 0;
+  virtual std::unique_ptr<TTcpConnection> Connect() = 0;
 };
 
 }

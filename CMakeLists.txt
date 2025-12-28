@@ -12,11 +12,11 @@ endif()
 add_executable(chat-server source/main.cc
         source/application/chat_server_application.cpp
         source/application/chat_server_application.h
-        source/prototyping/client_communication_system.cpp
-        source/prototyping/client_communication_system.h
+        source/prototyping/client_test_system.cpp
+        source/prototyping/client_test_system.h
         source/prototyping/prototyping_system.h
-        source/communication/tcp_server.h
-        source/communication/tcp_server_system.cpp
+        source/communication/tcp_connector.h
+        source/communication/tcp_system.cpp
         source/boost_communication/boost_tcp_server.cpp
         source/boost_communication/boost_tcp_server.h
         source/persistence/persistence_system.h
@@ -45,6 +45,8 @@ add_executable(chat-server source/main.cc
         source/communication/tcp_connection.h
         source/boost_communication/boost_tcp_connection.cc
         source/boost_communication/boost_tcp_connection.h
+        source/boost_communication/boost_tcp_client.cc
+        source/boost_communication/boost_tcp_client.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

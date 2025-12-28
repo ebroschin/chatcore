@@ -1,6 +1,6 @@
 #include "get_chat_messages_message_handler.h"
 
-#include "../../communication/tcp_server_system.h"
+#include "../../communication/tcp_system.h"
 #include "../chat_server_system.h"
 
 namespace claw::chat::server {
@@ -13,7 +13,7 @@ void GetChatMessagesMessageHandler::HandleMessage(const std::string& message) {
     result << message << "\n";
   }
 
-  system_.GetCommunicationSystem().SendMessage(result.str());
+  system_.GetTcpSystem().SendMessage(result.str());
 }
 
 }

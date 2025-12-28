@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../communication/tcp_server_system.h"
+#include "../communication/tcp_system.h"
 
 #include <claw/core/system.h>
 #include <claw/core/system_context.h>
@@ -31,7 +31,7 @@ public:
       auto now = clock::now();
       if (now - lastExecution >= std::chrono::seconds(1)) {
         lastExecution = now;
-        ctx_.Get<communication::TcpServerSystemBase>()->SendMessage("ping");
+        ctx_.Get<communication::TcpSystem>()->SendMessage("ping:hello from server");
       }
     }
   }

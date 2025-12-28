@@ -1,10 +1,10 @@
-#include "tcp_server_system.h"
+#include "tcp_system.h"
 
 #include <ranges>
 
 namespace claw::communication {
 
-void TcpServerSystemBase::HandleMessage(const std::string &message) {
+void TcpSystem::HandleMessage(const std::string &message) {
   //TODO protocol implementation details
   const auto index = message.find_first_of(':');
   const std::string message_type = message.substr(0, index);
@@ -13,19 +13,15 @@ void TcpServerSystemBase::HandleMessage(const std::string &message) {
   message_handler_registry_.HandleMessage(message_type, content);
 }
 
-void TcpServerSystemBase::SendMessage(const std::string& message) {
+void TcpSystem::SendMessage(const std::string& message) {
   if (connection_ == nullptr) return;
   connection_->SendMessage(message);
 }
 
-void TcpServerSystemBase::Initialize() {
-  std::cout << "starting server" << std::endl;
-}
-
-void TcpServerSystemBase::Update() {
+void TcpSystem::Update() {
   Connect();
   if (connection_ == nullptr) return;
-  
+
   if (connection_->HasData()) {
     HandleMessage(connection_->ReadMessage());
   }

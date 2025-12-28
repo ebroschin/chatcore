@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace claw::communication {
-class TcpServerSystemBase;
+class TcpSystem;
 }
 namespace claw::chat::server {
 
@@ -21,13 +21,13 @@ public:
   void CreateChatMessage(std::int64_t channel_id, const std::string& message);
   std::vector<std::string> GetChatMessages(std::int64_t channel_id);
 
-  [[nodiscard]] communication::TcpServerSystemBase& GetCommunicationSystem() {
-    return tcp_server_system_;
+  [[nodiscard]] communication::TcpSystem& GetTcpSystem() {
+    return tcp_system_;
   }
   
 private:
   ChatPersistenceAdapter& adapter_;
-  communication::TcpServerSystemBase& tcp_server_system_;
+  communication::TcpSystem& tcp_system_;
 };
 
 }

@@ -8,17 +8,19 @@ using boost::asio::ip::tcp;
 
 namespace claw::communication {
 
-class BoostTcpServer final : public TcpConnector<chat::server::BoostTcpConnection> {
+class BoostTcpClient final : public TcpConnector<chat::server::BoostTcpConnection> {
 public:
-  explicit BoostTcpServer(const std::string& ip, const unsigned short port)
-    : acceptor_{io_context_, tcp::endpoint{boost::asio::ip::make_address(ip), port}}
+  explicit BoostTcpClient(const std::string& ip, const unsigned short port)
+    : ip_{ip}, port_{port}
   {}
 
   std::unique_ptr<chat::server::BoostTcpConnection> Connect() override;
 
 private:
+  std::string ip_;
+  unsigned short port_;
   boost::asio::io_context io_context_{};
-  tcp::acceptor acceptor_;
+  tcp::resolver resolver_{io_context_};
 };
 
 }
