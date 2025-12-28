@@ -12,8 +12,7 @@ namespace claw::communication {
 class BoostTCPServer final : public TCPServer {
 public:
   explicit BoostTCPServer(const std::string& ip, const unsigned short port)
-    : acceptor_{io_context_, tcp::endpoint{boost::asio::ip::make_address(ip), port}},
-    db_{"example.db3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE}
+    : acceptor_{io_context_, tcp::endpoint{boost::asio::ip::make_address(ip), port}}
   {}
 
   void Initialize() override;
@@ -30,7 +29,6 @@ private:
   tcp::acceptor acceptor_;
   tcp::socket socket_{io_context_};
 
-  SQLite::Database db_;
   std::string response_message_buffer_{};
 };
 

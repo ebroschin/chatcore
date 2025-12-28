@@ -2,24 +2,21 @@
 
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <iostream>
-#include <ranges>
 
 namespace claw::communication {
 
 void BoostTCPServer::Initialize() {
   std::cout << "server started" << std::endl;
-
-  // Compile a SQL query, containing one parameter (index 1)
-  db_.exec("CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, value TEXT)");
-
-  std::cout << "waiting for client" << std::endl;
-  acceptor_.accept(socket_);
-  std::cout << "client connected!" << std::endl;
 }
 
 void BoostTCPServer::Update() {
+  if (!socket_.is_open()) {
+    std::cout << "waiting for client" << std::endl;
+    acceptor_.accept(socket_);
+    std::cout << "client connected!" << std::endl;
+  }
 
-  std::string message = ReadMessage();
+  const std::string message = ReadMessage();
   ProcessMessage(message);
   BufferResponse("you wrote: " + message);
   SendResponse(response_message_buffer_);
@@ -30,7 +27,7 @@ void BoostTCPServer::Deinitialize() {
 }
 
 void BoostTCPServer::BufferResponse(const std::string &message) {
-  response_message_buffer_ += message;
+  response_message_buffer_ += message + "\n";
 }
 
 void BoostTCPServer::SendResponse(const std::string& message) {
@@ -47,27 +44,27 @@ void BoostTCPServer::SendResponse(const std::string& message) {
 void BoostTCPServer::ProcessMessage(const std::string& message) {
   std::cout << "[RECEIVED] " << message << std::endl;
 
-  if (message.starts_with("write ")) {
-    const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
-
-    int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
-    BufferResponse("modified " + std::to_string(nb) + " rows");
-    return;
-  }
-
-  if (message.starts_with("get")) {
-    SQLite::Statement query(db_, "SELECT * FROM test");
-
-    std::stringstream string_stream;
-    while (query.executeStep()) {
-      for (int i = 0; i < query.getColumnCount(); i++) {
-        string_stream << query.getColumn(i).getString() << "\n";
-      }
-    }
-
-    BufferResponse(string_stream.str());
-    return;
-  }
+  // if (message.starts_with("write ")) {
+  //   const std::string content{std::string_view(message) | std::views::drop(std::strlen("write "))};
+  //
+  //   int nb = db_.exec("INSERT INTO test VALUES (NULL, '" + content + "')");
+  //   BufferResponse("modified " + std::to_string(nb) + " rows");
+  //   return;
+  // }
+  //
+  // if (message.starts_with("get")) {
+  //   SQLite::Statement query(db_, "SELECT * FROM test");
+  //
+  //   std::stringstream string_stream;
+  //   while (query.executeStep()) {
+  //     for (int i = 0; i < query.getColumnCount(); i++) {
+  //       string_stream << query.getColumn(i).getString() << "\n";
+  //     }
+  //   }
+  //
+  //   BufferResponse(string_stream.str());
+  //   return;
+  // }
 }
 
 std::string BoostTCPServer::ReadMessage() {

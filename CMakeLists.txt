@@ -19,7 +19,19 @@ add_executable(chat-server source/main.cc
         source/communication/tcp_server.h
         source/communication/tcp_server_system.cpp
         source/boost_communication/boost_tcp_server.cpp
-        source/boost_communication/boost_tcp_server.h)
+        source/boost_communication/boost_tcp_server.h
+        source/persistence/persistence_system.cpp
+        source/persistence/persistence_system.h
+        source/persistence/persistence_store.h
+        source/persistence/persistence_adapter.h
+        source/chat/chat_persistence_adapter.h
+        source/sqlite_persistence/sqlite_persistence_store.cpp
+        source/sqlite_persistence/sqlite_persistence_store.h
+        source/chat/sqlite_chat_persistence_adapter.cpp
+        source/chat/sqlite_chat_persistence_adapter.h
+        source/chat/chat_server_system.cpp
+        source/chat/chat_server_system.h
+)
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
 find_package(claw-core CONFIG REQUIRED)
