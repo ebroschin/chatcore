@@ -1,5 +1,7 @@
 #include "client_communication_system.h"
 
+#include "chat_input_system.h"
+
 #include <iostream>
 #include <ranges>
 
@@ -14,24 +16,35 @@ void ClientCommunicationSystem::Initialize() {
 }
 
 void ClientCommunicationSystem::Update() {
-  std::string message;
-  std::getline(std::cin, message);
 
+  std::string line;
+  if (ctx_.Get<chat::client::ChatInputSystem>()->GetLine(line)) {
+    SendMessage(line);
+  }
+
+  if (!socket_.available()) return;
+
+  std::string response_message = ReadMessage();
+
+  //process messages via message handler
+  std::cout << "[RECEIVED] " << response_message << std::endl;
+}
+
+std::string ClientCommunicationSystem::ReadMessage() {
+  uint32_t network_length;
+  boost::asio::read(socket_, boost::asio::buffer(&network_length, sizeof(network_length)));
+
+  const uint32_t host_length = ntohl(network_length);
+  std::vector<char> message_buffer(host_length);
+  boost::asio::read(socket_, boost::asio::buffer(message_buffer));
+
+  return std::string{message_buffer.data(), host_length};
+}
+
+void ClientCommunicationSystem::SendMessage(const std::string& message) {
   uint32_t network_length = htonl(message.length());
   boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)));
   boost::asio::write(socket_, boost::asio::buffer(message));
-
-  while (socket_.available()) {
-    uint32_t network_response_length;
-    boost::asio::read(socket_, boost::asio::buffer(&network_response_length, sizeof(network_response_length)));
-
-    const uint32_t host_response_length = ntohl(network_response_length);
-    std::vector<char> read_buffer(host_response_length);
-    boost::asio::read(socket_, boost::asio::buffer(read_buffer));
-
-    std::cout << "[message length] " << host_response_length << std::endl
-    << "[message] " << std::string_view(read_buffer.data(), host_response_length) << std::endl;
-  };
 }
 
 }

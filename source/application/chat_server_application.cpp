@@ -5,7 +5,9 @@
 #include "../chat/chat_server_system.h"
 #include "../communication/tcp_server_system.h"
 #include "../persistence/persistence_system.h"
+#include "../prototyping/chat_input_system.h"
 #include "../prototyping/client_communication_system.h"
+#include "../prototyping/ping_server_system.h"
 #include "../prototyping/prototyping_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 
@@ -27,8 +29,10 @@ void ChatServerApplication::Initialize() {
 
   ctx_->Register<communication::TCPServerSystemBase, communication::TCPServerSystem<communication::BoostTCPServer>>(*this, "0.0.0.0", 1338);
   ctx_->Register<ChatServerSystem>();
+  ctx_->Register<prototyping::PingServerSystem>();
 #else
   ctx_->Register<communication::ClientCommunicationSystem>(*this);
+  ctx_->Register<client::ChatInputSystem>();
 #endif
 }
 

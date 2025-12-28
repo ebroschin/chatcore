@@ -39,6 +39,9 @@ add_executable(chat-server source/main.cc
         source/chat/message_handler/get_chat_messages_message_handler.cpp
         source/chat/message_handler/get_chat_messages_message_handler.h
         source/chat/message_handler/chat_system_message_handler.h
+        source/prototyping/chat_input_system.cc
+        source/prototyping/chat_input_system.h
+        source/prototyping/ping_server_system.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

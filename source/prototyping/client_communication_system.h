@@ -16,7 +16,12 @@ public:
 
   void Initialize() override;
   void Update() override;
+
+  void SendMessage(const std::string& message);
+
 private:
+  std::string ReadMessage();
+
   core::Application& app_;
   boost::asio::io_context io_context_{};
   tcp::socket socket_{io_context_};

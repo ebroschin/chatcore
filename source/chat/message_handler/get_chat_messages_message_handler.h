@@ -9,7 +9,7 @@ public:
     ChatSystemMessageHandler(system)
   {}
 
-  void HandleMessage(const std::string &message) override;
+  void HandleMessage(const std::string& message) override;
 };
 
 }

@@ -17,9 +17,12 @@ void BoostTCPServer::Update() {
     std::cout << "client connected!" << std::endl;
   }
 
-  const std::string message = ReadMessage();
-  ProcessMessage(message);
-  SendMessage("you wrote: " + message);
+  if (socket_.available()) {
+    const std::string message = ReadMessage();
+    ProcessMessage(message);
+    SendMessage("you wrote: " + message);
+  }
+
   SendResponse(response_message_buffer_);
 }
 
@@ -32,11 +35,18 @@ void BoostTCPServer::SendMessage(const std::string &message) {
 }
 
 void BoostTCPServer::SendResponse(const std::string& message) {
-  uint32_t network_response_length = htonl(message.length());
-  std::vector<char> write_buffer(network_response_length);
+  if (response_message_buffer_.empty()) return;
 
-  boost::asio::write(socket_, boost::asio::buffer(&network_response_length, sizeof(network_response_length)));
-  boost::asio::write(socket_, boost::asio::buffer(message.data(), message.length()));
+  boost::system::error_code error;
+  uint32_t network_length = htonl(message.length());
+  boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
+  if (error) {
+    socket_.close();
+    return;
+  }
+
+  boost::asio::write(socket_, boost::asio::buffer(message), error);
+  if (error) return;
 
   std::cout << "[SENT] " << message << std::endl;
   response_message_buffer_.clear();
