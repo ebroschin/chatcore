@@ -29,11 +29,11 @@ add_executable(chat-server source/main.cc
         source/chat/adapters/sqlite_chat_persistence_adapter.h
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
-        source/communication/server.h
+        source/communication/message_handler_registry.h
         source/chat/message_handler/create_chat_channel_message_handler.h
         source/chat/message_handler/create_chat_channel_message_handler.cpp
         source/communication/message_handler.h
-        source/communication/server.cpp
+        source/communication/message_handler_registry.cpp
         source/chat/message_handler/create_chat_message_message_handler.cpp
         source/chat/message_handler/create_chat_message_message_handler.h
         source/chat/message_handler/get_chat_messages_message_handler.cpp
@@ -42,6 +42,9 @@ add_executable(chat-server source/main.cc
         source/prototyping/chat_input_system.cc
         source/prototyping/chat_input_system.h
         source/prototyping/ping_server_system.h
+        source/communication/tcp_connection.h
+        source/boost_communication/boost_tcp_connection.cc
+        source/boost_communication/boost_tcp_connection.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

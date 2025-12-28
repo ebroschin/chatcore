@@ -1,9 +1,8 @@
-#include "server.h"
-#include "message_handler.h"
+#include "message_handler_registry.h"
 
 namespace claw::communication {
 
-void Server::HandleMessage(const std::string& message_type, const std::string& message) {
+void MessageHandlerRegistry::HandleMessage(const std::string& message_type, const std::string& message) {
   const auto it = handlers_.find(message_type);
   if (it == handlers_.end()) return;
 

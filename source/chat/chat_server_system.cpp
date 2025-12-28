@@ -15,9 +15,9 @@ namespace claw::chat::server {
 ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   System(ctx),
   adapter_{*ctx.Get<persistence::PersistenceSystemBase>()->Get<ChatPersistenceAdapter>()},
-  tcp_server_system_{*ctx.Get<communication::TCPServerSystemBase>()}
+  tcp_server_system_{*ctx.Get<communication::TcpServerSystemBase>()}
 {
-  auto* tcp_system = ctx.Get<communication::TCPServerSystemBase>();
+  auto* tcp_system = ctx.Get<communication::TcpServerSystemBase>();
   tcp_system->RegisterMessageHandler<CreateChatChannelMessageHandler>("create_chat_channel", *this);
   tcp_system->RegisterMessageHandler<CreateChatMessageMessageHandler>("create_chat_message", *this);
   tcp_system->RegisterMessageHandler<GetChatMessagesMessageHandler>("get_chat_messages", *this);

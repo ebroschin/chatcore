@@ -1,8 +1,10 @@
 #pragma once
 
-#include <claw/core/system.h>
-#include <claw/core/application.h>
+#include "../boost_communication/boost_tcp_connection.h"
+
 #include "boost/asio.hpp"
+#include <claw/core/application.h>
+#include <claw/core/system.h>
 
 using boost::asio::ip::tcp;
 
@@ -18,13 +20,11 @@ public:
   void Update() override;
 
   void SendMessage(const std::string& message);
-
+  
 private:
-  std::string ReadMessage();
-
   core::Application& app_;
   boost::asio::io_context io_context_{};
-  tcp::socket socket_{io_context_};
+  std::unique_ptr<chat::server::BoostTcpConnection> connection_;
 };
 
 }

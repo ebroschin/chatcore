@@ -8,19 +8,14 @@
 
 namespace claw::communication {
 
-class Server {
+class MessageHandlerRegistry {
 public:
-  virtual ~Server() = default;
-
   template<typename TMessageHandler, typename... TArgs>
   requires std::derived_from<TMessageHandler, MessageHandler>
   void Register(const std::string& message_type, TArgs&&... args) {
     handlers_.emplace(message_type, std::make_unique<TMessageHandler>(std::forward<TArgs>(args)...));
   }
 
-  virtual void SendMessage(const std::string& message) = 0;
-
-protected:
   void HandleMessage(const std::string& message_type, const std::string& message);
 
 private:

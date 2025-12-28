@@ -27,7 +27,7 @@ void ChatServerApplication::Initialize() {
   auto* persistence_system = ctx_->Register<persistence::PersistenceSystemBase, persistence::PersistenceSystem<SqlitePersistenceStore>>("sqlite.db3");
   static_cast<persistence::PersistenceSystem<SqlitePersistenceStore>*>(persistence_system)->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
 
-  ctx_->Register<communication::TCPServerSystemBase, communication::TCPServerSystem<communication::BoostTCPServer>>(*this, "0.0.0.0", 1338);
+  ctx_->Register<communication::TcpServerSystemBase, communication::TcpServerSystem<communication::BoostTcpServer, communication::BoostTcpServer::ConnectionType>>(*this, "0.0.0.0", 1338);
   ctx_->Register<ChatServerSystem>();
   ctx_->Register<prototyping::PingServerSystem>();
 #else

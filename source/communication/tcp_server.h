@@ -1,14 +1,17 @@
 #pragma once
-
-#include "server.h"
+#include <memory>
 
 namespace claw::communication {
 
-class TCPServer : public Server {
+class TcpConnection;
+
+template<typename TTcpConnection>
+requires std::derived_from<TTcpConnection, TcpConnection>
+class TcpServer {
 public:
-  virtual void Initialize() = 0;
-  virtual void Update() = 0;
-  virtual void Deinitialize() = 0;
+  typedef TTcpConnection ConnectionType;
+
+  virtual std::unique_ptr<TTcpConnection> AcceptClientConnection() = 0;
 };
 
 }

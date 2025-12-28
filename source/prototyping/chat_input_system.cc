@@ -23,4 +23,15 @@ void ChatInputSystem::UpdateWorker() {
   }
 }
 
+bool ChatInputSystem::GetLine(std::string &out)  {
+  std::lock_guard lock{mutex_};
+  if (queue_.empty()) return false;
+
+  out = std::move(queue_.front());
+  queue_.pop();
+
+  return true;
+}
+
+
 }

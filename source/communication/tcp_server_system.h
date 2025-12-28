@@ -1,50 +1,67 @@
 #pragma once
 
 #include "boost/asio.hpp"
-#include <claw/core/system.h>
+#include "message_handler_registry.h"
 #include <claw/core/application.h>
+#include <claw/core/system.h>
 #include <concepts>
+#include <iostream>
 
 #include "tcp_server.h"
+#include "tcp_connection.h"
 
 using boost::asio::ip::tcp;
 
 namespace claw::communication {
 
-class TCPServerSystemBase : public core::System {
+class TcpServerSystemBase : public core::System {
 public:
-  explicit TCPServerSystemBase(const core::SystemContext& ctx,
-    core::Application& app,
-    std::unique_ptr<TCPServer>&& server)
-    : System(ctx), app_{app}, server_{std::move(server)}
+  explicit TcpServerSystemBase(const core::SystemContext& ctx,
+    core::Application& app)
+    : System(ctx), app_{app}
   { }
-
-  void Initialize() override;
-  void Update() override;
-  void Deinitialize() override;
 
   template<typename TMessageHandler, typename... TArgs>
   void RegisterMessageHandler(const std::string& key, TArgs&&... args) {
-    server_->Register<TMessageHandler>(key, std::forward<TArgs>(args)...);
+    message_handler_registry_.Register<TMessageHandler>(key, std::forward<TArgs>(args)...);
   }
 
+  void Initialize() override;
+  void Update() override;
   void SendMessage(const std::string& message);
 
 protected:
+  virtual void Connect() = 0;
+  void HandleMessage(const std::string& message);
+
   core::Application& app_;
-  std::unique_ptr<TCPServer> server_;
+  std::unique_ptr<TcpConnection> connection_;
+  MessageHandlerRegistry message_handler_registry_;
 };
 
-template<typename TServer>
-requires std::derived_from<TServer, TCPServer>
-class TCPServerSystem final : public TCPServerSystemBase {
+
+template<typename TTcpServer, typename TTcpConnection>
+requires std::derived_from<TTcpServer, TcpServer<TTcpConnection>>
+  && std::derived_from<TTcpConnection, TcpConnection>
+class TcpServerSystem final : public TcpServerSystemBase {
 public:
-  explicit TCPServerSystem(const core::SystemContext& ctx,
+  explicit TcpServerSystem(const core::SystemContext& ctx,
     core::Application& app,
     const std::string& address,
     unsigned short port)
-    : TCPServerSystemBase(ctx, app, std::make_unique<TServer>(address, port))
+    : TcpServerSystemBase(ctx, app),
+    server_{std::make_unique<TTcpServer>(address, port)}
   {}
+
+  void Connect() override {
+    if (connection_ != nullptr && connection_->IsOpen()) return;
+    std::cout << "waiting for client" << std::endl;
+    connection_ = server_->AcceptClientConnection();
+    std::cout << "client connected!" << std::endl;
+  }
+
+private:
+  std::unique_ptr<TTcpServer> server_;
 };
 
 }

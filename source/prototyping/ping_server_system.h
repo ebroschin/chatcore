@@ -31,7 +31,7 @@ public:
       auto now = clock::now();
       if (now - lastExecution >= std::chrono::seconds(1)) {
         lastExecution = now;
-        ctx_.Get<communication::TCPServerSystemBase>()->SendMessage("ping");
+        ctx_.Get<communication::TcpServerSystemBase>()->SendMessage("ping");
       }
     }
   }

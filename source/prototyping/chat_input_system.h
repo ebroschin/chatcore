@@ -18,15 +18,7 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
-  bool GetLine(std::string& out) {
-    std::lock_guard lock{mutex_};
-    if (queue_.empty()) return false;
-
-    out = std::move(queue_.front());
-    queue_.pop();
-
-    return true;
-  }
+  bool GetLine(std::string& out);
 
 private:
   void UpdateWorker();
