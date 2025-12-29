@@ -9,6 +9,7 @@
 namespace claw::communication {
 class TcpSystem;
 }
+
 namespace claw::chat::server {
 
 class ChatPersistenceAdapter;

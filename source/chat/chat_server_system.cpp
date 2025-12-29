@@ -1,7 +1,6 @@
 #include "chat_server_system.h"
 
 #include "../communication/tcp_system.h"
-#include "../prototyping/client_test_system.h"
 #include "adapters/chat_persistence_adapter.h"
 
 #include "message_handler/create_chat_channel_message_handler.h"

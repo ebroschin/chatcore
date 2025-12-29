@@ -1,6 +1,7 @@
 #include "client_test_system.h"
 
 #include "../communication/tcp_system.h"
+#include <claw/core/system_context.h>
 
 namespace claw::prototyping {
 
