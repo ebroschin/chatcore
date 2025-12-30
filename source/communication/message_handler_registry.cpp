@@ -4,7 +4,10 @@ namespace claw::communication {
 
 void MessageHandlerRegistry::HandleMessage(const std::string& message_type, const std::string& message) {
   const auto it = handlers_.find(message_type);
-  if (it == handlers_.end()) return;
+  if (it == handlers_.end()) {
+    fallback_handler_->HandleMessage(message);
+    return;
+  }
 
   it->second->HandleMessage(message);
 }

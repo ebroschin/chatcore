@@ -25,8 +25,8 @@ private:
 
   std::atomic<bool> running_;
   std::thread worker_;
-  std::queue<std::string> queue_;
-  std::mutex mutex_;
+  std::queue<std::string> queue_{};
+  std::mutex mutex_{};
 };
 
 }

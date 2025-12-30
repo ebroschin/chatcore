@@ -22,6 +22,11 @@ public:
     message_handler_registry_.Register<TMessageHandler>(key, std::forward<TArgs>(args)...);
   }
 
+  template<typename TMessageHandler, typename... TArgs>
+  void RegisterFallbackMessageHandler(TArgs&&... args) {
+    message_handler_registry_.RegisterFallback<TMessageHandler>(std::forward<TArgs>(args)...);
+  }
+
   void Update() override;
   void SendMessage(const std::string& message); //TODO connection id
   //TODO void BroadcastMessage(const std::string& message);

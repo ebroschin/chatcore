@@ -17,13 +17,15 @@ void ChatInputSystem::Deinitialize() {
 
 void ChatInputSystem::UpdateWorker() {
   std::string line;
-  while (running_ && std::getline(std::cin, line)) {
+  while (true) {
+    if (!running_) continue;
+    std::getline(std::cin, line);
     std::lock_guard lock{mutex_};
     queue_.push(line);
   }
 }
 
-bool ChatInputSystem::GetLine(std::string &out)  {
+bool ChatInputSystem::GetLine(std::string& out)  {
   std::lock_guard lock{mutex_};
   if (queue_.empty()) return false;
 

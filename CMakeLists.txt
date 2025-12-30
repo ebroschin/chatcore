@@ -50,6 +50,7 @@ add_executable(chat-server source/main.cc
         source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
         source/utility/concepts.h
+        source/prototyping/fallback_message_handler.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
