@@ -14,6 +14,8 @@
 
 #include <boost/stacktrace.hpp>
 #include <iostream>
+#include "chat_tcp_system.h"
+#include "chat_persistence_system.h"
 
 using namespace claw::persistence::sqlite;
 
@@ -25,12 +27,14 @@ void ChatServerApplication::Initialize() {
   ctx_->Register<prototyping::PrototypingSystem>(argument_);
 
 #ifdef SERVER_SIDE
-  auto* persistence_system = ctx_->Register<persistence::PersistenceSystemBase, persistence::PersistenceSystem<SqlitePersistenceStore>>("sqlite.db3");
-  static_cast<persistence::PersistenceSystem<SqlitePersistenceStore>*>(persistence_system)->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
+  auto* persistence_system = ctx_->Register<ChatPersistenceSystem>("sqlite.db3");
+  persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
 
-  ctx_->Register<communication::TcpSystem, communication::TcpServerSystem<communication::BoostTcpServer, communication::BoostTcpServer::ConnectionType>>("0.0.0.0", 1338);
+  auto* tcp_system = ctx_->Register<ChatServerTcpSystem>();
   ctx_->Register<ChatServerSystem>();
   ctx_->Register<prototyping::PingServerSystem>();
+
+  tcp_system->Connect({"0.0.0.0", 1338});
 #else
   ctx_->Register<communication::TcpSystem, communication::TcpClientSystem<communication::BoostTcpClient, communication::BoostTcpClient::ConnectionType>>(*this, "localhost", 1338);
   ctx_->Register<prototyping::ClientTestSystem>();

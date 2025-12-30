@@ -47,6 +47,9 @@ add_executable(chat-server source/main.cc
         source/boost_communication/boost_tcp_connection.h
         source/boost_communication/boost_tcp_client.cc
         source/boost_communication/boost_tcp_client.h
+        source/application/chat_tcp_system.h
+        source/application/chat_persistence_system.h
+        source/utility/concepts.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

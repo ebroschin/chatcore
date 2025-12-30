@@ -4,6 +4,7 @@
 
 #include <claw/core/system.h>
 #include <claw/core/system_context.h>
+#include "../application/chat_tcp_system.h"
 
 namespace claw::prototyping {
 
@@ -27,11 +28,13 @@ public:
     using clock = std::chrono::steady_clock;
     std::chrono::steady_clock::time_point lastExecution = std::chrono::steady_clock::now();
     
-    while (running_) {
+    while (true) {
+      if (!running_) continue;
+
       auto now = clock::now();
       if (now - lastExecution >= std::chrono::seconds(1)) {
         lastExecution = now;
-        ctx_.Get<communication::TcpSystem>()->SendMessage("ping:hello from server");
+        ctx_.Get<chat::server::ChatServerTcpSystem>()->SendMessage("ping:hello from server");
       }
     }
   }

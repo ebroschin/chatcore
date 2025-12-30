@@ -13,28 +13,13 @@
 
 namespace claw::persistence {
 
-class PersistenceSystemBase : public core::System {
-public:
-  explicit PersistenceSystemBase(const core::SystemContext& ctx):
-    System(ctx)
-  {}
-
-  template <typename TAdapterInterface>
-  TAdapterInterface* Get() {
-    return dynamic_cast<TAdapterInterface*>(GetAdapter(typeid(TAdapterInterface)));
-  }
-
-protected:
-  virtual PersistenceAdapterBase* GetAdapter(const std::type_index& key) = 0;
-};
-
 template <typename TStore>
 requires std::derived_from<TStore, PersistenceStore>
-class PersistenceSystem final : public PersistenceSystemBase {
+class PersistenceSystem final : public core::System {
 public:
   template <typename... TArgs>
   explicit PersistenceSystem(const core::SystemContext& ctx, TArgs&&... args)
-    : PersistenceSystemBase(ctx)
+    : System(ctx)
     , store_(std::make_unique<TStore>(std::forward<TArgs>(args)...))
   {}
 
@@ -51,16 +36,19 @@ public:
   template <typename TAdapterInterface, typename TAdapter, typename... TArgs>
   requires std::derived_from<TAdapter, TAdapterInterface> &&
     std::derived_from<TAdapter, PersistenceAdapter<TStore, TAdapterInterface>>
-  void Register(TArgs&&... args) {
-    std::type_index key = typeid(TAdapterInterface);
+  TAdapterInterface* Register(TArgs&&... args) {
+    const std::type_index key = typeid(TAdapterInterface);
     auto ptr = std::make_unique<TAdapter>(*store_, std::forward<TArgs>(args)...);
-    adapters_.emplace(key, std::move(ptr));
+    auto [it, success] = adapters_.emplace(key, std::move(ptr));
+
+    return success? dynamic_cast<TAdapterInterface*>(it->second.get()) : nullptr;
   }
 
-protected:
-  PersistenceAdapterBase* GetAdapter(const std::type_index& key) override {
+  template <typename TAdapterInterface>
+  TAdapterInterface* Get() {
+    const std::type_index key = typeid(TAdapterInterface);
     const auto it = adapters_.find(key);
-    return it != adapters_.end()? it->second.get() : nullptr;
+    return it != adapters_.end()? dynamic_cast<TAdapterInterface*>(it->second.get()) : nullptr;
   }
 
 private:

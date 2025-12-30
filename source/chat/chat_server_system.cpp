@@ -2,6 +2,7 @@
 
 #include "../communication/tcp_system.h"
 #include "adapters/chat_persistence_adapter.h"
+#include "../application/chat_persistence_system.h"
 
 #include "message_handler/create_chat_channel_message_handler.h"
 #include "message_handler/create_chat_message_message_handler.h"
@@ -13,8 +14,8 @@ namespace claw::chat::server {
 
 ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   System(ctx),
-  adapter_{*ctx.Get<persistence::PersistenceSystemBase>()->Get<ChatPersistenceAdapter>()},
-  tcp_system_{*ctx.Get<communication::TcpSystem>()}
+  adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<ChatPersistenceAdapter>()},
+  tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
 {
   tcp_system_.RegisterMessageHandler<CreateChatChannelMessageHandler>("create_chat_channel", *this);
   tcp_system_.RegisterMessageHandler<CreateChatMessageMessageHandler>("create_chat_message", *this);

@@ -2,9 +2,9 @@
 
 namespace claw::communication {
 
-std::unique_ptr<chat::server::BoostTcpConnection> BoostTcpClient::Connect() {
+std::unique_ptr<chat::server::BoostTcpConnection> BoostTcpClient::Connect(const BoostTcpClientParameters& parameters) {
   boost::system::error_code error;
-  const auto endpoints = resolver_.resolve(ip_, std::to_string(port_));
+  const auto endpoints = resolver_.resolve(parameters.ip, parameters.port);
 
   tcp::socket socket{io_context_};
   boost::asio::connect(socket, endpoints, error);

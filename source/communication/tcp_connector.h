@@ -5,12 +5,14 @@ namespace claw::communication {
 
 class TcpConnection;
 
-template<typename TTcpConnection>
+template<typename TTcpConnection, typename TConnectionParameters>
 requires std::derived_from<TTcpConnection, TcpConnection>
 class TcpConnector {
 public:
-  typedef TTcpConnection ConnectionType;
-  virtual std::unique_ptr<TTcpConnection> Connect() = 0;
+  using ConnectionType = TTcpConnection;
+  using ParameterType = TConnectionParameters;
+
+  virtual std::unique_ptr<TTcpConnection> Connect(const TConnectionParameters& parameters) = 0;
 };
 
 }

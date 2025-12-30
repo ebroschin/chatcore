@@ -4,8 +4,6 @@
 #include "message_handler_registry.h"
 #include <claw/core/system.h>
 #include <concepts>
-#include <iostream>
-
 #include "tcp_connection.h"
 #include "tcp_connector.h"
 
@@ -13,9 +11,9 @@ using boost::asio::ip::tcp;
 
 namespace claw::communication {
 
-class TcpSystem : public core::System {
+class TcpSystemBase : public core::System {
 public:
-  explicit TcpSystem(const core::SystemContext& ctx)
+  explicit TcpSystemBase(const core::SystemContext& ctx)
     : System(ctx)
   { }
 
@@ -29,7 +27,6 @@ public:
   //TODO void BroadcastMessage(const std::string& message);
 
 protected:
-  virtual void Connect() = 0;
   void HandleMessage(const std::string& message);
 
   //TODO refactor to multi-connection later, dont impose connection attempts in Update loop
@@ -43,49 +40,26 @@ protected:
 // after the handshake, both server and client are peers
 // connector (and its connection type) are passed via template parameters
 
-template<typename TTcpConnector, typename TTcpConnection>
-requires std::derived_from<TTcpConnector, TcpConnector<TTcpConnection>>
-  && std::derived_from<TTcpConnection, TcpConnection>
-class TcpServerSystem final : public TcpSystem {
+template<typename TTcpConnector>
+requires std::derived_from<TTcpConnector,
+  TcpConnector<typename TTcpConnector::ConnectionType, typename TTcpConnector::ParameterType>>
+  && std::derived_from<typename TTcpConnector::ConnectionType, TcpConnection>
+class TcpSystem : public TcpSystemBase {
 public:
-  explicit TcpServerSystem(const core::SystemContext& ctx,
-    const std::string& address,
-    unsigned short port)
-    : TcpSystem(ctx),
-    connector_{std::make_unique<TTcpConnector>(address, port)}
+  using ParameterType = TTcpConnector::ParameterType;
+
+  explicit TcpSystem(const core::SystemContext& ctx)
+    : TcpSystemBase(ctx),
+    connector_{std::make_unique<TTcpConnector>()}
   {}
 
-  void Connect() override {
+  void Connect(const ParameterType& parameters) {
+    //TODO support multi connections
     if (connection_ != nullptr && connection_->IsOpen()) return;
-    std::cout << "waiting for client..." << std::endl;
-    connection_ = connector_->Connect();
-    std::cout << "client connected!" << std::endl;
+    connection_ = connector_->Connect(parameters);
   }
 
-private:
-  std::unique_ptr<TTcpConnector> connector_;
-};
-
-template<typename TTcpConnector, typename TTcpConnection>
-requires std::derived_from<TTcpConnector, TcpConnector<TTcpConnection>>
-  && std::derived_from<TTcpConnection, TcpConnection>
-class TcpClientSystem final : public TcpSystem {
-public:
-  explicit TcpClientSystem(const core::SystemContext& ctx,
-    const std::string& address,
-    unsigned short port)
-    : TcpSystem(ctx),
-    connector_{std::make_unique<TTcpConnector>(address, port)}
-  {}
-
-  void Connect() override {
-    if (connection_ != nullptr && connection_->IsOpen()) return;
-    std::cout << "connecting to server..." << std::endl;
-    connection_ = connector_->Connect();
-    std::cout << "connected!" << std::endl;
-  }
-
-private:
+protected:
   std::unique_ptr<TTcpConnector> connector_;
 };
 

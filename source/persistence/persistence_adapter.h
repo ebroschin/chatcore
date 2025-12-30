@@ -2,6 +2,7 @@
 #include "persistence_store.h"
 
 #include <concepts>
+#include "../utility/concepts.h"
 
 namespace claw::persistence {
 
@@ -16,7 +17,7 @@ public:
 
 template<typename TPersistenceStore, typename TAdapterInterface>
 requires std::derived_from<TPersistenceStore, PersistenceStore>
-  && std::derived_from<TAdapterInterface, PersistenceAdapterBase>
+  && utility::VirtuallyDerivedFrom<TAdapterInterface, PersistenceAdapterBase>
 class PersistenceAdapter : public virtual PersistenceAdapterBase, public TAdapterInterface {
 public:
   explicit PersistenceAdapter(TPersistenceStore& store):
