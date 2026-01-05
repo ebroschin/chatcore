@@ -1,35 +1,28 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-
-#include "message_handler.h"
+#include <functional>
+#include <tuple>
+#include "../utility/variadic.h"
 
 namespace claw::communication {
 
-//TODO
-// abstract message format and message discriminator
-
+template<typename... TMessages>
 class MessageHandlerRegistry {
 public:
-  template<typename TMessageHandler, typename... TArgs>
-  requires std::derived_from<TMessageHandler, MessageHandler>
-  void Register(const std::string& message_type, TArgs&&... args) {
-    handlers_.emplace(message_type, std::make_unique<TMessageHandler>(std::forward<TArgs>(args)...));
+  template<typename TMessage>
+  void HandleMessage(const TMessage& message) {
+    constexpr int index = utility::IndexOf<TMessage, TMessages...>();
+    std::get<index>(handlers_)(message);
   }
 
-  template<typename TMessageHandler, typename... TArgs>
-  requires std::derived_from<TMessageHandler, MessageHandler>
-  void RegisterFallback(TArgs&&... args) {
-    fallback_handler_ = std::make_unique<TMessageHandler>(std::forward<TArgs>(args)...);
+  template<typename TMessage>
+  void Register(std::function<void(const TMessage&)> function) {
+    constexpr int index = utility::IndexOf<TMessage, TMessages...>();
+    std::get<index>(handlers_) = std::move(function);
   }
-
-  void HandleMessage(const std::string& message_type, const std::string& message);
 
 private:
-  std::unique_ptr<MessageHandler> fallback_handler_;
-  std::unordered_map<std::string, std::unique_ptr<MessageHandler>> handlers_{};
+  std::tuple<std::function<void(const TMessages&)>...> handlers_{};
 };
 
 }

@@ -11,13 +11,15 @@ ClientTestSystem::ClientTestSystem(const core::SystemContext& ctx):
 System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
-  tcp_system_.RegisterMessageHandler<PingMessageHandler>("ping");
+  tcp_system_.RegisterMessageHandler<communication::TestMessage>([&](const communication::TestMessage& message) {
+    std::cout << "ping received: " << message.value << std::endl;
+  });
 }
 
 void ClientTestSystem::Update() {
   static std::string line;
   if (!chat_input_system_.GetLine(line)) return;
-  tcp_system_.SendMessage(line);
+  tcp_system_.SendMessage<communication::TestMessage>({line});
 }
 
 

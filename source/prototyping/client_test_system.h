@@ -23,11 +23,4 @@ private:
   chat::server::ChatClientTcpSystem& tcp_system_;
 };
 
-class PingMessageHandler final : public communication::MessageHandler {
-public:
-  void HandleMessage(const std::string& message) override {
-    std::cout << "ping received: " << message << std::endl;
-  }
-};
-
 }

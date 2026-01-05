@@ -13,7 +13,7 @@ void GetChatMessagesMessageHandler::HandleMessage(const std::string& message) {
     result << message << "\n";
   }
 
-  system_.GetTcpSystem().SendMessage(result.str());
+  system_.GetTcpSystem().SendMessage<communication::TestMessage>({ result.str() });
 }
 
 }

@@ -1,29 +1,43 @@
 #include "tcp_system.h"
 
-#include <ranges>
-
 namespace claw::communication {
 
-void TcpSystemBase::HandleMessage(const std::string &message) {
-  //TODO serialization implementation details => DTO's later
-  const auto index = message.find_first_of(':');
-  const std::string message_type = message.substr(0, index);
-  const std::string content{std::string_view(message) | std::views::drop(index + 1)};
-
-  message_handler_registry_.HandleMessage(message_type, content);
+template<>
+TestMessage TestSerializer::Deserialize<TestMessage>(const std::string& raw) {
+  TestMessage msg;
+  msg.value = raw;
+  return msg;
 }
 
-void TcpSystemBase::SendMessage(const std::string& message) {
-  if (connection_ == nullptr) return;
-  connection_->SendMessage(message);
+template<>
+OtherMessage TestSerializer::Deserialize<OtherMessage>(const std::string& raw) {
+  OtherMessage msg;
+  msg.value = std::stoi(raw) + 111;
+  return msg;
 }
 
-void TcpSystemBase::Update() {
-  if (connection_ == nullptr) return;
+template<>
+AnotherMessage TestSerializer::Deserialize<AnotherMessage>(const std::string& raw) {
+  AnotherMessage msg;
+  msg.value = std::stof(raw);
+  msg.value2 = std::stof(raw) + 1.5f;
+  msg.value3 = std::stof(raw) + 3.5f;
+  return msg;
+}
 
-  if (connection_->HasData()) {
-    HandleMessage(connection_->ReadMessage());
-  }
+template<>
+std::string TestSerializer::Serialize<OtherMessage>(const OtherMessage& raw) {
+  return "other:" + std::to_string(raw.value);
+}
+
+template<>
+std::string TestSerializer::Serialize<TestMessage>(const TestMessage& raw) {
+  return "test:" + raw.value;
+}
+
+template<>
+std::string TestSerializer::Serialize<AnotherMessage>(const AnotherMessage& raw) {
+  return "another:" + std::to_string(raw.value) + " " + std::to_string(raw.value2) + " " + std::to_string(raw.value3) + " ";
 }
 
 }

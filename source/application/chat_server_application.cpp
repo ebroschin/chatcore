@@ -20,7 +20,7 @@
 
 using namespace claw::persistence::sqlite;
 
-//#define SERVER_SIDE
+#define SERVER_SIDE
 
 namespace claw::chat::server {
 
@@ -35,14 +35,14 @@ void ChatServerApplication::Initialize() {
   ctx_->Register<ChatServerSystem>();
   ctx_->Register<prototyping::PingServerSystem>();
 
-  tcp_system->RegisterFallbackMessageHandler<prototyping::FallbackMessageHandler>();
+  // tcp_system->RegisterFallbackMessageHandler<prototyping::FallbackMessageHandler>();
   tcp_system->Connect({"0.0.0.0", 1338});
 #else
   auto* tcp_system = ctx_->Register<ChatClientTcpSystem>();
   ctx_->Register<client::ChatInputSystem>();
   ctx_->Register<prototyping::ClientTestSystem>();
 
-  tcp_system->RegisterFallbackMessageHandler<prototyping::FallbackMessageHandler>();
+  //tcp_system->RegisterFallbackMessageHandler<prototyping::FallbackMessageHandler>();
   tcp_system->Connect({"localhost", "1338"});
 #endif
 }

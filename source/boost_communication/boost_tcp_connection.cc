@@ -9,7 +9,7 @@ void BoostTcpConnection::SendMessage(const std::string &message) {
   if (HandleError(error)) return;
 
   boost::asio::write(socket_, boost::asio::buffer(message), error);
-  if (HandleError(error)) return;
+  HandleError(error);
 }
 
 std::string BoostTcpConnection::ReadMessage() {

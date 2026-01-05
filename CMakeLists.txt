@@ -33,7 +33,6 @@ add_executable(chat-server source/main.cc
         source/chat/message_handler/create_chat_channel_message_handler.h
         source/chat/message_handler/create_chat_channel_message_handler.cpp
         source/communication/message_handler.h
-        source/communication/message_handler_registry.cpp
         source/chat/message_handler/create_chat_message_message_handler.cpp
         source/chat/message_handler/create_chat_message_message_handler.h
         source/chat/message_handler/get_chat_messages_message_handler.cpp
@@ -51,6 +50,9 @@ add_executable(chat-server source/main.cc
         source/application/chat_persistence_system.h
         source/utility/concepts.h
         source/prototyping/fallback_message_handler.h
+        source/communication/network_serializer.h
+        source/communication/tcp_system_parameters.h
+        source/utility/variadic.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

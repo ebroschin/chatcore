@@ -34,7 +34,7 @@ public:
       auto now = clock::now();
       if (now - lastExecution >= std::chrono::seconds(1)) {
         lastExecution = now;
-        ctx_.Get<chat::server::ChatServerTcpSystem>()->SendMessage("ping:hello from server");
+        ctx_.Get<chat::server::ChatServerTcpSystem>()->SendMessage<communication::TestMessage>({"ping:hello from server"});
       }
     }
   }
