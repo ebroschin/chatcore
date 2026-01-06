@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace claw::communication {
 
 template<typename TDiscriminator, typename TMessage>
@@ -24,18 +25,17 @@ concept NetworkConnector = requires(TConnector connector,
 
 template<typename TCodec, typename TMessage>
 concept NetworkCodecFor =
-requires(typename TCodec::RawType& bytes,
+requires(std::span<const std::byte> input_bytes,
     typename TCodec::PayloadType& payload,
     const TMessage& message)
 {
-  typename TCodec::RawType;
   typename TCodec::DiscriminatorType;
   typename TCodec::PayloadType;
 
   { TCodec::template Encode<TMessage>(message) }
-  -> std::same_as<typename TCodec::RawType>;
+  -> std::same_as<std::vector<std::byte>>;
 
-  { TCodec::DecodePayload(bytes) }
+  { TCodec::DecodePayload(input_bytes) }
   -> std::same_as<std::pair<typename TCodec::DiscriminatorType, typename TCodec::PayloadType>>;
 
   { TCodec::template Decode<TMessage>(payload) }

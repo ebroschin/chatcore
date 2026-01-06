@@ -52,8 +52,7 @@ public:
     if (connection_ == nullptr) return;
     if (!connection_->HasData()) return;
 
-    std::string bytes = connection_->ReadMessage();
-
+    auto bytes = connection_->ReadMessage();
     auto pair = TCodec::DecodePayload(bytes);
     static const auto message_handler_lookup = CreateMessageHandlerLookup();
 
@@ -79,8 +78,8 @@ public:
   template<typename TMessage>
   requires IsValidMessage<TMessage>
   void SendMessage(const TMessage& message) {
-    std::string serialized_message = TCodec::template Encode<TMessage>(message);
-    connection_->SendMessage(serialized_message);
+    auto bytes = TCodec::template Encode<TMessage>(message);
+    connection_->SendMessage(bytes);
   }
 
   //TODO void BroadcastMessage(const std::string& message);

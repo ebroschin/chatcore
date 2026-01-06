@@ -12,8 +12,8 @@ public:
     socket_{std::move(socket)}
   {}
 
-  void SendMessage(const std::string &message) override;
-  std::string ReadMessage() override;
+  void SendMessage(std::span<const std::byte> bytes) override;
+  std::vector<std::byte> ReadMessage() override;
   bool HasData() override;
   bool IsOpen() override;
 

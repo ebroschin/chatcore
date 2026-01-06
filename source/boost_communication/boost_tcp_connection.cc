@@ -2,28 +2,28 @@
 
 namespace claw::chat::server {
 
-void BoostTcpConnection::SendMessage(const std::string &message) {
+void BoostTcpConnection::SendMessage(std::span<const std::byte> bytes) {
   boost::system::error_code error;
-  uint32_t network_length = htonl(message.length());
+  uint32_t network_length = htonl(bytes.size());
   boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
   if (HandleError(error)) return;
 
-  boost::asio::write(socket_, boost::asio::buffer(message), error);
+  boost::asio::write(socket_, boost::asio::buffer(bytes), error);
   HandleError(error);
 }
 
-std::string BoostTcpConnection::ReadMessage() {
+std::vector<std::byte> BoostTcpConnection::ReadMessage() {
   boost::system::error_code error;
   uint32_t network_length;
   boost::asio::read(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
   if (HandleError(error)) return {};
 
   const uint32_t host_length = ntohl(network_length);
-  std::vector<char> message_buffer(host_length);
+  std::vector<std::byte> message_buffer(host_length);
   boost::asio::read(socket_, boost::asio::buffer(message_buffer), error);
   if (HandleError(error)) return {};
 
-  return std::string{message_buffer.data(), host_length};
+  return message_buffer;
 }
 
 bool BoostTcpConnection::HasData() {
