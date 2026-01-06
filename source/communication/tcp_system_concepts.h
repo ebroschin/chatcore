@@ -11,10 +11,16 @@ template<typename TDiscriminator, typename... TMessages>
 concept NetworkMessages =
   (NetworkMessage<TMessages, TDiscriminator> && ...);
 
-template<typename TTcpConnector>
-concept NetworkConnector = std::derived_from<TTcpConnector,
-  TcpConnector<typename TTcpConnector::ConnectionType, typename TTcpConnector::ParameterType>>
-  && std::derived_from<typename TTcpConnector::ConnectionType, TcpConnection>;
+template<typename TConnector>
+concept NetworkConnector = requires(TConnector connector,
+  const typename TConnector::ParameterType& parameters)
+{
+  typename TConnector::ConnectionType;
+  typename TConnector::ParameterType;
+
+  { connector.Connect(parameters) }
+  -> std::same_as<std::unique_ptr<typename TConnector::ConnectionType>>;
+};
 
 template<typename TCodec, typename TMessage>
 concept NetworkCodecFor =

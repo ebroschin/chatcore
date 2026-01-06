@@ -3,7 +3,6 @@
 #include "../codec/test_codec.h"
 #include "message_handler_registry.h"
 #include "tcp_connection.h"
-#include "tcp_connector.h"
 #include "tcp_system_concepts.h"
 #include <claw/core/system.h>
 #include <concepts>

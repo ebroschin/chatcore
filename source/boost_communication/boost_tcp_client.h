@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../communication/tcp_connector.h"
 #include "boost/asio.hpp"
 #include "boost_tcp_connection.h"
 
@@ -13,9 +12,12 @@ struct BoostTcpClientParameters {
   std::string port;
 };
 
-class BoostTcpClient : public TcpConnector<chat::server::BoostTcpConnection, BoostTcpClientParameters> {
+class BoostTcpClient {
 public:
-  std::unique_ptr<chat::server::BoostTcpConnection> Connect(const BoostTcpClientParameters& parameters) override;
+  using ConnectionType = chat::server::BoostTcpConnection;
+  using ParameterType = BoostTcpClientParameters;
+
+  std::unique_ptr<ConnectionType> Connect(const ParameterType& parameters);
 
 private:
   boost::asio::io_context io_context_{};

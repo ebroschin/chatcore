@@ -5,7 +5,7 @@
 
 namespace claw::communication {
 
-std::unique_ptr<chat::server::BoostTcpConnection> BoostTcpServer::Connect(const BoostTcpServerParameters& parameters) {
+std::unique_ptr<BoostTcpServer::ConnectionType> BoostTcpServer::Connect(const ParameterType& parameters) {
   tcp::socket socket{io_context_};
 
   std::cout << "waiting for client..." << std::endl;

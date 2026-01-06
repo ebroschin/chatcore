@@ -15,7 +15,6 @@ add_executable(chat-server source/main.cc
         source/prototyping/client_test_system.cpp
         source/prototyping/client_test_system.h
         source/prototyping/prototyping_system.h
-        source/communication/tcp_connector.h
         source/boost_communication/boost_tcp_server.cpp
         source/boost_communication/boost_tcp_server.h
         source/persistence/persistence_system.h
