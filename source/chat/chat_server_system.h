@@ -14,9 +14,9 @@ class ChatServerSystem final : public core::System {
 public:
   explicit ChatServerSystem(const core::SystemContext& ctx);
 
-  void CreateChatChannel(const std::string& name);
-  void CreateChatMessage(const std::int64_t& channel_id, const std::string& message);
-  std::vector<std::string> GetChatMessages(const std::int64_t& channel_id);
+  std::uint32_t CreateChatChannel(const std::string& name);
+  std::uint32_t CreateChatMessage(const std::uint32_t& channel_id, const api::ChatMessage& message);
+  std::vector<api::ChatMessage> GetChatMessages(const std::uint32_t& channel_id);
 
   [[nodiscard]] ChatServerTcpSystem& GetTcpSystem() { return tcp_system_; }
   

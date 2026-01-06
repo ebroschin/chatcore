@@ -6,13 +6,18 @@
 
 #include "../communication/tcp_system_builder.h"
 #include "../codec/test_codec.h"
+#include "../application/messages/json_macros.h"
 
 namespace claw::chat::server {
 
 using MessageTypes = std::tuple<
     communication::TestMessage,
     communication::AnotherMessage,
-    communication::OtherMessage
+    communication::OtherMessage,
+    api::WriteChatMessage,
+    api::GetChatsRequestMessage,
+    api::GetChatsResponseMessage,
+    api::CreateChannelMessage
 >;
 
 using ChatServerTcpSystem = communication::TcpSystemBuilder<

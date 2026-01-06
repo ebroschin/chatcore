@@ -18,8 +18,6 @@
 
 using namespace claw::persistence::sqlite;
 
-#define SERVER_SIDE
-
 namespace claw::chat::server {
 
 void ChatServerApplication::Initialize() {

@@ -6,6 +6,10 @@
 
 using namespace claw::persistence::sqlite;
 
+namespace claw::chat::api {
+struct ChatMessage;
+}
+
 namespace claw::chat::server {
 
 class SqliteChatPersistenceAdapter final : public persistence::PersistenceAdapter<SqlitePersistenceStore, ChatPersistenceAdapter> {
@@ -17,9 +21,9 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
-  void CreateChatChannel(const std::string &name) override;
-  void CreateChatMessage(std::int64_t channel_id, const std::string &message) override;
-  std::vector<std::string> GetChatMessages(std::int64_t channel_id) override;
+  std::uint32_t CreateChatChannel(const std::string &name) override;
+  std::uint32_t CreateChatMessage(const std::uint32_t& channel_id, const api::ChatMessage& message) override;
+  std::vector<api::ChatMessage> GetChatMessages(const std::uint32_t& channel_id) override;
 };
 
 }

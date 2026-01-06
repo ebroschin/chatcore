@@ -17,17 +17,33 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   tcp_system_.RegisterMessageHandler<communication::TestMessage>([&](const communication::TestMessage& message) {
     std::cout << "message from client received: " << message.value << std::endl;
   });
+
+  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](const api::WriteChatMessage& message) {
+    std::cout << "received message from: " << message.message.user_id << std::endl;
+    CreateChatMessage(message.channel_id, message.message);
+  });
+
+  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](const api::CreateChannelMessage& message) {
+    std::cout << "creating channel: " << message.name << std::endl;
+    CreateChatChannel(message.name);
+  });
+
+  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](const api::GetChatsRequestMessage& message) {
+    std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
+    auto result = GetChatMessages(message.channel_id);
+    tcp_system_.SendMessage<api::GetChatsResponseMessage>({message.channel_id, std::move(result)});
+  });
 }
 
-void ChatServerSystem::CreateChatChannel(const std::string& name) {
-  adapter_.CreateChatChannel(name);
+std::uint32_t ChatServerSystem::CreateChatChannel(const std::string& name) {
+  return adapter_.CreateChatChannel(name);
 }
 
-void ChatServerSystem::CreateChatMessage(const std::int64_t& channel_id, const std::string& message) {
-  adapter_.CreateChatMessage(channel_id, message);
+std::uint32_t ChatServerSystem::CreateChatMessage(const std::uint32_t& channel_id, const api::ChatMessage& message) {
+  return adapter_.CreateChatMessage(channel_id, message);
 }
 
-std::vector<std::string> ChatServerSystem::GetChatMessages(const std::int64_t& channel_id) {
+std::vector<api::ChatMessage> ChatServerSystem::GetChatMessages(const std::uint32_t& channel_id) {
   return adapter_.GetChatMessages(channel_id);
 }
 

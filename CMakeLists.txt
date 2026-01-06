@@ -9,7 +9,15 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
 endif()
 
-add_executable(chat-server source/main.cc
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
+
+if(BUILD_CLIENT)
+    set(TARGET_NAME chat-client)
+else()
+    set(TARGET_NAME chat-server)
+endif()
+
+add_executable(${TARGET_NAME} source/main.cc
         source/application/chat_server_application.cpp
         source/application/chat_server_application.h
         source/prototyping/client_test_system.cpp
@@ -45,11 +53,18 @@ add_executable(chat-server source/main.cc
         source/utility/variadic.h
         source/communication/tcp_system_concepts.h
         source/codec/test_codec.h
+        source/application/messages/api.h
+        source/application/messages/json_macros.h
 )
+
+# Only define SERVER_SIDE if we are NOT building the client
+if(NOT BUILD_CLIENT)
+    target_compile_definitions(${TARGET_NAME} PRIVATE SERVER_SIDE)
+endif()
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
 find_package(claw-core CONFIG REQUIRED)
 find_package(claw-utility CONFIG REQUIRED)
 find_package(SQLiteCpp CONFIG REQUIRED)
 
-target_link_libraries(chat-server PRIVATE SQLiteCpp Boost::stacktrace_backtrace claw::core)
+target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_backtrace claw::core)
