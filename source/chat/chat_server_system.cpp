@@ -19,13 +19,13 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   });
 
   tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](const api::WriteChatMessage& message) {
-    std::cout << "received message from: " << message.message.user_id << std::endl;
-    CreateChatMessage(message.channel_id, message.message);
+    const auto id = CreateChatMessage(message.channel_id, message.message);
+    std::cout << "created message with id: " << id << std::endl;
   });
 
   tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](const api::CreateChannelMessage& message) {
-    std::cout << "creating channel: " << message.name << std::endl;
-    CreateChatChannel(message.name);
+    const auto id = CreateChatChannel(message.name);
+    std::cout << "created channel: " << message.name << "with id: " << id << std::endl;
   });
 
   tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](const api::GetChatsRequestMessage& message) {

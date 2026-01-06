@@ -94,7 +94,7 @@ private:
   }
 
   template<typename TMessage>
-  static constexpr void HandleMessageInternal(TcpSystem* self, const TCodec::PayloadType& payload) {
+  static void HandleMessageInternal(TcpSystem* self, const TCodec::PayloadType& payload) {
     self->HandleMessage<TMessage>(payload);
   }
 

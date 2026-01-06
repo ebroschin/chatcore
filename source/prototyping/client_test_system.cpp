@@ -12,9 +12,9 @@ ClientTestSystem::ClientTestSystem(const core::SystemContext& ctx):
 System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
-  tcp_system_.RegisterMessageHandler<communication::TestMessage>([&](const communication::TestMessage& message) {
-    std::cout << "ping received: " << message.value << std::endl;
-  });
+  // tcp_system_.RegisterMessageHandler<communication::TestMessage>([&](const communication::TestMessage& message) {
+  //   std::cout << "ping received: " << message.value << std::endl;
+  // });
 
   tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](const chat::api::GetChatsResponseMessage& message) {
     std::cout << "received chats: " << std::endl;
@@ -49,6 +49,5 @@ void ClientTestSystem::Update() {
 
   tcp_system_.SendMessage<communication::TestMessage>({line});
 }
-
 
 }

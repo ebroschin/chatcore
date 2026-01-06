@@ -12,7 +12,10 @@ public:
   template<typename TMessage>
   void HandleMessage(const TMessage& message) {
     constexpr int index = utility::IndexOf<TMessage, TMessages...>();
-    std::get<index>(handlers_)(message);
+    auto& handler = std::get<index>(handlers_);
+    if (!handler) return;
+
+    handler(message);
   }
 
   template<typename TMessage>
