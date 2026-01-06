@@ -4,7 +4,8 @@
 #include "../boost_communication/boost_tcp_server.h"
 #include "../boost_communication/boost_tcp_client.h"
 
-#include "../communication/tcp_system_parameters.h"
+#include "../communication/tcp_system_builder.h"
+#include "../codec/test_codec.h"
 
 namespace claw::chat::server {
 
@@ -14,15 +15,15 @@ using MessageTypes = std::tuple<
     communication::OtherMessage
 >;
 
-using ChatServerTcpSystem = communication::TcpSystemParameters<
+using ChatServerTcpSystem = communication::TcpSystemBuilder<
     communication::BoostTcpServer,
-    communication::TestSerializer,
+    TestCodec,
     MessageTypes
 >::Type;
 
-using ChatClientTcpSystem = communication::TcpSystemParameters<
+using ChatClientTcpSystem = communication::TcpSystemBuilder<
     communication::BoostTcpClient,
-    communication::TestSerializer,
+    TestCodec,
     MessageTypes
 >::Type;
 }

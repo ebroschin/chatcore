@@ -16,7 +16,6 @@ add_executable(chat-server source/main.cc
         source/prototyping/client_test_system.h
         source/prototyping/prototyping_system.h
         source/communication/tcp_connector.h
-        source/communication/tcp_system.cpp
         source/boost_communication/boost_tcp_server.cpp
         source/boost_communication/boost_tcp_server.h
         source/persistence/persistence_system.h
@@ -30,14 +29,7 @@ add_executable(chat-server source/main.cc
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
         source/communication/message_handler_registry.h
-        source/chat/message_handler/create_chat_channel_message_handler.h
-        source/chat/message_handler/create_chat_channel_message_handler.cpp
         source/communication/message_handler.h
-        source/chat/message_handler/create_chat_message_message_handler.cpp
-        source/chat/message_handler/create_chat_message_message_handler.h
-        source/chat/message_handler/get_chat_messages_message_handler.cpp
-        source/chat/message_handler/get_chat_messages_message_handler.h
-        source/chat/message_handler/chat_system_message_handler.h
         source/prototyping/chat_input_system.cc
         source/prototyping/chat_input_system.h
         source/prototyping/ping_server_system.h
@@ -50,9 +42,10 @@ add_executable(chat-server source/main.cc
         source/application/chat_persistence_system.h
         source/utility/concepts.h
         source/prototyping/fallback_message_handler.h
-        source/communication/network_serializer.h
-        source/communication/tcp_system_parameters.h
+        source/communication/tcp_system_builder.h
         source/utility/variadic.h
+        source/communication/tcp_system_concepts.h
+        source/codec/test_codec.h
 )
 
 find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)

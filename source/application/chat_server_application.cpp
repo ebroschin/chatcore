@@ -11,8 +11,6 @@
 #include "../prototyping/prototyping_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "../prototyping/client_test_system.h"
-
-#include "../prototyping/fallback_message_handler.h"
 #include "chat_persistence_system.h"
 #include "chat_tcp_system.h"
 #include <boost/stacktrace.hpp>
@@ -20,7 +18,7 @@
 
 using namespace claw::persistence::sqlite;
 
-#define SERVER_SIDE
+//#define SERVER_SIDE
 
 namespace claw::chat::server {
 
@@ -34,15 +32,11 @@ void ChatServerApplication::Initialize() {
   auto* tcp_system = ctx_->Register<ChatServerTcpSystem>();
   ctx_->Register<ChatServerSystem>();
   ctx_->Register<prototyping::PingServerSystem>();
-
-  // tcp_system->RegisterFallbackMessageHandler<prototyping::FallbackMessageHandler>();
   tcp_system->Connect({"0.0.0.0", 1338});
 #else
   auto* tcp_system = ctx_->Register<ChatClientTcpSystem>();
   ctx_->Register<client::ChatInputSystem>();
   ctx_->Register<prototyping::ClientTestSystem>();
-
-  //tcp_system->RegisterFallbackMessageHandler<prototyping::FallbackMessageHandler>();
   tcp_system->Connect({"localhost", "1338"});
 #endif
 }
