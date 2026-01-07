@@ -2,6 +2,18 @@
 
 namespace claw::chat::server {
 
+void BoostTcpConnection::Start(ReceiverCallback callback) {
+  callback_ = std::move(callback);
+  worker_ = std::thread{&BoostTcpConnection::Poll, this};
+}
+
+void BoostTcpConnection::Poll() {
+  while (true) {
+    auto bytes = ReadMessage();
+    callback_(bytes);
+  }
+}
+
 void BoostTcpConnection::SendMessage(std::span<const std::byte> bytes) {
   boost::system::error_code error;
   uint32_t network_length = htonl(bytes.size());
@@ -10,6 +22,10 @@ void BoostTcpConnection::SendMessage(std::span<const std::byte> bytes) {
 
   boost::asio::write(socket_, boost::asio::buffer(bytes), error);
   HandleError(error);
+}
+
+bool BoostTcpConnection::IsOpen() {
+  return open_;
 }
 
 std::vector<std::byte> BoostTcpConnection::ReadMessage() {
@@ -34,10 +50,6 @@ bool BoostTcpConnection::HasData() {
   if (HandleError(error)) return false;
 
   return result;
-}
-
-bool BoostTcpConnection::IsOpen() {
-  return open_;
 }
 
 bool BoostTcpConnection::HandleError(const boost::system::error_code& error) {

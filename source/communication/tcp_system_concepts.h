@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 
 namespace claw::communication {
 
@@ -14,13 +15,14 @@ concept NetworkMessages =
 
 template<typename TConnector>
 concept NetworkConnector = requires(TConnector connector,
-  const typename TConnector::ParameterType& parameters)
+  const typename TConnector::ParameterType& parameters,
+  std::function<void(std::shared_ptr<typename TConnector::ConnectionType>)> callback)
 {
   typename TConnector::ConnectionType;
   typename TConnector::ParameterType;
 
-  { connector.Connect(parameters) }
-  -> std::same_as<std::unique_ptr<typename TConnector::ConnectionType>>;
+  { connector.Connect(parameters, callback) }
+  -> std::same_as<void>;
 };
 
 template<typename TCodec, typename TMessage>

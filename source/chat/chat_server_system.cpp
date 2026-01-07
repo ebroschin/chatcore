@@ -14,24 +14,24 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<ChatPersistenceAdapter>()},
   tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
 {
-  tcp_system_.RegisterMessageHandler<communication::TestMessage>([&](const communication::TestMessage& message) {
-    std::cout << "message from client received: " << message.value << std::endl;
+  tcp_system_.RegisterMessageHandler<api::PrintMessage>([&](communication::ConnectionID id, const api::PrintMessage& message) {
+    std::cout << "[" << id << "]" <<  " message from client received: " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](const api::WriteChatMessage& message) {
-    const auto id = CreateChatMessage(message.channel_id, message.message);
-    std::cout << "created message with id: " << id << std::endl;
+  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](communication::ConnectionID id, const api::WriteChatMessage& message) {
+    const auto message_id = CreateChatMessage(message.channel_id, message.message);
+    std::cout << "created message with id: " << message_id << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](const api::CreateChannelMessage& message) {
-    const auto id = CreateChatChannel(message.name);
-    std::cout << "created channel: " << message.name << "with id: " << id << std::endl;
+  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](communication::ConnectionID id, const api::CreateChannelMessage& message) {
+    const auto channel_id = CreateChatChannel(message.name);
+    std::cout << "created channel: " << message.name << "with id: " << channel_id << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](const api::GetChatsRequestMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](communication::ConnectionID id, const api::GetChatsRequestMessage& message) {
     std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
     auto result = GetChatMessages(message.channel_id);
-    tcp_system_.SendMessage<api::GetChatsResponseMessage>({message.channel_id, std::move(result)});
+    tcp_system_.SendMessage<api::GetChatsResponseMessage>(id, {message.channel_id, std::move(result)});
   });
 }
 

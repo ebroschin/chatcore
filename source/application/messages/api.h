@@ -11,6 +11,11 @@ struct ChatMessage {
   std::string content;
 };
 
+struct PrintMessage {
+  static constexpr std::uint64_t TypeId = 100;
+  std::string value;
+};
+
 struct WriteChatMessage {
   static constexpr std::uint64_t TypeId = 104;
 

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../application/chat_tcp_system.h"
 #include "../communication/tcp_system.h"
-
+#include "client_test_system.h"
 #include <claw/core/system.h>
 #include <claw/core/system_context.h>
-#include "../application/chat_tcp_system.h"
 
 namespace claw::prototyping {
 
@@ -34,7 +34,7 @@ public:
       auto now = clock::now();
       if (now - lastExecution >= std::chrono::seconds(1)) {
         lastExecution = now;
-        ctx_.Get<chat::server::ChatServerTcpSystem>()->SendMessage<communication::TestMessage>({"hello from server"});
+        ctx_.Get<chat::server::ChatServerTcpSystem>()->BroadcastMessage<chat::api::PrintMessage>({"hello from server"});
       }
     }
   }

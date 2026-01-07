@@ -10,11 +10,10 @@ struct TestCodec {
   using PayloadType = nlohmann::json;
 
   template<typename TMessage>
-  static std::vector<std::byte> Encode(const TMessage& message) {
-    const nlohmann::json payload = message;
+  static std::vector<std::byte> Encode(const TMessage& message) { //TODO non-alloc
     const nlohmann::json result {
       {"type_id", TMessage::TypeId},
-      {"payload", payload},
+      {"payload", message},
     };
 
     std::string serialized_result = result.dump();
@@ -28,12 +27,7 @@ struct TestCodec {
   }
 
   static std::pair<DiscriminatorType, PayloadType> DecodePayload(std::span<const std::byte> bytes) {
-    std::string text(
-        reinterpret_cast<const char*>(bytes.data()),
-        bytes.size()
-    );
-    nlohmann::json json = nlohmann::json::parse(text);
-
+    nlohmann::json json = nlohmann::json::parse(bytes.begin(), bytes.end());
     return {json["type_id"], json["payload"]};
   }
 };

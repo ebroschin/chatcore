@@ -16,8 +16,9 @@ class BoostTcpClient {
 public:
   using ConnectionType = chat::server::BoostTcpConnection;
   using ParameterType = BoostTcpClientParameters;
+  using CallbackType = std::function<void(std::shared_ptr<ConnectionType>)>;
 
-  std::unique_ptr<ConnectionType> Connect(const ParameterType& parameters);
+  void Connect(const ParameterType& parameters, CallbackType callback);
 
 private:
   boost::asio::io_context io_context_{};

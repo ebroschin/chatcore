@@ -35,7 +35,6 @@ void ChatServerApplication::Initialize() {
   auto* tcp_system = ctx_->Register<ChatClientTcpSystem>();
   ctx_->Register<client::ChatInputSystem>();
   ctx_->Register<prototyping::ClientTestSystem>();
-  tcp_system->Connect({"localhost", "1338"});
 #endif
 }
 

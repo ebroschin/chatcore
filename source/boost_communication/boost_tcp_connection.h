@@ -12,16 +12,24 @@ public:
     socket_{std::move(socket)}
   {}
 
+  ~BoostTcpConnection() override {
+    if (!worker_.joinable()) return;
+    worker_.join();
+  }
+
+  void Start(ReceiverCallback callback) override;
   void SendMessage(std::span<const std::byte> bytes) override;
-  std::vector<std::byte> ReadMessage() override;
-  bool HasData() override;
   bool IsOpen() override;
 
 private:
+  void Poll();
   bool HandleError(const boost::system::error_code& error);
+  bool HasData();
+  std::vector<std::byte> ReadMessage();
 
   tcp::socket socket_;
   bool open_{true};
+  std::thread worker_{};
 };
 
 }

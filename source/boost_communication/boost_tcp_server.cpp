@@ -5,18 +5,32 @@
 
 namespace claw::communication {
 
-std::unique_ptr<BoostTcpServer::ConnectionType> BoostTcpServer::Connect(const ParameterType& parameters) {
-  tcp::socket socket{io_context_};
+BoostTcpServer::~BoostTcpServer() {
+  if (!worker_.joinable()) return;
+  worker_.join();
+}
 
-  std::cout << "waiting for client..." << std::endl;
+void BoostTcpServer::Connect(const ParameterType& parameters, CallbackType callback) {
+  worker_ = std::thread{[this, parameters, callback]() {
+    Accept(parameters, callback);
+  }};
+}
 
-  const auto address = boost::asio::ip::make_address(parameters.ip);
-  tcp::acceptor acceptor_{io_context_, tcp::endpoint{address, parameters.port}};
+void BoostTcpServer::Accept(const ParameterType& parameters, CallbackType callback) {
+  while (true) {
+    tcp::socket socket{io_context_};
 
-  acceptor_.accept(socket);
+    std::cout << "waiting for client..." << std::endl;
 
-  std::cout << "client connected" << std::endl;
-  return std::make_unique<chat::server::BoostTcpConnection>(std::move(socket));
+    const auto address = boost::asio::ip::make_address(parameters.ip);
+    tcp::acceptor acceptor_{io_context_, tcp::endpoint{address, parameters.port}};
+
+    acceptor_.accept(socket);
+
+    std::cout << "client connected" << std::endl;
+
+    callback(std::make_unique<chat::server::BoostTcpConnection>(std::move(socket)));
+  }
 }
 
 }

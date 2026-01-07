@@ -55,6 +55,7 @@ add_executable(${TARGET_NAME} source/main.cc
         source/codec/test_codec.h
         source/application/messages/api.h
         source/application/messages/json_macros.h
+        source/communication/commons.h
 )
 
 # Only define SERVER_SIDE if we are NOT building the client
