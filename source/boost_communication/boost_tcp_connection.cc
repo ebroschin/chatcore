@@ -9,7 +9,7 @@ void BoostTcpConnection::Start(ReceiverCallback callback) {
 
 void BoostTcpConnection::Poll() {
   while (true) {
-    auto bytes = ReadMessage();
+    auto bytes = ReadMessage(); //needs to handle eof
     callback_(bytes);
   }
 }

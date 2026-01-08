@@ -23,12 +23,10 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
       std::cout << chat_message.user_id << ": " << chat_message.content << std::endl;
     }
   });
-
-
 }
 
 void ClientTestSystem::Initialize() {
-  tcp_system_.Connect({"localhost", "1338"}, [this](communication::ConnectionID id) {
+  tcp_system_.Connect({"192.168.178.20", "1338"}, [this](communication::ConnectionID id) {
     connection_id_ = id;
   });
 }

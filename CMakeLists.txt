@@ -9,7 +9,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
 
 if(BUILD_CLIENT)
     set(TARGET_NAME chat-client)

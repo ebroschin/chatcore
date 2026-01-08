@@ -30,7 +30,6 @@ public:
   void Connect(const TConnector::ParameterType& parameters, std::function<void(ConnectionID)> callback = nullptr) {
     static std::atomic<ConnectionID> id_counter{0};
 
-
     connector_->Connect(parameters, [this, callback](std::shared_ptr<typename TConnector::ConnectionType> ptr) {
       auto connection_id = ++id_counter;
       {
