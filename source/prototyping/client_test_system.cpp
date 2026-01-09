@@ -26,7 +26,7 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
 }
 
 void ClientTestSystem::Initialize() {
-  tcp_system_.Connect({"192.168.178.20", "1338"}, [this](communication::ConnectionID id) {
+  tcp_system_.Connect({"192.168.178.26", "1338"}, [this](communication::ConnectionID id) {
     connection_id_ = id;
   });
 }

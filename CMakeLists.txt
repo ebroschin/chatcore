@@ -1,6 +1,8 @@
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
-set(VCPKG_TARGET_TRIPLET "x64-windows-static")
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+if(WIN32)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
+    set(VCPKG_TARGET_TRIPLET "x64-windows-static")
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+endif()
 
 cmake_minimum_required(VERSION 4.0)
 project(chat-server)
@@ -29,7 +31,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     )
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
 
 if(BUILD_CLIENT)
     set(TARGET_NAME chat-client)
@@ -76,16 +78,25 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/messages/api.h
         source/application/messages/json_macros.h
         source/communication/commons.h
- "source/cross_platform.h")
+        source/cross_platform.h)
 
 # Only define SERVER_SIDE if we are NOT building the client
 if(NOT BUILD_CLIENT)
     target_compile_definitions(${TARGET_NAME} PRIVATE SERVER_SIDE)
 endif()
 
-find_package(Boost REQUIRED COMPONENTS stacktrace_windbg)
+if(WIN32)
+    find_package(Boost REQUIRED COMPONENTS stacktrace_windbg)
+else()
+    find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
+endif()
+
 find_package(SQLiteCpp CONFIG REQUIRED)
 find_package(claw-core CONFIG REQUIRED)
 find_package(claw-utility CONFIG REQUIRED)
 
-target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_windbg claw::core)
+if(WIN32)
+    target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_windbg claw::core)
+else()
+    target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_backtrace claw::core)
+endif()
