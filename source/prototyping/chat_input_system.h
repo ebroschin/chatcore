@@ -4,6 +4,7 @@
 #include <claw/core/system.h>
 #include <queue>
 #include <thread>
+#include <mutex>
 
 namespace claw::chat::client {
 

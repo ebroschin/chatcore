@@ -25,19 +25,11 @@ public:
   }
 
   void UpdateWorker() {
-    //using clock = std::chrono::steady_clock;
-    //std::chrono::steady_clock::time_point lastExecution = std::chrono::steady_clock::now();
-    
     while (true) {
       if (!running_) continue;
 
       std::this_thread::sleep_for(std::chrono::seconds(1));
-      ctx_.Get<chat::server::ChatServerTcpSystem>()->BroadcastMessage<chat::api::PrintMessage>({"hello from server"});
-      // auto now = clock::now();
-      // if (now - lastExecution >= std::chrono::seconds(1)) {
-      //   lastExecution = now;
-      //   ctx_.Get<chat::server::ChatServerTcpSystem>()->BroadcastMessage<chat::api::PrintMessage>({"hello from server"});
-      // }
+      ctx_.Get<chat::server::ChatServerTcpSystem>()->Broadcast<chat::api::PrintMessage>({"hello from server"});
     }
   }
 

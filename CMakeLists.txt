@@ -1,15 +1,20 @@
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
+set(VCPKG_TARGET_TRIPLET "x64-windows-static")
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+
 cmake_minimum_required(VERSION 4.0)
 project(chat-server)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
-endif()
-
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+        set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
+    endif()
+
     add_compile_options(
             -Wall -Wextra -Werror -Wpedantic
             -Wshadow -Wconversion -Wsign-conversion
@@ -71,16 +76,16 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/messages/api.h
         source/application/messages/json_macros.h
         source/communication/commons.h
-)
+ "source/cross_platform.h")
 
 # Only define SERVER_SIDE if we are NOT building the client
 if(NOT BUILD_CLIENT)
     target_compile_definitions(${TARGET_NAME} PRIVATE SERVER_SIDE)
 endif()
 
-find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
+find_package(Boost REQUIRED COMPONENTS stacktrace_windbg)
+find_package(SQLiteCpp CONFIG REQUIRED)
 find_package(claw-core CONFIG REQUIRED)
 find_package(claw-utility CONFIG REQUIRED)
-find_package(SQLiteCpp CONFIG REQUIRED)
 
-target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_backtrace claw::core)
+target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_windbg claw::core)

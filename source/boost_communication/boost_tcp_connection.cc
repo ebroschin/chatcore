@@ -9,12 +9,12 @@ void BoostTcpConnection::Start(ReceiverCallback callback) {
 
 void BoostTcpConnection::Poll() {
   while (true) {
-    auto bytes = ReadMessage(); //needs to handle eof
+    auto bytes = ReadBytes(); //needs to handle eof
     callback_(bytes);
   }
 }
 
-void BoostTcpConnection::SendMessage(std::span<const std::byte> bytes) {
+void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
   boost::system::error_code error;
   uint32_t network_length = htonl(static_cast<std::uint32_t>(bytes.size()));
   boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
@@ -28,7 +28,7 @@ bool BoostTcpConnection::IsOpen() {
   return open_;
 }
 
-std::vector<std::byte> BoostTcpConnection::ReadMessage() {
+std::vector<std::byte> BoostTcpConnection::ReadBytes() {
   boost::system::error_code error;
   uint32_t network_length;
   boost::asio::read(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);

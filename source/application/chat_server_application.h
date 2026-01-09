@@ -1,6 +1,7 @@
 #pragma once
 
 #include <claw/core/application.h>
+#include <string>
 
 namespace claw::chat::server {
 

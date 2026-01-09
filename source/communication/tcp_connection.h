@@ -13,7 +13,7 @@ public:
 
   virtual bool IsOpen() = 0;
   virtual void Start(ReceiverCallback callback) = 0;
-  virtual void SendMessage(std::span<const std::byte> bytes) = 0;
+  virtual void SendBytes(std::span<const std::byte> bytes) = 0;
 
 protected:
   ReceiverCallback callback_ = nullptr;

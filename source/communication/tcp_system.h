@@ -41,8 +41,6 @@ public:
         ReceiveMessage(connection_id, bytes);
       });
 
-      //ptr->Start(std::bind(&TcpSystem::ReceiveMessage, this, std::placeholders::_1));
-
       if (!callback) return;
       callback(connection_id);
     });
@@ -56,7 +54,7 @@ public:
 
   template<typename TMessage>
   requires IsValidMessage<TMessage>
-  void SendMessage(ConnectionID id, const TMessage& message) {
+  void Send(ConnectionID id, const TMessage& message) {
     auto bytes = TCodec::template Encode<TMessage>(message);
 
     std::shared_ptr<TcpConnection> connection;
@@ -68,12 +66,12 @@ public:
       connection = it->second;
     }
 
-    connection->SendMessage(bytes);
+    connection->SendBytes(bytes);
   }
 
   template<typename TMessage>
   requires IsValidMessage<TMessage>
-  void BroadcastMessage(const TMessage& message) {
+  void Broadcast(const TMessage& message) {
     // 1. Encode ONCE into a shared buffer
     //auto shared_payload = std::make_shared<std::vector<std::byte>>();
     auto bytes = TCodec::template Encode<TMessage>(message);
@@ -92,7 +90,7 @@ public:
 
     // 3. Parallel/Async Dispatch
     for (const auto& conn : snapshot) {
-      conn->SendMessage(bytes);
+      conn->SendBytes(bytes);
     }
   }
 

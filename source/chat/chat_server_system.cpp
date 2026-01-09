@@ -31,7 +31,7 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](communication::ConnectionID id, const api::GetChatsRequestMessage& message) {
     std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
     auto result = GetChatMessages(message.channel_id);
-    tcp_system_.SendMessage<api::GetChatsResponseMessage>(id, {message.channel_id, std::move(result)});
+    tcp_system_.Send<api::GetChatsResponseMessage>(id, {message.channel_id, std::move(result)});
   });
 }
 

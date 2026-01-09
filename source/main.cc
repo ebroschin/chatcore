@@ -1,3 +1,4 @@
+#include "cross_platform.h"
 #include "application/chat_server_application.h"
 
 int main(int argc, char** argv) {

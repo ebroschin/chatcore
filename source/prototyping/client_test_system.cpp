@@ -39,24 +39,24 @@ void ClientTestSystem::Update() {
 
   if (line.starts_with("write")) {
     const std::string message = line.substr(std::strlen("write"));
-    tcp_system_.SendMessage<chat::api::WriteChatMessage>(connection_id_, {1, {1, message}});
+    tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {1, {1, message}});
     return;
   }
 
   if (line.starts_with("get")) {
     const std::string channel_id = line.substr(std::strlen("get"));
     const auto channel_id_param = static_cast<std::uint32_t>(std::stoul(channel_id));
-    tcp_system_.SendMessage<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param});
+    tcp_system_.Send<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param});
     return;
   }
 
   if (line.starts_with("create")) {
     const std::string name = line.substr(std::strlen("create"));
-    tcp_system_.SendMessage<chat::api::CreateChannelMessage>(connection_id_, {name});
+    tcp_system_.Send<chat::api::CreateChannelMessage>(connection_id_, {name});
     return;
   }
 
-  tcp_system_.SendMessage<chat::api::PrintMessage>(connection_id_, {line});
+  tcp_system_.Send<chat::api::PrintMessage>(connection_id_, {line});
 }
 
 }

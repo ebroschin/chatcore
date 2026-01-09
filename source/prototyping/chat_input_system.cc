@@ -1,6 +1,8 @@
 #include "chat_input_system.h"
 
 #include <iostream>
+#include <mutex>
+#include <string>
 
 namespace claw::chat::client {
 
