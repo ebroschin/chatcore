@@ -13,6 +13,7 @@ public:
 protected:
   void HandleTerminate() override;
   void Initialize() override;
+
 private:
   std::string argument_;
 };

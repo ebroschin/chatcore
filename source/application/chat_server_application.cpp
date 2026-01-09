@@ -15,6 +15,7 @@
 #include "chat_tcp_system.h"
 #include <boost/stacktrace.hpp>
 #include <iostream>
+#include <string>
 
 using namespace claw::persistence::sqlite;
 
@@ -32,7 +33,7 @@ void ChatServerApplication::Initialize() {
   ctx_->Register<prototyping::PingServerSystem>();
   tcp_system->Connect({"0.0.0.0", 1338});
 #else
-  auto* tcp_system = ctx_->Register<ChatClientTcpSystem>();
+  ctx_->Register<ChatClientTcpSystem>();
   ctx_->Register<client::ChatInputSystem>();
   ctx_->Register<prototyping::ClientTestSystem>();
 #endif

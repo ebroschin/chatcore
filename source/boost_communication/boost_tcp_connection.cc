@@ -16,7 +16,7 @@ void BoostTcpConnection::Poll() {
 
 void BoostTcpConnection::SendMessage(std::span<const std::byte> bytes) {
   boost::system::error_code error;
-  uint32_t network_length = htonl(bytes.size());
+  uint32_t network_length = htonl(static_cast<std::uint32_t>(bytes.size()));
   boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
   if (HandleError(error)) return;
 
