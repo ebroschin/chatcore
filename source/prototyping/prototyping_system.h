@@ -11,7 +11,7 @@ public:
     : System(ctx), argument_{argument}
   {}
 
-  const std::string& Argument() { return argument_; }
+  [[nodiscard]] const std::string& Argument() { return argument_; }
 
 private:
   std::string argument_;

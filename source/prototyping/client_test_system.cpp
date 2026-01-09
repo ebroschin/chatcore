@@ -17,7 +17,7 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
     std::cout << "[" << id << "]" << "server says: " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](communication::ConnectionID id, const chat::api::GetChatsResponseMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](communication::ConnectionID, const chat::api::GetChatsResponseMessage& message) {
     std::cout << "received chats: " << std::endl;
     for (const auto& chat_message : message.messages) {
       std::cout << chat_message.user_id << ": " << chat_message.content << std::endl;

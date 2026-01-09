@@ -18,12 +18,12 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
     std::cout << "[" << id << "]" <<  " message from client received: " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](communication::ConnectionID id, const api::WriteChatMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](communication::ConnectionID, const api::WriteChatMessage& message) {
     const auto message_id = CreateChatMessage(message.channel_id, message.message);
     std::cout << "created message with id: " << message_id << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](communication::ConnectionID id, const api::CreateChannelMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](communication::ConnectionID, const api::CreateChannelMessage& message) {
     const auto channel_id = CreateChatChannel(message.name);
     std::cout << "created channel: " << message.name << "with id: " << channel_id << std::endl;
   });

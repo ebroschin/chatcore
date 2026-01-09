@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.0)
 project(chat-server)
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -9,7 +9,22 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(
+            -Wall -Wextra -Werror -Wpedantic
+            -Wshadow -Wconversion -Wsign-conversion
+            -Wold-style-cast -Wnon-virtual-dtor
+            -Woverloaded-virtual -Wnull-dereference
+            -Wdouble-promotion -Wformat=2
+            -Wundef -Wextra-semi -Wimplicit-fallthrough
+            -Wglobal-constructors
+            -fno-common -fstrict-aliasing -fno-omit-frame-pointer
+
+            -Wno-c++98-compat-extra-semi
+    )
+endif()
+
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
 
 if(BUILD_CLIENT)
     set(TARGET_NAME chat-client)
