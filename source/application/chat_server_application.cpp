@@ -1,18 +1,19 @@
 #include "chat_server_application.h"
 
-#include "../boost_communication/boost_tcp_server.h"
-#include "../boost_communication/boost_tcp_client.h"
 #include "../chat/adapters/sqlite_chat_persistence_adapter.h"
 #include "../chat/chat_server_system.h"
 #include "../communication/tcp_system.h"
 #include "../persistence/persistence_system.h"
 #include "../prototyping/chat_input_system.h"
+#include "../prototyping/client_test_system.h"
 #include "../prototyping/ping_server_system.h"
 #include "../prototyping/prototyping_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
-#include "../prototyping/client_test_system.h"
+#include "../users/adapters/sqlite_user_persistence_adapter.h"
+#include "../users/user_server_system.h"
 #include "chat_persistence_system.h"
 #include "chat_tcp_system.h"
+
 #include <boost/stacktrace.hpp>
 #include <iostream>
 #include <string>
@@ -27,9 +28,11 @@ void ChatServerApplication::Initialize() {
 #ifdef SERVER_SIDE
   auto* persistence_system = ctx_->Register<ChatPersistenceSystem>("sqlite.db3");
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
+  persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 
   auto* tcp_system = ctx_->Register<ChatServerTcpSystem>();
   ctx_->Register<ChatServerSystem>();
+  ctx_->Register<UserServerSystem>();
   ctx_->Register<prototyping::PingServerSystem>();
   tcp_system->Connect({"0.0.0.0", 1338});
 #else

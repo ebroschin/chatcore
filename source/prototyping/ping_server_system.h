@@ -25,12 +25,12 @@ public:
   }
 
   void UpdateWorker() {
-    while (true) {
-      if (!running_) continue;
-
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      ctx_.Get<chat::server::ChatServerTcpSystem>()->Broadcast<chat::api::PrintMessage>({"hello from server"});
-    }
+    // while (true) {
+    //   if (!running_) continue;
+    //
+    //   std::this_thread::sleep_for(std::chrono::seconds(1));
+    //   ctx_.Get<chat::server::ChatServerTcpSystem>()->Broadcast<chat::api::PrintMessage>({"hello from server"});
+    // }
   }
 
 private:

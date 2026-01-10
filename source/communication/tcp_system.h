@@ -28,16 +28,18 @@ public:
   {}
 
   void Connect(const TConnector::ParameterType& parameters, std::function<void(ConnectionID)> callback = nullptr) {
-    static std::atomic<ConnectionID> id_counter{0};
+    static std::atomic<ConnectionID> id_counter{1};
 
-    connector_->Connect(parameters, [this, callback](std::shared_ptr<typename TConnector::ConnectionType> ptr) {
-      auto connection_id = ++id_counter;
+    connector_->Connect(parameters, [this, callback]
+      (std::shared_ptr<typename TConnector::ConnectionType> connection) {
+      auto connection_id = id_counter.fetch_add(1, std::memory_order_relaxed);
+
       {
         std::unique_lock lock(connections_mutex_);
-        connections_.emplace(connection_id, ptr);
+        connections_.emplace(connection_id, connection);
       }
 
-      ptr->Start([this, connection_id](std::span<const std::byte> bytes) {
+      connection->Start([this, connection_id](std::span<const std::byte> bytes) {
         ReceiveMessage(connection_id, bytes);
       });
 
@@ -46,6 +48,8 @@ public:
     });
   }
 
+  //TODO messages are known at compile time, so do the message handlers.
+  // it should be possible to register those at compile time too.
   template<typename TMessage>
   requires IsValidMessage<TMessage>
   void RegisterMessageHandler(std::function<void(ConnectionID id, const TMessage&)> function) {
@@ -56,8 +60,8 @@ public:
   requires IsValidMessage<TMessage>
   void Send(ConnectionID id, const TMessage& message) {
     auto bytes = TCodec::template Encode<TMessage>(message);
-
     std::shared_ptr<TcpConnection> connection;
+
     {
       std::shared_lock lock(connections_mutex_);
       auto it = connections_.find(id);
@@ -72,25 +76,19 @@ public:
   template<typename TMessage>
   requires IsValidMessage<TMessage>
   void Broadcast(const TMessage& message) {
-    // 1. Encode ONCE into a shared buffer
-    //auto shared_payload = std::make_shared<std::vector<std::byte>>();
     auto bytes = TCodec::template Encode<TMessage>(message);
-    // Optimization: Reserve/Resize buffer if size known
+    std::vector<std::shared_ptr<TcpConnection>> connections; //TODO allocates with every broadcast
 
-    std::vector<std::shared_ptr<TcpConnection>> snapshot;
-
-    // 2. Fast Snapshot
     {
       std::shared_lock lock(connections_mutex_);
-      snapshot.reserve(connections_.size());
-      for (const auto &conn : connections_ | std::views::values) {
-        snapshot.push_back(conn);
+      connections.reserve(connections_.size());
+      for (const auto &connection : connections_ | std::views::values) {
+        connections.push_back(connection);
       }
-    } // Lock released immediately
+    }
 
-    // 3. Parallel/Async Dispatch
-    for (const auto& conn : snapshot) {
-      conn->SendBytes(bytes);
+    for (const auto& connection : connections) {
+      connection->SendBytes(bytes);
     }
   }
 
@@ -128,10 +126,8 @@ private:
   }
 
   std::unique_ptr<TConnector> connector_;
-
-  //TODO implement connection pooling
-  std::shared_mutex connections_mutex_;
-  std::unordered_map<ConnectionID, std::shared_ptr<TcpConnection>> connections_;
+  std::shared_mutex connections_mutex_{};
+  std::unordered_map<ConnectionID, std::shared_ptr<TcpConnection>> connections_{};
   MessageHandlerRegistry<TMessages...> message_handler_registry_{};
 };
 

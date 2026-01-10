@@ -31,7 +31,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     )
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
 
 if(BUILD_CLIENT)
     set(TARGET_NAME chat-client)
@@ -78,7 +78,14 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/messages/api.h
         source/application/messages/json_macros.h
         source/communication/commons.h
-        source/cross_platform.h)
+        source/cross_platform.h
+        source/users/user_server_system.cc
+        source/users/user_server_system.h
+        source/users/adapters/user_persistence_adapter.h
+        source/users/adapters/sqlite_user_persistence_adapter.cc
+        source/users/adapters/sqlite_user_persistence_adapter.h
+        source/application/commons.h
+)
 
 # Only define SERVER_SIDE if we are NOT building the client
 if(NOT BUILD_CLIENT)
@@ -86,17 +93,14 @@ if(NOT BUILD_CLIENT)
 endif()
 
 if(WIN32)
-    find_package(Boost REQUIRED COMPONENTS stacktrace_windbg)
+    set(BOOST_STACKTRACE stacktrace_windbg)
 else()
-    find_package(Boost REQUIRED COMPONENTS stacktrace_backtrace)
+    set(BOOST_STACKTRACE stacktrace_backtrace)
 endif()
 
+find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
 find_package(claw-core CONFIG REQUIRED)
 find_package(claw-utility CONFIG REQUIRED)
 
-if(WIN32)
-    target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_windbg claw::core)
-else()
-    target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::stacktrace_backtrace claw::core)
-endif()
+target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::${BOOST_STACKTRACE} claw::core)

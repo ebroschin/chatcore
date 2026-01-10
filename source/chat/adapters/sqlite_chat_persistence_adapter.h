@@ -3,6 +3,7 @@
 #include "../../persistence/persistence_adapter.h"
 #include "../../sqlite_persistence/sqlite_persistence_store.h"
 #include "chat_persistence_adapter.h"
+#include <vector>
 
 using namespace claw::persistence::sqlite;
 

@@ -6,23 +6,26 @@
 #include <string>
 #include <vector>
 
+
 namespace claw::chat::server {
 
 class ChatPersistenceAdapter;
+class UserServerSystem;
 
 class ChatServerSystem final : public core::System {
 public:
   explicit ChatServerSystem(const core::SystemContext& ctx);
 
-  std::uint32_t CreateChatChannel(const std::string& name);
-  std::uint32_t CreateChatMessage(const std::uint32_t& channel_id, const api::ChatMessage& message);
-  std::vector<api::ChatMessage> GetChatMessages(const std::uint32_t& channel_id);
+  void Initialize() override;
 
-  [[nodiscard]] ChatServerTcpSystem& GetTcpSystem() { return tcp_system_; }
+  api::PersistenceID CreateChatChannel(const std::string& name);
+  api::PersistenceID CreateChatMessage(const api::PersistenceID& channel_id, const api::ChatMessage& message);
+  std::vector<api::ChatMessage> GetChatMessages(const api::PersistenceID& channel_id);
   
 private:
   ChatPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
+  UserServerSystem* user_system_;
 };
 
 }

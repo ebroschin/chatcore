@@ -5,7 +5,7 @@
 #include "../boost_communication/boost_tcp_client.h"
 #include "../communication/tcp_system_builder.h"
 #include "../codec/test_codec.h"
-#include "../application/messages/json_macros.h"
+#include "messages/json_macros.h"
 
 namespace claw::chat::server {
 
@@ -14,7 +14,12 @@ using MessageTypes = std::tuple<
     api::WriteChatMessage,
     api::GetChatsRequestMessage,
     api::GetChatsResponseMessage,
-    api::CreateChannelMessage
+    api::CreateChannelMessage,
+    api::CreateUserMessage,
+    api::GetUserRequestMessage,
+    api::GetUserResponseMessage,
+    api::AuthenticateUserRequestMessage,
+    api::AuthenticateUserResponseMessage
 >;
 
 using ChatServerTcpSystem = communication::TcpSystemBuilder<

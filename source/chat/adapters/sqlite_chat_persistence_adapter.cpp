@@ -1,5 +1,4 @@
 #include "sqlite_chat_persistence_adapter.h"
-
 #include "../../application/messages/api.h"
 
 namespace claw::chat::server {
