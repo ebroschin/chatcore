@@ -11,5 +11,8 @@
       "baseline": "50396659fa5b6e6032cad387eda0fb3887833be1",
       "packages": ["claw-core", "claw-utility"]
     }
+  ],
+  "overlay-triplets": [
+    "./triplets"
   ]
 }

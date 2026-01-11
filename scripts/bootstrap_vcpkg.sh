@@ -4,7 +4,5 @@ set -e
 VCPKG_ROOT="$(cd "$(dirname "$0")/../external/vcpkg" && pwd)"
 
 if [ ! -f "$VCPKG_ROOT/vcpkg" ]; then
-  "$VCPKG_ROOT/bootstrap-vcpkg.sh"
+  "$VCPKG_ROOT/bootstrap-vcpkg.sh" --disable-metrics
 fi
-
-
