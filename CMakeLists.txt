@@ -6,7 +6,7 @@ else()
     set(VCPKG_TARGET_TRIPLET "x64-linux-clang")
 endif()
 
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.28)
 project(chat-server)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

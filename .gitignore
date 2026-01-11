@@ -5,6 +5,7 @@ out/
 # CLion
 .idea/
 cmake-build-*/
+build/
 
 # CMake
 CMakeFiles/

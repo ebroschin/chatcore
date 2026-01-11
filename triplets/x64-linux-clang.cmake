@@ -4,8 +4,8 @@
 set(VCPKG_TARGET_ARCHITECTURE x64)
 
 # specify Clang as the compiler
-set(VCPKG_C_COMPILER /usr/bin/clang)
-set(VCPKG_CXX_COMPILER /usr/bin/clang++)
+set(VCPKG_C_COMPILER /usr/bin/clang-20)
+set(VCPKG_CXX_COMPILER /usr/bin/clang++-20)
 
 # default linkage rules 
 set(VCPKG_LIBRARY_LINKAGE static)
