@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-bash -x scripts/bootstrap_vcpkg.sh -disable-metrics
+bash -x scripts/bootstrap_vcpkg.sh -disableMetrics
 
 cmake -S . -B build -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake \
