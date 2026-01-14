@@ -23,7 +23,7 @@ using namespace claw::persistence::sqlite;
 namespace claw::chat::server {
 
 void ChatServerApplication::Initialize() {
-  ctx_->Register<prototyping::PrototypingSystem>(argument_);
+  ctx_->Register<prototyping::PrototypingSystem>();
 
 #ifdef SERVER_SIDE
   auto* persistence_system = ctx_->Register<ChatPersistenceSystem>("sqlite.db3");

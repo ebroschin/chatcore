@@ -26,9 +26,16 @@ struct TestCodec {
     return payload.get<TMessage>();
   }
 
-  static std::pair<DiscriminatorType, PayloadType> DecodePayload(std::span<const std::byte> bytes) {
-    nlohmann::json json = nlohmann::json::parse(bytes.begin(), bytes.end());
-    return {json["type_id"], json["payload"]};
+  static std::optional<std::pair<DiscriminatorType, PayloadType>> DecodePayload(std::span<const std::byte> bytes) {
+    if (bytes.empty()) return std::nullopt;
+
+    //non-throwing parse
+    nlohmann::json json = nlohmann::json::parse(bytes.begin(), bytes.end(), nullptr, false);
+    if (json.is_discarded()) return std::nullopt;
+    if (!json.contains("type_id")) return std::nullopt;
+    if (!json.contains("payload")) return std::nullopt;
+
+    return std::make_pair(json["type_id"], json["payload"]);
   }
 };
 

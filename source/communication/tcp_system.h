@@ -4,11 +4,10 @@
 #include "message_handler_registry.h"
 #include "tcp_connection.h"
 #include "tcp_system_concepts.h"
-#include <atomic>
+#include "tcp_task_handler.h"
 #include <claw/core/system.h>
 #include <concepts>
 #include <mutex>
-#include <shared_mutex>
 #include <nlohmann/json.hpp>
 
 namespace claw::communication {
@@ -21,34 +20,23 @@ class TcpSystem final: public core::System {
   template<typename T>
   static constexpr bool IsValidMessage = (std::same_as<T, TMessages> || ...);
 
+  using ConnectionCallback = std::function<void(ConnectionID)>;
+
 public:
   explicit TcpSystem(const core::SystemContext& ctx)
     : System(ctx),
     connector_{std::make_unique<TConnector>()}
   {}
 
-  void Connect(const TConnector::ParameterType& parameters, std::function<void(ConnectionID)> callback = nullptr) {
-    static std::atomic<ConnectionID> id_counter{1};
-
+  void Connect(const TConnector::ParameterType& parameters, ConnectionCallback callback = nullptr) {
     connector_->Connect(parameters, [this, callback]
-      (std::shared_ptr<typename TConnector::ConnectionType> connection) {
-      auto connection_id = id_counter.fetch_add(1, std::memory_order_relaxed);
-
-      {
-        std::unique_lock lock(connections_mutex_);
-        connections_.emplace(connection_id, connection);
-      }
-
-      connection->Start([this, connection_id](std::span<const std::byte> bytes) {
-        ReceiveMessage(connection_id, bytes);
-      });
-
-      if (!callback) return;
-      callback(connection_id);
+      (std::shared_ptr<typename TConnector::ConnectionType> connection)
+    {
+        CreateConnection(std::move(connection), callback);
     });
   }
 
-  //TODO messages are known at compile time, so do the message handlers.
+  //TODO messages are known at compile time, so are the message handlers.
   // it should be possible to register those at compile time too.
   template<typename TMessage>
   requires IsValidMessage<TMessage>
@@ -60,60 +48,80 @@ public:
   requires IsValidMessage<TMessage>
   void Send(ConnectionID id, const TMessage& message) {
     auto bytes = TCodec::template Encode<TMessage>(message);
-    std::shared_ptr<TcpConnection> connection;
 
-    {
-      std::shared_lock lock(connections_mutex_);
+    tcp_task_handler_.Post([this, id, bytes = std::move(bytes)]() {
       auto it = connections_.find(id);
       if (it == connections_.end()) return;
 
-      connection = it->second;
-    }
-
-    connection->SendBytes(bytes);
+      it->second->SendBytes(bytes);
+    });
   }
 
   template<typename TMessage>
   requires IsValidMessage<TMessage>
   void Broadcast(const TMessage& message) {
     auto bytes = TCodec::template Encode<TMessage>(message);
-    std::vector<std::shared_ptr<TcpConnection>> connections; //TODO allocates with every broadcast
 
-    {
-      std::shared_lock lock(connections_mutex_);
-      connections.reserve(connections_.size());
+    tcp_task_handler_.Post([this, bytes = std::move(bytes)]() {
       for (const auto &connection : connections_ | std::views::values) {
-        connections.push_back(connection);
+        connection->SendBytes(bytes);
       }
-    }
-
-    for (const auto& connection : connections) {
-      connection->SendBytes(bytes);
-    }
+    });
   }
 
 private:
-  //TODO thread safety
-  void RemoveConnection(ConnectionID id) {
-    auto it = connections_.find(id);
-    if (it == connections_.end()) return; //TODO error logging
+  void CreateConnection(std::shared_ptr<typename TConnector::ConnectionType>&& connection, ConnectionCallback callback) {
+    static ConnectionID id_counter{1};
 
-    connections_.erase(it);
+    tcp_task_handler_.Post([this,
+      connection = std::move(connection),
+      callback = std::move(callback)]()
+    {
+      auto connection_id = id_counter++;
+      connections_.emplace(connection_id, connection);
+
+      const auto receiver_callback = [this, connection_id](std::span<const std::byte> bytes) {
+        ReceiveMessage(connection_id, bytes);
+      };
+
+      const auto disconnect_callback = [this, connection_id]() {
+        RemoveConnection(connection_id);
+      };
+
+      connection->Start(receiver_callback, disconnect_callback);
+
+      if (!callback) return;
+      callback(connection_id);
+    });
+  }
+
+  void RemoveConnection(ConnectionID id) {
+    tcp_task_handler_.Post([this, id]() {
+      auto it = connections_.find(id);
+      if (it == connections_.end()) return;
+
+      connections_.erase(it);
+    });
   }
 
   void ReceiveMessage(ConnectionID id, std::span<const std::byte> bytes) {
-    auto pair = TCodec::DecodePayload(bytes);
+    auto payload = TCodec::DecodePayload(bytes);
+    if (!payload.has_value()) return;
+
     static const auto message_handler_lookup = CreateMessageHandlerLookup();
+    tcp_task_handler_.Post([this, id, payload = std::move(payload)]() {
+      auto type_id = payload.value().first;
+      auto it = message_handler_lookup.find(type_id);
+      if (it == message_handler_lookup.end()) return; //TODO error logging
 
-    auto type_id = pair.first;
-    auto it = message_handler_lookup.find(type_id);
-    if (it == message_handler_lookup.end()) return; //TODO error logging
-
-    it->second(this, id, pair.second);
+      it->second(this, id, payload.value().second);
+    });
   }
 
   template<typename TMessage>
   static void HandleMessage(TcpSystem* self, ConnectionID id, const TCodec::PayloadType& payload) {
+    if (self == nullptr) return;
+
     auto message = TCodec::template Decode<TMessage>(payload);
     self->message_handler_registry_.HandleMessage(id, message);
   }
@@ -126,9 +134,9 @@ private:
   }
 
   std::unique_ptr<TConnector> connector_;
-  std::shared_mutex connections_mutex_{};
   std::unordered_map<ConnectionID, std::shared_ptr<TcpConnection>> connections_{};
   MessageHandlerRegistry<TMessages...> message_handler_registry_{};
+  TcpTaskHandler tcp_task_handler_{};
 };
 
 }

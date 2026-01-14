@@ -19,16 +19,16 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     endif()
 
     add_compile_options(
-            -Wall -Wextra -Werror -Wpedantic
-            -Wshadow -Wconversion -Wsign-conversion
-            -Wold-style-cast -Wnon-virtual-dtor
-            -Woverloaded-virtual -Wnull-dereference
-            -Wdouble-promotion -Wformat=2
-            -Wundef -Wextra-semi -Wimplicit-fallthrough
-            -Wglobal-constructors
-            -fno-common -fstrict-aliasing -fno-omit-frame-pointer
+        -Wall -Wextra -Werror -Wpedantic
+        -Wshadow -Wconversion -Wsign-conversion
+        -Wold-style-cast -Wnon-virtual-dtor
+        -Woverloaded-virtual -Wnull-dereference
+        -Wdouble-promotion -Wformat=2
+        -Wundef -Wextra-semi -Wimplicit-fallthrough
+        -Wglobal-constructors
+        -fno-common -fstrict-aliasing -fno-omit-frame-pointer
 
-            -Wno-c++98-compat-extra-semi
+        -Wno-c++98-compat-extra-semi
     )
 endif()
 
@@ -79,16 +79,15 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/messages/api.h
         source/application/messages/json_macros.h
         source/communication/commons.h
-        source/cross_platform.h
         source/users/user_server_system.cc
         source/users/user_server_system.h
         source/users/adapters/user_persistence_adapter.h
         source/users/adapters/sqlite_user_persistence_adapter.cc
         source/users/adapters/sqlite_user_persistence_adapter.h
         source/application/commons.h
+        source/communication/tcp_task_handler.h
 )
 
-# Only define SERVER_SIDE if we are NOT building the client
 if(NOT BUILD_CLIENT)
     target_compile_definitions(${TARGET_NAME} PRIVATE SERVER_SIDE)
 endif()

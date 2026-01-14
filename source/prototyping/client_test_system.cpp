@@ -14,7 +14,6 @@ System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
   tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](communication::ConnectionID id, const chat::api::PrintMessage& message) {
-    if (!ping_active_) return;
     std::cout << "[" << id << "]" << "server says: " << message.value << std::endl;
   });
 
@@ -29,10 +28,6 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
     std::cout << "login successful" << std::endl;
     user_ = std::make_unique<chat::api::User>(std::move(message.user));
   });
-}
-
-void ClientTestSystem::Initialize() {
-
 }
 
 void ClientTestSystem::Update() {
@@ -93,12 +88,9 @@ void ClientTestSystem::Update() {
     return;
   }
 
-  if (line.starts_with("ping")) {
-    ping_active_ = !ping_active_;
-    return;
-  }
-
-  tcp_system_.Send<chat::api::PrintMessage>(connection_id_, {line});
+  if (user_ == nullptr) return;
+  //tcp_system_.Send<chat::api::PrintMessage>(connection_id_, {line});
+  tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {1, {user_->id, line}});
 }
 
 void ClientTestSystem::ParseCommand(std::string_view view, std::vector<std::string>& result) {

@@ -7,14 +7,10 @@ namespace claw::prototyping {
 
 class PrototypingSystem final : public core::System {
 public:
-  explicit PrototypingSystem(const core::SystemContext& ctx, const std::string& argument)
-    : System(ctx), argument_{argument}
+  explicit PrototypingSystem(const core::SystemContext& ctx)
+    : System(ctx)
   {}
 
-  [[nodiscard]] const std::string& Argument() { return argument_; }
-
-private:
-  std::string argument_;
 };
 
 }

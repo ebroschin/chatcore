@@ -30,6 +30,7 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
 
     api::User& user = result.value();
     user_sessions_.emplace(id, user);
+    tcp_system_.Send<api::AuthenticateUserResponseMessage>(id, {user});
     tcp_system_.Broadcast<api::PrintMessage>({"User has logged in: " + user.name + " [" + std::to_string(user.id) + "]"});
   });
 }

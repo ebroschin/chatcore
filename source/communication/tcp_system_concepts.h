@@ -38,7 +38,7 @@ requires(std::span<const std::byte> input_bytes,
   -> std::same_as<std::vector<std::byte>>;
 
   { TCodec::DecodePayload(input_bytes) }
-  -> std::same_as<std::pair<typename TCodec::DiscriminatorType, typename TCodec::PayloadType>>;
+  -> std::same_as<std::optional<std::pair<typename TCodec::DiscriminatorType, typename TCodec::PayloadType>>>;
 
   { TCodec::template Decode<TMessage>(payload) }
   -> std::same_as<TMessage>;

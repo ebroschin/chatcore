@@ -11,8 +11,8 @@ BoostTcpServer::~BoostTcpServer() {
 }
 
 void BoostTcpServer::Connect(const ParameterType& parameters, CallbackType callback) {
-  worker_ = std::thread{[this, parameters, callback]() {
-    Accept(parameters, callback);
+  worker_ = std::thread{[this, parameters, callback = std::move(callback)]() {
+    Accept(parameters, std::move(callback));
   }};
 }
 
@@ -24,7 +24,6 @@ void BoostTcpServer::Accept(const ParameterType& parameters, CallbackType callba
 
     const auto address = boost::asio::ip::make_address(parameters.ip);
     tcp::acceptor acceptor_{io_context_, tcp::endpoint{address, parameters.port}};
-
     acceptor_.accept(socket);
 
     std::cout << "client connected" << std::endl;

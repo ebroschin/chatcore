@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../persistence/persistence_store.h"
 
 #include <string>
@@ -16,6 +17,7 @@ public:
   void Deinitialize() override;
 
   SQLite::Database& Database() { return db_; }
+
 private:
   SQLite::Database db_;
 };

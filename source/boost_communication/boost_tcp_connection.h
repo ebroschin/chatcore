@@ -13,22 +13,22 @@ public:
   {}
 
   ~BoostTcpConnection() override {
+    running_ = false;
     if (!worker_.joinable()) return;
     worker_.join();
   }
 
-  void Start(ReceiverCallback callback) override;
+  void Start(ReceiverCallback callback, DisconnectCallback disconnect_callback) override;
   void SendBytes(std::span<const std::byte> bytes) override;
-  bool IsOpen() override;
 
 private:
   void Poll();
   bool HandleError(const boost::system::error_code& error);
-  bool HasData();
-  std::vector<std::byte> ReadBytes();
+  void ReadBytes();
+  void HandleDisconnect();
 
+  bool running_{true};
   tcp::socket socket_;
-  bool open_{true};
   std::thread worker_{};
 };
 
