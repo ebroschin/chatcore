@@ -2,7 +2,6 @@
 
 #include "../chat/adapters/sqlite_chat_persistence_adapter.h"
 #include "../chat/chat_server_system.h"
-#include "../communication/tcp_system.h"
 #include "../persistence/persistence_system.h"
 #include "../prototyping/chat_input_system.h"
 #include "../prototyping/client_test_system.h"

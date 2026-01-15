@@ -22,7 +22,7 @@ private:
 
   chat::client::ChatInputSystem& chat_input_system_;
   chat::server::ChatClientTcpSystem& tcp_system_;
-  communication::ConnectionID connection_id_{};
+  network::ConnectionID connection_id_{};
   std::unique_ptr<chat::api::User> user_{};
 };
 

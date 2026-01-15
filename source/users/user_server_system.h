@@ -18,14 +18,14 @@ public:
   explicit UserServerSystem(const core::SystemContext& ctx);
 
   api::PersistenceID CreateUser(const std::string& name, const std::string& password);
-  bool ValidateSession(const communication::ConnectionID& id);
-  std::optional<std::reference_wrapper<const api::User>> GetSessionUser(const communication::ConnectionID& id);
+  bool ValidateSession(const network::ConnectionID& id);
+  std::optional<std::reference_wrapper<const api::User>> GetSessionUser(const network::ConnectionID& id);
 
 private:
   UserPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
 
-  std::unordered_map<communication::ConnectionID, api::User> user_sessions_{};
+  std::unordered_map<network::ConnectionID, api::User> user_sessions_{};
 };
 
 }

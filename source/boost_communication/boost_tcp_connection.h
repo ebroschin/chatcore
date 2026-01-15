@@ -1,12 +1,13 @@
 #pragma once
-#include "../communication/tcp_connection.h"
+
+#include <claw/network/tcp/tcp_connection.h>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
 
 namespace claw::chat::server {
 
-class BoostTcpConnection final : public communication::TcpConnection {
+class BoostTcpConnection final : public network::tcp::TcpConnection {
 public:
   explicit BoostTcpConnection(tcp::socket socket):
     socket_{std::move(socket)}

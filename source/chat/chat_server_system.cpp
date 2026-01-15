@@ -1,6 +1,6 @@
 #include "chat_server_system.h"
 
-#include "../communication/tcp_system.h"
+#include <claw/network/tcp/tcp_system.h>
 #include "adapters/chat_persistence_adapter.h"
 #include "../application/chat_persistence_system.h"
 #include <iostream>
@@ -21,11 +21,11 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
 void ChatServerSystem::Initialize() {
   user_system_ = ctx_.Get<UserServerSystem>();
 
-  tcp_system_.RegisterMessageHandler<api::PrintMessage>([&](communication::ConnectionID id, const api::PrintMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::PrintMessage>([&](network::ConnectionID id, const api::PrintMessage& message) {
     std::cout << "[" << id << "]" <<  " message from client received: " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](communication::ConnectionID id, const api::WriteChatMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](network::ConnectionID id, const api::WriteChatMessage& message) {
     if (!user_system_->ValidateSession(id)) return;
     const auto message_id = CreateChatMessage(message.channel_id, message.message);
     std::cout << "created message with id: " << message_id << std::endl;
@@ -36,7 +36,7 @@ void ChatServerSystem::Initialize() {
     tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(message.channel_id) + "]" + user.value().get().name + " says: " + message.message.content });
   });
 
-  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](communication::ConnectionID id, const api::CreateChannelMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](network::ConnectionID id, const api::CreateChannelMessage& message) {
     if (!user_system_->ValidateSession(id)) return;
     const auto channel_id = CreateChatChannel(message.name);
     std::cout << "created channel: " << message.name << "with id: " << channel_id << std::endl;
@@ -47,7 +47,7 @@ void ChatServerSystem::Initialize() {
     tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(channel_id) + "] has been created by" + user.value().get().name});
   });
 
-  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](communication::ConnectionID id, const api::GetChatsRequestMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](network::ConnectionID id, const api::GetChatsRequestMessage& message) {
     if (!user_system_->ValidateSession(id)) return;
     std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
 

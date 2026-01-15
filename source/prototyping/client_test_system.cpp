@@ -1,6 +1,6 @@
 #include "client_test_system.h"
 
-#include "../communication/tcp_system.h"
+#include <claw/network/tcp/tcp_system.h>
 #include "../application/chat_tcp_system.h"
 #include <claw/core/system_context.h>
 #include "chat_input_system.h"
@@ -13,18 +13,18 @@ ClientTestSystem::ClientTestSystem(const core::SystemContext& ctx):
 System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
-  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](communication::ConnectionID id, const chat::api::PrintMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionID id, const chat::api::PrintMessage& message) {
     std::cout << "[" << id << "]" << "server says: " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](communication::ConnectionID, const chat::api::GetChatsResponseMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionID, const chat::api::GetChatsResponseMessage& message) {
     std::cout << "received chats: " << std::endl;
     for (const auto& chat_message : message.messages) {
       std::cout << chat_message.user_id << ": " << chat_message.content << std::endl;
     }
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](communication::ConnectionID, const chat::api::AuthenticateUserResponseMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](network::ConnectionID, const chat::api::AuthenticateUserResponseMessage& message) {
     std::cout << "login successful" << std::endl;
     user_ = std::make_unique<chat::api::User>(std::move(message.user));
   });
@@ -40,7 +40,7 @@ void ClientTestSystem::Update() {
     ParseCommand(line, parameter_buffer);
     if (parameter_buffer.size() <= 1) return;
 
-    tcp_system_.Connect({parameter_buffer[1], "1338"}, [this](communication::ConnectionID id) {
+    tcp_system_.Connect({parameter_buffer[1], "1338"}, [this](network::ConnectionID id) {
      connection_id_ = id;
     });
 

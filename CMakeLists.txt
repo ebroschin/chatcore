@@ -58,12 +58,9 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/adapters/sqlite_chat_persistence_adapter.h
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
-        source/communication/message_handler_registry.h
-        source/communication/message_handler.h
         source/prototyping/chat_input_system.cc
         source/prototyping/chat_input_system.h
         source/prototyping/ping_server_system.h
-        source/communication/tcp_connection.h
         source/boost_communication/boost_tcp_connection.cc
         source/boost_communication/boost_tcp_connection.h
         source/boost_communication/boost_tcp_client.cc
@@ -71,12 +68,9 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
         source/prototyping/fallback_message_handler.h
-        source/communication/tcp_system_builder.h
-        source/communication/tcp_system_concepts.h
         source/codec/test_codec.h
         source/application/messages/api.h
         source/application/messages/json_macros.h
-        source/communication/commons.h
         source/users/user_server_system.cc
         source/users/user_server_system.h
         source/users/adapters/user_persistence_adapter.h
@@ -99,5 +93,13 @@ find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
 find_package(claw-core CONFIG REQUIRED)
 find_package(claw-utility CONFIG REQUIRED)
+find_package(claw-network CONFIG REQUIRED)
 
-target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::${BOOST_STACKTRACE} claw::core claw::utility)
+target_link_libraries(${TARGET_NAME}
+    PRIVATE
+        SQLiteCpp
+        Boost::${BOOST_STACKTRACE}
+        claw::core
+        claw::utility
+        claw::network
+)
