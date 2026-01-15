@@ -1,3 +1,12 @@
 [submodule "external/vcpkg"]
 	path = external/vcpkg
 	url = https://github.com/microsoft/vcpkg.git
+[submodule "external/claw-network"]
+	path = external/claw-network
+	url = git@192.168.178.20:claw/claw-network.git
+[submodule "external/claw-utility"]
+	path = external/claw-utility
+	url = git@192.168.178.20:claw/claw-utility.git
+[submodule "external/claw-core"]
+	path = external/claw-core
+	url = git@192.168.178.20:claw/claw-core.git

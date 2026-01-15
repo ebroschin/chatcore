@@ -89,11 +89,18 @@ else()
     set(BOOST_STACKTRACE stacktrace_backtrace)
 endif()
 
+#use submodules during library development
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-network")
+#find_package(claw-network CONFIG REQUIRED)
+
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-utility")
+#find_package(claw-utility CONFIG REQUIRED)
+
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-core")
+#find_package(claw-core CONFIG REQUIRED)
+
 find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
-find_package(claw-core CONFIG REQUIRED)
-find_package(claw-utility CONFIG REQUIRED)
-find_package(claw-network CONFIG REQUIRED)
 
 target_link_libraries(${TARGET_NAME}
     PRIVATE
