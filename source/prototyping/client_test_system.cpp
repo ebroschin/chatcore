@@ -30,11 +30,8 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
   });
 }
 
-void ClientTestSystem::Update() {
+void ClientTestSystem::HandleLine(const std::string& line) {
   static std::vector<std::string> parameter_buffer;
-  static std::string line;
-
-  if (!chat_input_system_.GetLine(line)) return;
 
   if (line.starts_with("connect")) {
     ParseCommand(line, parameter_buffer);

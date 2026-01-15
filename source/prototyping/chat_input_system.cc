@@ -1,13 +1,16 @@
 #include "chat_input_system.h"
 
+#include "client_test_system.h"
+
 #include <iostream>
-#include <mutex>
 #include <string>
+#include <claw/core/system_context.h>
 
 namespace claw::chat::client {
 
 void ChatInputSystem::Initialize() {
   running_ = true;
+  worker_ = std::thread{&ChatInputSystem::UpdateWorker, this};
 }
 
 void ChatInputSystem::Deinitialize() {
@@ -22,20 +25,8 @@ void ChatInputSystem::UpdateWorker() {
   while (true) {
     if (!running_) continue;
     std::getline(std::cin, line);
-    std::lock_guard lock{mutex_};
-    queue_.push(line);
+    ctx_.Get<prototyping::ClientTestSystem>()->HandleLine(line);
   }
 }
-
-bool ChatInputSystem::GetLine(std::string& out)  {
-  std::lock_guard lock{mutex_};
-  if (queue_.empty()) return false;
-
-  out = std::move(queue_.front());
-  queue_.pop();
-
-  return true;
-}
-
 
 }

@@ -2,7 +2,7 @@
 
 int main(int, char**) {
   claw::chat::server::ChatServerApplication application{};
-  application.Run();
+  application.RunBlocking();
 
   return 0;
 }

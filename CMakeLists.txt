@@ -32,7 +32,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     )
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
 
 if(BUILD_CLIENT)
     set(TARGET_NAME chat-client)

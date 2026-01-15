@@ -13,7 +13,7 @@ class ClientTestSystem final : public core::System {
 public:
   explicit ClientTestSystem(const core::SystemContext& ctx);
 
-  void Update() override;
+  void HandleLine(const std::string& line);
 
   [[nodiscard]] auto ConnectionID() { return connection_id_; }
 

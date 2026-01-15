@@ -22,22 +22,22 @@ using namespace claw::persistence::sqlite;
 namespace claw::chat::server {
 
 void ChatServerApplication::Initialize() {
-  ctx_->Register<prototyping::PrototypingSystem>();
+  ctx_.Register<prototyping::PrototypingSystem>();
 
 #ifdef SERVER_SIDE
-  auto* persistence_system = ctx_->Register<ChatPersistenceSystem>("sqlite.db3");
+  auto* persistence_system = ctx_.Register<ChatPersistenceSystem>("sqlite.db3");
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
   persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 
-  auto* tcp_system = ctx_->Register<ChatServerTcpSystem>();
-  ctx_->Register<ChatServerSystem>();
-  ctx_->Register<UserServerSystem>();
-  ctx_->Register<prototyping::PingServerSystem>();
+  auto* tcp_system = ctx_.Register<ChatServerTcpSystem>();
+  ctx_.Register<ChatServerSystem>();
+  ctx_.Register<UserServerSystem>();
+  ctx_.Register<prototyping::PingServerSystem>();
   tcp_system->Connect({"0.0.0.0", 1338});
 #else
-  ctx_->Register<ChatClientTcpSystem>();
-  ctx_->Register<client::ChatInputSystem>();
-  ctx_->Register<prototyping::ClientTestSystem>();
+  ctx_.Register<ChatClientTcpSystem>();
+  ctx_.Register<client::ChatInputSystem>();
+  ctx_.Register<prototyping::ClientTestSystem>();
 #endif
 }
 
