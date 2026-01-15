@@ -4,11 +4,11 @@
 #include "message_handler_registry.h"
 #include "tcp_connection.h"
 #include "tcp_system_concepts.h"
-#include "tcp_task_handler.h"
 #include <claw/core/system.h>
 #include <concepts>
 #include <mutex>
-#include <nlohmann/json.hpp>
+#include <claw/utility/task_thread.h>
+#include <ranges>
 
 namespace claw::communication {
 
@@ -49,7 +49,7 @@ public:
   void Send(ConnectionID id, const TMessage& message) {
     auto bytes = TCodec::template Encode<TMessage>(message);
 
-    tcp_task_handler_.Post([this, id, bytes = std::move(bytes)]() {
+    task_thread.Post([this, id, bytes = std::move(bytes)]() {
       auto it = connections_.find(id);
       if (it == connections_.end()) return;
 
@@ -62,7 +62,7 @@ public:
   void Broadcast(const TMessage& message) {
     auto bytes = TCodec::template Encode<TMessage>(message);
 
-    tcp_task_handler_.Post([this, bytes = std::move(bytes)]() {
+    task_thread.Post([this, bytes = std::move(bytes)]() {
       for (const auto &connection : connections_ | std::views::values) {
         connection->SendBytes(bytes);
       }
@@ -71,13 +71,11 @@ public:
 
 private:
   void CreateConnection(std::shared_ptr<typename TConnector::ConnectionType>&& connection, ConnectionCallback callback) {
-    static ConnectionID id_counter{1};
-
-    tcp_task_handler_.Post([this,
+    task_thread.Post([this,
       connection = std::move(connection),
       callback = std::move(callback)]()
     {
-      auto connection_id = id_counter++;
+      auto connection_id = id_counter_++;
       connections_.emplace(connection_id, connection);
 
       const auto receiver_callback = [this, connection_id](std::span<const std::byte> bytes) {
@@ -96,7 +94,7 @@ private:
   }
 
   void RemoveConnection(ConnectionID id) {
-    tcp_task_handler_.Post([this, id]() {
+    task_thread.Post([this, id]() {
       auto it = connections_.find(id);
       if (it == connections_.end()) return;
 
@@ -106,15 +104,15 @@ private:
 
   void ReceiveMessage(ConnectionID id, std::span<const std::byte> bytes) {
     auto payload = TCodec::DecodePayload(bytes);
-    if (!payload.has_value()) return;
+    if (!payload) return;
 
     static const auto message_handler_lookup = CreateMessageHandlerLookup();
-    tcp_task_handler_.Post([this, id, payload = std::move(payload)]() {
-      auto type_id = payload.value().first;
+    task_thread.Post([this, id, payload = std::move(payload)]() {
+      auto type_id = payload->first;
       auto it = message_handler_lookup.find(type_id);
       if (it == message_handler_lookup.end()) return; //TODO error logging
 
-      it->second(this, id, payload.value().second);
+      it->second(this, id, payload->second);
     });
   }
 
@@ -136,7 +134,8 @@ private:
   std::unique_ptr<TConnector> connector_;
   std::unordered_map<ConnectionID, std::shared_ptr<TcpConnection>> connections_{};
   MessageHandlerRegistry<TMessages...> message_handler_registry_{};
-  TcpTaskHandler tcp_task_handler_{};
+  utility::TaskThread task_thread{};
+  ConnectionID id_counter_{1};
 };
 
 }

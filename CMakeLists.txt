@@ -70,10 +70,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/boost_communication/boost_tcp_client.h
         source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
-        source/utility/concepts.h
         source/prototyping/fallback_message_handler.h
         source/communication/tcp_system_builder.h
-        source/utility/variadic.h
         source/communication/tcp_system_concepts.h
         source/codec/test_codec.h
         source/application/messages/api.h
@@ -85,7 +83,6 @@ add_executable(${TARGET_NAME} source/main.cc
         source/users/adapters/sqlite_user_persistence_adapter.cc
         source/users/adapters/sqlite_user_persistence_adapter.h
         source/application/commons.h
-        source/communication/tcp_task_handler.h
 )
 
 if(NOT BUILD_CLIENT)
@@ -103,4 +100,4 @@ find_package(SQLiteCpp CONFIG REQUIRED)
 find_package(claw-core CONFIG REQUIRED)
 find_package(claw-utility CONFIG REQUIRED)
 
-target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::${BOOST_STACKTRACE} claw::core)
+target_link_libraries(${TARGET_NAME} PRIVATE SQLiteCpp Boost::${BOOST_STACKTRACE} claw::core claw::utility)

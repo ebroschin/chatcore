@@ -2,7 +2,7 @@
 #include "persistence_store.h"
 
 #include <concepts>
-#include "../utility/concepts.h"
+#include <claw/utility/concepts.h>
 
 namespace claw::persistence {
 
