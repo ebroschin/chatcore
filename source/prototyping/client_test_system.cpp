@@ -13,21 +13,36 @@ ClientTestSystem::ClientTestSystem(const core::SystemContext& ctx):
 System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
-  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionID id, const chat::api::PrintMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionId id, const chat::api::PrintMessage& message) {
     std::cout << "[" << id << "]" << "server says: " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionID, const chat::api::GetChatsResponseMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatsResponseMessage& message) {
     std::cout << "received chats: " << std::endl;
     for (const auto& chat_message : message.messages) {
       std::cout << chat_message.user_id << ": " << chat_message.content << std::endl;
     }
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](network::ConnectionID, const chat::api::AuthenticateUserResponseMessage& message) {
+  tcp_system_.RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](network::ConnectionId, const chat::api::AuthenticateUserResponseMessage& message) {
     std::cout << "login successful" << std::endl;
-    user_ = std::make_unique<chat::api::User>(std::move(message.user));
+    user_ = std::make_unique<chat::api::User>(message.user);
   });
+}
+
+void ClientTestSystem::Initialize() {
+  auto* channel = tcp_system_.CreateMessageChannel();
+  worker_ = std::thread{[this, channel]() {
+    while (running_) {
+      channel->ProcessBlocking();
+    }
+  }};
+}
+
+void ClientTestSystem::Deinitialize() {
+  running_ = false;
+  if (!worker_.joinable()) return;
+  worker_.join();
 }
 
 void ClientTestSystem::HandleLine(const std::string& line) {
@@ -37,8 +52,9 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     ParseCommand(line, parameter_buffer);
     if (parameter_buffer.size() <= 1) return;
 
-    tcp_system_.Connect({parameter_buffer[1], "1338"}, [this](network::ConnectionID id) {
-     connection_id_ = id;
+    tcp_system_.Connect({parameter_buffer[1], "1338"}, [this](network::ConnectionId id) {
+      connection_id_ = id;
+      std::cout << "connection established: " << id << std::endl;
     });
 
     return;

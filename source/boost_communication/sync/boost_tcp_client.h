@@ -23,6 +23,7 @@ public:
 private:
   boost::asio::io_context io_context_{};
   tcp::resolver resolver_{io_context_};
+  utility::TaskThread task_thread_;
 };
 
 }

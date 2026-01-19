@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 namespace claw::chat::server {
 
 class ChatPersistenceAdapter;

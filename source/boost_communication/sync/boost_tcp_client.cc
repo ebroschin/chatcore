@@ -10,7 +10,7 @@ void BoostTcpClient::Connect(const ParameterType& parameters, CallbackType callb
   boost::asio::connect(socket, endpoints, error);
   if (error) return;
 
-  callback(std::make_unique<chat::server::BoostTcpConnection>(std::move(socket)));
+  callback(std::make_unique<chat::server::BoostTcpConnection>(std::move(socket), task_thread_));
 }
 
 

@@ -29,6 +29,7 @@ private:
 
   boost::asio::io_context io_context_{};
   std::thread worker_{};
+  utility::TaskThread task_thread_;
 };
 
 }

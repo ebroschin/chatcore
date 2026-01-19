@@ -22,8 +22,7 @@ void ChatInputSystem::Deinitialize() {
 
 void ChatInputSystem::UpdateWorker() {
   std::string line;
-  while (true) {
-    if (!running_) continue;
+  while (running_) {
     std::getline(std::cin, line);
     ctx_.Get<prototyping::ClientTestSystem>()->HandleLine(line);
   }

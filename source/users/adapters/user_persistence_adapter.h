@@ -3,6 +3,7 @@
 #include "../../persistence/persistence_adapter.h"
 #include "../../application/commons.h"
 #include <string>
+#include <optional>
 
 namespace claw::chat::api {
 struct User;

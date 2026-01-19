@@ -37,7 +37,9 @@ void BoostTcpConnection::ReadBytes() {
   boost::asio::read(socket_, boost::asio::buffer(message_buffer), error);
   if (HandleError(error)) return;
 
-  receiver_callback_(message_buffer);
+  task_thread_.Post([this, message_buffer]() {
+    receiver_callback_(message_buffer);
+  });
 }
 
 bool BoostTcpConnection::HandleError(const boost::system::error_code& error) {
@@ -48,7 +50,10 @@ bool BoostTcpConnection::HandleError(const boost::system::error_code& error) {
   }
 
   running_ = false;
-  disconnect_callback_();
+  task_thread_.Post([this]() {
+    disconnect_callback_();
+  });
+
   return true;
 }
 

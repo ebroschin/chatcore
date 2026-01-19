@@ -14,14 +14,14 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
   adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<UserPersistenceAdapter>()},
   tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
 {
-  tcp_system_.RegisterMessageHandler<api::CreateUserMessage>([&](network::ConnectionID, const api::CreateUserMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::CreateUserMessage>([&](network::ConnectionId, const api::CreateUserMessage& message) {
     const auto user_id = CreateUser(message.name, message.password);
     std::cout << "created user with id: " << user_id << std::endl;
 
     tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(user_id) + "]"});
   });
 
-  tcp_system_.RegisterMessageHandler<api::AuthenticateUserRequestMessage>([&](network::ConnectionID id, const api::AuthenticateUserRequestMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::AuthenticateUserRequestMessage>([&](network::ConnectionId id, const api::AuthenticateUserRequestMessage& message) {
     auto result = adapter_.AuthenticateUser(message.name, message.password);
     if (!result.has_value()) {
       tcp_system_.Send<api::PrintMessage>(id, {"Wrong user or password"});
@@ -35,7 +35,7 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
   });
 }
 
-bool UserServerSystem::ValidateSession(const network::ConnectionID& id) {
+bool UserServerSystem::ValidateSession(const network::ConnectionId& id) {
   auto result = user_sessions_.contains(id);
   if (!result) {
     tcp_system_.Send<api::PrintMessage>(id, {"Not authorized."});
@@ -47,7 +47,7 @@ api::PersistenceID UserServerSystem::CreateUser(const std::string& name, const s
   return adapter_.CreateUser(name, password);
 }
 
-std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSessionUser(const network::ConnectionID& id) {
+std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSessionUser(const network::ConnectionId& id) {
   auto it = user_sessions_.find(id);
   if (it == user_sessions_.end()) return std::nullopt;
 

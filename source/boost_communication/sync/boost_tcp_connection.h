@@ -2,6 +2,7 @@
 
 #include <claw/network/tcp/tcp_connection.h>
 #include <boost/asio.hpp>
+#include <claw/utility/task_thread.h>
 
 using boost::asio::ip::tcp;
 
@@ -9,8 +10,9 @@ namespace claw::chat::server {
 
 class BoostTcpConnection final : public network::tcp::TcpConnection {
 public:
-  explicit BoostTcpConnection(tcp::socket socket):
-    socket_{std::move(socket)}
+  explicit BoostTcpConnection(tcp::socket socket, utility::TaskThread& task_thread):
+    socket_{std::move(socket)},
+    task_thread_{task_thread}
   {}
 
   ~BoostTcpConnection() override {
@@ -31,6 +33,8 @@ private:
   bool running_{true};
   tcp::socket socket_;
   std::thread worker_{};
+
+  utility::TaskThread& task_thread_;
 };
 
 }

@@ -32,7 +32,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     )
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" ON)
+option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
 
 if(BUILD_CLIENT)
     set(TARGET_NAME chat-client)
@@ -46,8 +46,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/prototyping/client_test_system.cpp
         source/prototyping/client_test_system.h
         source/prototyping/prototyping_system.h
-        source/boost_communication/boost_tcp_server.cpp
-        source/boost_communication/boost_tcp_server.h
+        source/boost_communication/sync/boost_tcp_server.cpp
+        source/boost_communication/sync/boost_tcp_server.h
         source/persistence/persistence_system.h
         source/persistence/persistence_store.h
         source/persistence/persistence_adapter.h
@@ -61,13 +61,12 @@ add_executable(${TARGET_NAME} source/main.cc
         source/prototyping/chat_input_system.cc
         source/prototyping/chat_input_system.h
         source/prototyping/ping_server_system.h
-        source/boost_communication/boost_tcp_connection.cc
-        source/boost_communication/boost_tcp_connection.h
-        source/boost_communication/boost_tcp_client.cc
-        source/boost_communication/boost_tcp_client.h
+        source/boost_communication/sync/boost_tcp_connection.cc
+        source/boost_communication/sync/boost_tcp_connection.h
+        source/boost_communication/sync/boost_tcp_client.cc
+        source/boost_communication/sync/boost_tcp_client.h
         source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
-        source/prototyping/fallback_message_handler.h
         source/codec/test_codec.h
         source/application/messages/api.h
         source/application/messages/json_macros.h

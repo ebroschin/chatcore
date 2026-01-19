@@ -1,7 +1,7 @@
 #include "boost_tcp_server.h"
 
-#include <ranges>
 #include <iostream>
+#include <ranges>
 
 namespace claw::communication {
 
@@ -28,7 +28,7 @@ void BoostTcpServer::Accept(const ParameterType& parameters, CallbackType callba
 
     std::cout << "client connected" << std::endl;
 
-    callback(std::make_unique<chat::server::BoostTcpConnection>(std::move(socket)));
+    callback(std::make_unique<chat::server::BoostTcpConnection>(std::move(socket), task_thread_));
   }
 }
 

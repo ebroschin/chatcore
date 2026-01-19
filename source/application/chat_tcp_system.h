@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../boost_communication/sync/boost_tcp_client.h"
+#include "../boost_communication/sync/boost_tcp_server.h"
 #include <claw/network/tcp/tcp_system.h>
 #include <claw/network/tcp/tcp_system_builder.h>
-#include "../boost_communication/boost_tcp_server.h"
-#include "../boost_communication/boost_tcp_client.h"
 
 #include "../codec/test_codec.h"
 #include "messages/json_macros.h"
