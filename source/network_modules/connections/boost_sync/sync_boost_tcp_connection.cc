@@ -1,22 +1,22 @@
-#include "boost_tcp_connection.h"
+#include "sync_boost_tcp_connection.h"
 
 #include <iostream>
 
-namespace claw::chat::server {
+namespace claw::network::modules {
 
-void BoostTcpConnection::Start(ReceiverCallback callback, DisconnectCallback disconnect_callback) {
+void SyncBoostTcpConnection::Start(ReceiverCallback callback, DisconnectCallback disconnect_callback) {
   receiver_callback_ = std::move(callback);
   disconnect_callback_ = std::move(disconnect_callback);
-  worker_ = std::thread{&BoostTcpConnection::Poll, this};
+  worker_ = std::thread{&SyncBoostTcpConnection::Poll, this};
 }
 
-void BoostTcpConnection::Poll() {
+void SyncBoostTcpConnection::Poll() {
   while (running_) {
     ReadBytes();
   }
 }
 
-void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
+void SyncBoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
   boost::system::error_code error;
   uint32_t network_length = htonl(static_cast<std::uint32_t>(bytes.size()));
   boost::asio::write(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
@@ -26,7 +26,7 @@ void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
   HandleError(error);
 }
 
-void BoostTcpConnection::ReadBytes() {
+void SyncBoostTcpConnection::ReadBytes() {
   boost::system::error_code error;
   uint32_t network_length;
   boost::asio::read(socket_, boost::asio::buffer(&network_length, sizeof(network_length)), error);
@@ -42,7 +42,7 @@ void BoostTcpConnection::ReadBytes() {
   });
 }
 
-bool BoostTcpConnection::HandleError(const boost::system::error_code& error) {
+bool SyncBoostTcpConnection::HandleError(const boost::system::error_code& error) {
   if (!error) return false;
 
   if (error == boost::asio::error::eof) {

@@ -5,7 +5,7 @@
 
 namespace claw::chat::server {
 
-struct TestCodec {
+struct JsonNetworkCodec {
   using DiscriminatorType = std::uint64_t;
   using PayloadType = nlohmann::json;
 

@@ -46,8 +46,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/prototyping/client_test_system.cpp
         source/prototyping/client_test_system.h
         source/prototyping/prototyping_system.h
-        source/boost_communication/sync/boost_tcp_server.cpp
-        source/boost_communication/sync/boost_tcp_server.h
+        source/network_modules/connections/boost_sync/sync_boost_tcp_acceptor.cpp
+        source/network_modules/connections/boost_sync/sync_boost_tcp_acceptor.h
         source/persistence/persistence_system.h
         source/persistence/persistence_store.h
         source/persistence/persistence_adapter.h
@@ -61,13 +61,13 @@ add_executable(${TARGET_NAME} source/main.cc
         source/prototyping/chat_input_system.cc
         source/prototyping/chat_input_system.h
         source/prototyping/ping_server_system.h
-        source/boost_communication/sync/boost_tcp_connection.cc
-        source/boost_communication/sync/boost_tcp_connection.h
-        source/boost_communication/sync/boost_tcp_client.cc
-        source/boost_communication/sync/boost_tcp_client.h
+        source/network_modules/connections/boost_sync/sync_boost_tcp_connection.cc
+        source/network_modules/connections/boost_sync/sync_boost_tcp_connection.h
+        source/network_modules/connections/boost_sync/sync_boost_tcp_resolver.cc
+        source/network_modules/connections/boost_sync/sync_boost_tcp_resolver.h
         source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
-        source/codec/test_codec.h
+        source/network_modules/codecs/json_network_codec.h
         source/application/messages/api.h
         source/application/messages/json_macros.h
         source/users/user_server_system.cc
@@ -76,6 +76,10 @@ add_executable(${TARGET_NAME} source/main.cc
         source/users/adapters/sqlite_user_persistence_adapter.cc
         source/users/adapters/sqlite_user_persistence_adapter.h
         source/application/commons.h
+        source/network_modules/connections/boost_async/boost_tcp_acceptor.cc
+        source/network_modules/connections/boost_async/boost_tcp_acceptor.h
+        source/network_modules/connections/boost_async/boost_tcp_connection.cc
+        source/network_modules/connections/boost_async/boost_tcp_connection.h
 )
 
 if(NOT BUILD_CLIENT)

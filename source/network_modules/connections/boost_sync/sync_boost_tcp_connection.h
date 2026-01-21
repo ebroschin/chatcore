@@ -4,18 +4,16 @@
 #include <boost/asio.hpp>
 #include <claw/utility/task_thread.h>
 
-using boost::asio::ip::tcp;
+namespace claw::network::modules {
 
-namespace claw::chat::server {
-
-class BoostTcpConnection final : public network::tcp::TcpConnection {
+class SyncBoostTcpConnection final : public tcp::TcpConnection {
 public:
-  explicit BoostTcpConnection(tcp::socket socket, utility::TaskThread& task_thread):
+  explicit SyncBoostTcpConnection(boost::asio::ip::tcp::socket socket, utility::TaskThread& task_thread):
     socket_{std::move(socket)},
     task_thread_{task_thread}
   {}
 
-  ~BoostTcpConnection() override {
+  ~SyncBoostTcpConnection() override {
     running_ = false;
     if (!worker_.joinable()) return;
     worker_.join();
@@ -31,7 +29,7 @@ private:
   void HandleDisconnect();
 
   bool running_{true};
-  tcp::socket socket_;
+  boost::asio::ip::tcp::socket socket_;
   std::thread worker_{};
 
   utility::TaskThread& task_thread_;
