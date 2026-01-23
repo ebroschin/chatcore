@@ -31,10 +31,10 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
 }
 
 void ClientTestSystem::Initialize() {
-  auto* channel = tcp_system_.CreateMessageChannel();
-  worker_ = std::thread{[this, channel]() {
+  auto* processor = tcp_system_.CreateMessageProcessor();
+  worker_ = std::thread{[this, processor]() {
     while (running_) {
-      channel->ProcessBlocking();
+      processor->ProcessBlocking();
     }
   }};
 }

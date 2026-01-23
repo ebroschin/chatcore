@@ -1,7 +1,6 @@
 #pragma once
 
 #include <claw/network/tcp/tcp_system.h>
-#include "client_test_system.h"
 #include <claw/core/system.h>
 #include <claw/core/system_context.h>
 
@@ -16,10 +15,10 @@ public:
   void Initialize() override {
     running_ = true;
 
-    auto* channel = ctx_.Get<chat::server::ChatServerTcpSystem>()->CreateMessageChannel();
-    worker_ = std::thread{[this, channel]() {
+    auto* processor = ctx_.Get<chat::server::ChatServerTcpSystem>()->CreateMessageProcessor();
+    worker_ = std::thread{[this, processor]() {
       while (running_) {
-        channel->ProcessBlocking();
+        processor->ProcessBlocking();
       }
     }};
   }
@@ -28,15 +27,6 @@ public:
     running_ = false;
     if (!worker_.joinable()) return;
     worker_.join();
-  }
-
-  void UpdateWorker() {
-    // while (true) {
-    //   if (!running_) continue;
-    //
-    //   std::this_thread::sleep_for(std::chrono::seconds(1));
-    //   ctx_.Get<chat::server::ChatServerTcpSystem>()->Broadcast<chat::api::PrintMessage>({"hello from server"});
-    // }
   }
 
 private:
