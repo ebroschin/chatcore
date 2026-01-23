@@ -10,3 +10,6 @@
 [submodule "external/claw-core"]
 	path = external/claw-core
 	url = git@192.168.178.20:claw/claw-core.git
+[submodule "external/claw-network-modules"]
+	path = external/claw-network-modules
+	url = git@192.168.178.20:claw/claw-network-modules.git
