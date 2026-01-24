@@ -21,8 +21,9 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
-  api::PersistenceId CreateUser(const std::string& name, const std::string& password) override;
+  std::optional<api::PersistenceId> CreateUser(const std::string& name, const std::string& password) override;
   std::optional<api::User> GetUser(const api::PersistenceId& id) override;
+  std::optional<api::User> GetUser(const std::string& name) override;
   std::optional<api::User> AuthenticateUser(const std::string& name, const std::string& password) override;
 };
 

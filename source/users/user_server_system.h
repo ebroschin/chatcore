@@ -16,7 +16,7 @@ class UserServerSystem final : public core::System {
 public:
   explicit UserServerSystem(const core::SystemContext& ctx);
 
-  api::PersistenceId CreateUser(const std::string& name, const std::string& password);
+  std::optional<api::PersistenceId> CreateUser(const std::string& name, const std::string& password);
   bool ValidateSession(const network::ConnectionId& id);
   std::optional<std::reference_wrapper<const api::User>> GetSessionUser(const network::ConnectionId& id);
 

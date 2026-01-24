@@ -16,10 +16,19 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
 {
   tcp_system_.RegisterMessageHandler<api::CreateUserRequestMessage>([&](network::ConnectionId id, const api::CreateUserRequestMessage& message) {
     const auto user_id = CreateUser(message.name, message.password);
-    std::cout << "created user with id: " << user_id << std::endl;
+    if (!user_id) {
+      auto user = adapter_.GetUser(message.name);
+      if (!user) return;
 
-    tcp_system_.Send<api::CreateUserResponseMessage>(id, {user_id, message.name});
-    tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(user_id) + "]"});
+      std::cout << "user already exists: " << user->id << std::endl;
+      tcp_system_.Send<api::CreateUserResponseMessage>(id, {*user_id, message.name});
+      return;
+    }
+
+    std::cout << "created user with id: " << *user_id << std::endl;
+    tcp_system_.Send<api::CreateUserResponseMessage>(id, {*user_id, message.name});
+    tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(*user_id) + "]"});
+
   });
 
   tcp_system_.RegisterMessageHandler<api::AuthenticateUserRequestMessage>([&](network::ConnectionId id, const api::AuthenticateUserRequestMessage& message) {
@@ -44,7 +53,7 @@ bool UserServerSystem::ValidateSession(const network::ConnectionId& id) {
   return result;
 }
 
-api::PersistenceId UserServerSystem::CreateUser(const std::string& name, const std::string& password) {
+std::optional<api::PersistenceId> UserServerSystem::CreateUser(const std::string& name, const std::string& password) {
   return adapter_.CreateUser(name, password);
 }
 
