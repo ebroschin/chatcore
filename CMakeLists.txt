@@ -61,14 +61,11 @@ add_executable(${TARGET_NAME} source/main.cc
         source/prototyping/ping_server_system.h
         source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
-        source/application/messages/api.h
-        source/application/messages/json_macros.h
         source/users/user_server_system.cc
         source/users/user_server_system.h
         source/users/adapters/user_persistence_adapter.h
         source/users/adapters/sqlite_user_persistence_adapter.cc
         source/users/adapters/sqlite_user_persistence_adapter.h
-        source/application/commons.h
 )
 
 if(NOT BUILD_CLIENT)
@@ -92,6 +89,7 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-core")
 #find_package(claw-core CONFIG REQUIRED)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-network-modules")
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/chat-server-api")
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
@@ -104,4 +102,5 @@ target_link_libraries(${TARGET_NAME}
         claw::utility
         claw::network
         claw::network-modules
+        claw::chat-api
 )

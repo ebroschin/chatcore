@@ -14,9 +14,7 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   System(ctx),
   adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<ChatPersistenceAdapter>()},
   tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
-{
-
-}
+{}
 
 void ChatServerSystem::Initialize() {
   user_system_ = ctx_.Get<UserServerSystem>();
@@ -56,15 +54,15 @@ void ChatServerSystem::Initialize() {
   });
 }
 
-api::PersistenceID ChatServerSystem::CreateChatChannel(const std::string& name) {
+api::PersistenceId ChatServerSystem::CreateChatChannel(const std::string& name) {
   return adapter_.CreateChatChannel(name);
 }
 
-api::PersistenceID ChatServerSystem::CreateChatMessage(const api::PersistenceID& channel_id, const api::ChatMessage& message) {
+api::PersistenceId ChatServerSystem::CreateChatMessage(const api::PersistenceId& channel_id, const api::ChatMessage& message) {
   return adapter_.CreateChatMessage(channel_id, message);
 }
 
-std::vector<api::ChatMessage> ChatServerSystem::GetChatMessages(const api::PersistenceID& channel_id) {
+std::vector<api::ChatMessage> ChatServerSystem::GetChatMessages(const api::PersistenceId& channel_id) {
   return adapter_.GetChatMessages(channel_id);
 }
 

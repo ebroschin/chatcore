@@ -1,10 +1,12 @@
 #include "client_test_system.h"
 
 #include <claw/network/tcp/tcp_system.h>
-#include "../application/chat_tcp_system.h"
+#include <claw/chat/api.h>
 #include <claw/core/system_context.h>
+
+#include "../application/chat_tcp_system.h"
 #include "chat_input_system.h"
-#include "../application/messages/api.h"
+
 #include <iostream>
 
 namespace claw::prototyping {
@@ -70,7 +72,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
   if (line.starts_with("get")) {
     const std::string channel_id = line.substr(std::strlen("get"));
-    const auto channel_id_param = static_cast<chat::api::PersistenceID>(std::stoul(channel_id));
+    const auto channel_id_param = static_cast<chat::api::PersistenceId>(std::stoul(channel_id));
     tcp_system_.Send<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param});
     return;
   }
@@ -87,7 +89,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
     const auto& name = parameter_buffer[1];
     const auto& password = parameter_buffer[2];
-    tcp_system_.Send<chat::api::CreateUserMessage>(connection_id_, {name, password});
+    tcp_system_.Send<chat::api::CreateUserRequestMessage>(connection_id_, {name, password});
     return;
   }
 

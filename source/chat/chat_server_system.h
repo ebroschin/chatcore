@@ -17,9 +17,9 @@ public:
 
   void Initialize() override;
 
-  api::PersistenceID CreateChatChannel(const std::string& name);
-  api::PersistenceID CreateChatMessage(const api::PersistenceID& channel_id, const api::ChatMessage& message);
-  std::vector<api::ChatMessage> GetChatMessages(const api::PersistenceID& channel_id);
+  api::PersistenceId CreateChatChannel(const std::string& name);
+  api::PersistenceId CreateChatMessage(const api::PersistenceId& channel_id, const api::ChatMessage& message);
+  std::vector<api::ChatMessage> GetChatMessages(const api::PersistenceId& channel_id);
   
 private:
   ChatPersistenceAdapter& adapter_;

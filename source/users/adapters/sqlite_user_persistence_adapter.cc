@@ -1,5 +1,5 @@
 #include "sqlite_user_persistence_adapter.h"
-#include "../../application/messages/api.h"
+#include <claw/chat/api.h>
 
 namespace claw::chat::server {
 
@@ -19,16 +19,16 @@ void SqliteUserPersistenceAdapter::Deinitialize()  {
 
 }
 
-api::PersistenceID SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password)  {
+api::PersistenceId SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password)  {
   SQLite::Statement query(store_.Database(), "INSERT INTO chat_users (name, password) VALUES (?,?);");
   query.bind(1, name);
   query.bind(2, password);
   query.exec();
 
-  return static_cast<api::PersistenceID>(store_.Database().getLastInsertRowid());
+  return static_cast<api::PersistenceId>(store_.Database().getLastInsertRowid());
 }
 
-std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::PersistenceID& id)  {
+std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::PersistenceId& id)  {
   const auto& db = store_.Database();
   SQLite::Statement query(db,
       "SELECT id, name FROM chat_users "

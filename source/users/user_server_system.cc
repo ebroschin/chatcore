@@ -14,10 +14,11 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
   adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<UserPersistenceAdapter>()},
   tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
 {
-  tcp_system_.RegisterMessageHandler<api::CreateUserMessage>([&](network::ConnectionId, const api::CreateUserMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::CreateUserRequestMessage>([&](network::ConnectionId id, const api::CreateUserRequestMessage& message) {
     const auto user_id = CreateUser(message.name, message.password);
     std::cout << "created user with id: " << user_id << std::endl;
 
+    tcp_system_.Send<api::CreateUserResponseMessage>(id, {user_id, message.name});
     tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(user_id) + "]"});
   });
 
@@ -43,7 +44,7 @@ bool UserServerSystem::ValidateSession(const network::ConnectionId& id) {
   return result;
 }
 
-api::PersistenceID UserServerSystem::CreateUser(const std::string& name, const std::string& password) {
+api::PersistenceId UserServerSystem::CreateUser(const std::string& name, const std::string& password) {
   return adapter_.CreateUser(name, password);
 }
 

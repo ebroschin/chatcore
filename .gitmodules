@@ -13,3 +13,6 @@
 [submodule "external/claw-network-modules"]
 	path = external/claw-network-modules
 	url = git@192.168.178.20:claw/claw-network-modules.git
+[submodule "external/chat-server-api"]
+	path = external/chat-server-api
+	url = git@192.168.178.20:claw/chat-server-api.git
