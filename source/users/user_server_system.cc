@@ -21,14 +21,13 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
       if (!user) return;
 
       std::cout << "user already exists: " << user->id << std::endl;
-      tcp_system_.Send<api::CreateUserResponseMessage>(id, {*user_id, message.name});
+      tcp_system_.Send<api::CreateUserResponseMessage>(id, {user->id, message.name});
       return;
     }
 
     std::cout << "created user with id: " << *user_id << std::endl;
     tcp_system_.Send<api::CreateUserResponseMessage>(id, {*user_id, message.name});
     tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(*user_id) + "]"});
-
   });
 
   tcp_system_.RegisterMessageHandler<api::AuthenticateUserRequestMessage>([&](network::ConnectionId id, const api::AuthenticateUserRequestMessage& message) {

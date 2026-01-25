@@ -38,7 +38,7 @@ api::PersistenceId SqliteChatPersistenceAdapter::CreateChatMessage(const api::Pe
   query.bind(3, message.content);
   query.exec();
 
-  return static_cast<std::uint32_t>(store_.Database().getLastInsertRowid());
+  return static_cast<api::PersistenceId>(store_.Database().getLastInsertRowid());
 }
 
 std::vector<api::ChatMessage> SqliteChatPersistenceAdapter::GetChatMessages(const api::PersistenceId& channel_id) {

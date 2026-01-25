@@ -16,7 +16,7 @@ System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
   tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionId id, const chat::api::PrintMessage& message) {
-    std::cout << "[" << id << "]" << "server says: " << message.value << std::endl;
+    std::cout << "[" << id << "] " << "server says: " << message.value << std::endl;
   });
 
   tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatsResponseMessage& message) {
@@ -104,7 +104,6 @@ void ClientTestSystem::HandleLine(const std::string& line) {
   }
 
   if (user_ == nullptr) return;
-  //tcp_system_.Send<chat::api::PrintMessage>(connection_id_, {line});
   tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {1, {user_->id, line}});
 }
 
