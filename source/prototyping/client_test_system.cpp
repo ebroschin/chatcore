@@ -79,7 +79,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
   if (line.starts_with("create")) {
     const std::string name = line.substr(std::strlen("create"));
-    tcp_system_.Send<chat::api::CreateChannelMessage>(connection_id_, {name});
+    tcp_system_.Send<chat::api::CreateChannelRequestMessage>(connection_id_, {name});
     return;
   }
 

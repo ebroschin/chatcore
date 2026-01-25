@@ -15,13 +15,13 @@ namespace claw::chat::server {
 
 using ChatClientTcpSystem = network::tcp::TcpSystemBuilder<
     network::modules::SyncBoostTcpResolver,
-    JsonNetworkCodec,
+    network::modules::JsonNetworkCodec,
     api::MessageTypes
 >::Type;
 
 using ChatServerTcpSystem = network::tcp::TcpSystemBuilder<
     network::modules::BoostTcpAcceptor,
-    JsonNetworkCodec,
+    network::modules::JsonNetworkCodec,
     api::MessageTypes
 >::Type;
 

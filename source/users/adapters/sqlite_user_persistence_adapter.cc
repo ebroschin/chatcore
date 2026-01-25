@@ -33,7 +33,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::Persis
   SQLite::Statement query(db,
       "SELECT id, name FROM chat_users "
       "WHERE id = ? "
-      "ORDER BY id ASC;"
+      "ORDER BY id ASC "
       "LIMIT 1;"
   );
 
@@ -53,7 +53,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const std::string
   SQLite::Statement query(db,
       "SELECT id FROM chat_users "
       "WHERE name = ? "
-      "ORDER BY id ASC;"
+      "ORDER BY id ASC "
       "LIMIT 1;"
   );
 
@@ -73,7 +73,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::AuthenticateUser(const st
       "SELECT id FROM chat_users "
       "WHERE name = ? "
       "AND password = ? "
-      "ORDER BY id ASC;"
+      "ORDER BY id ASC "
       "LIMIT 1;"
   );
 

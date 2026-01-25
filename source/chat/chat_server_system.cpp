@@ -34,15 +34,23 @@ void ChatServerSystem::Initialize() {
     tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(message.channel_id) + "]" + user.value().get().name + " says: " + message.message.content });
   });
 
-  tcp_system_.RegisterMessageHandler<api::CreateChannelMessage>([&](network::ConnectionId id, const api::CreateChannelMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::CreateChannelRequestMessage>([&](network::ConnectionId id, const api::CreateChannelRequestMessage& message) {
     if (!user_system_->ValidateSession(id)) return;
-    const auto channel_id = CreateChatChannel(message.name);
-    std::cout << "created channel: " << message.name << "with id: " << channel_id << std::endl;
+    auto channel_id = CreateChatChannel(message.name);
+    if (!channel_id) {
+      auto existing_channel_id = adapter_.GetChatChannel(message.name);
+      if (!existing_channel_id) return;
 
+      tcp_system_.Send<api::CreateChannelResponseMessage>(id, {*existing_channel_id});
+      return;
+    }
+
+    std::cout << "created channel: " << message.name << "with id: " << *channel_id << std::endl;
     auto user = user_system_->GetSessionUser(id);
     if (!user.has_value()) return;
 
-    tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(channel_id) + "] has been created by" + user.value().get().name});
+    tcp_system_.Send<api::CreateChannelResponseMessage>(id, {*channel_id});
+    tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(*channel_id) + "] has been created by" + user.value().get().name});
   });
 
   tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
@@ -54,7 +62,7 @@ void ChatServerSystem::Initialize() {
   });
 }
 
-api::PersistenceId ChatServerSystem::CreateChatChannel(const std::string& name) {
+std::optional<api::PersistenceId> ChatServerSystem::CreateChatChannel(const std::string& name) {
   return adapter_.CreateChatChannel(name);
 }
 
