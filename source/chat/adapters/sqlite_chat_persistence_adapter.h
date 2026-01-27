@@ -22,11 +22,12 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
-  std::optional<api::PersistenceId> CreateChatChannel(const std::string &name) override;
-  std::optional<api::PersistenceId> GetChatChannel(const std::string& name) override;
+  std::optional<api::ChatChannel> CreateChatChannel(const std::string &name) override;
+  std::optional<api::ChatChannel> GetChatChannel(const std::string& name) override;
+  std::optional<api::ChatChannel> GetChatChannel(api::PersistenceId id) override;
 
-  api::PersistenceId CreateChatMessage(const api::PersistenceId& channel_id, const api::ChatMessage& message) override;
-  std::vector<api::ChatMessage> GetChatMessages(const api::PersistenceId& channel_id) override;
+  std::optional<api::ChatMessage> CreateChatMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& content) override;
+  std::vector<api::ChatMessage> GetChatMessages(api::PersistenceId channel_id) override;
 };
 
 }

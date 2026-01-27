@@ -20,58 +20,109 @@ void ChatServerSystem::Initialize() {
   user_system_ = ctx_.Get<UserServerSystem>();
 
   tcp_system_.RegisterMessageHandler<api::PrintMessage>([&](network::ConnectionId id, const api::PrintMessage& message) {
-    std::cout << "[" << id << "]" <<  " message from client received: " << message.value << std::endl;
+    std::cout << "[client::print " << id << "]" << message.value << std::endl;
   });
 
   tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](network::ConnectionId id, const api::WriteChatMessage& message) {
-    if (!user_system_->ValidateSession(id)) return;
-    const auto message_id = CreateChatMessage(message.channel_id, message.message);
-    std::cout << "created message with id: " << message_id << std::endl;
-
-    auto user = user_system_->GetSessionUser(id);
-    if (!user.has_value()) return;
-
-    tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(message.channel_id) + "]" + user.value().get().name + " says: " + message.message.content });
+    WriteChatMessage(id, message.content);
   });
 
   tcp_system_.RegisterMessageHandler<api::CreateChannelRequestMessage>([&](network::ConnectionId id, const api::CreateChannelRequestMessage& message) {
-    if (!user_system_->ValidateSession(id)) return;
-    auto channel_id = CreateChatChannel(message.name);
-    if (!channel_id) {
-      auto existing_channel_id = adapter_.GetChatChannel(message.name);
-      if (!existing_channel_id) return;
+    CreateChatChannel(id, message.name);
+  });
 
-      tcp_system_.Send<api::CreateChannelResponseMessage>(id, {*existing_channel_id});
-      return;
-    }
-
-    std::cout << "created channel: " << message.name << "with id: " << *channel_id << std::endl;
-    auto user = user_system_->GetSessionUser(id);
-    if (!user.has_value()) return;
-
-    tcp_system_.Send<api::CreateChannelResponseMessage>(id, {*channel_id});
-    tcp_system_.Broadcast<api::PrintMessage>({"[" + std::to_string(*channel_id) + "] has been created by" + user.value().get().name});
+  tcp_system_.RegisterMessageHandler<api::JoinChatChannelRequestMessage>([&](network::ConnectionId id, const api::JoinChatChannelRequestMessage& message) {
+    JoinChatChannel(id, message.channel_id);
   });
 
   tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
-    if (!user_system_->ValidateSession(id)) return;
+    if (!user_system_->ValidateSession(api::GetChatsRequestMessage::TypeId, id)) return;
+
     std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
 
-    auto result = GetChatMessages(message.channel_id);
+    auto result = adapter_.GetChatMessages(message.channel_id);
     tcp_system_.Send<api::GetChatsResponseMessage>(id, {message.channel_id, std::move(result)});
   });
 }
 
-std::optional<api::PersistenceId> ChatServerSystem::CreateChatChannel(const std::string& name) {
-  return adapter_.CreateChatChannel(name);
+void ChatServerSystem::JoinChatChannel(network::ConnectionId id, api::PersistenceId channel_id) {
+  if (!user_system_->ValidateSession(api::JoinChatChannelRequestMessage::TypeId, id)) return;
+
+  auto potential_user = user_system_->GetSessionUser(id);
+  if (!potential_user) return;
+
+  auto channel = adapter_.GetChatChannel(channel_id);
+  if (!channel.has_value()) {
+    tcp_system_.Send<api::ErrorMessage>(id, {api::WriteChatMessage::TypeId, "Channel not found."});
+    return;
+  }
+
+  const auto& user = potential_user->get();
+  auto previous_channel = channel_store_.GetAssignedChannel(id);
+  if (previous_channel) {
+    std::cout << user.name << " left channel " << previous_channel->get().name << std::endl;
+  }
+
+  channel_store_.AssignConnection(id, channel_id);
+
+  std::cout << user.name << " joined channel " << channel->name << std::endl;
+  tcp_system_.Send<api::JoinChatChannelResponseMessage>(id, {channel_id});
 }
 
-api::PersistenceId ChatServerSystem::CreateChatMessage(const api::PersistenceId& channel_id, const api::ChatMessage& message) {
-  return adapter_.CreateChatMessage(channel_id, message);
+void ChatServerSystem::WriteChatMessage(network::ConnectionId connection_id, const std::string& content) {
+  if (!user_system_->ValidateSession(api::WriteChatMessage::TypeId, connection_id)) return;
+
+  auto potential_user = user_system_->GetSessionUser(connection_id);
+  if (!potential_user.has_value()) {
+    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "User not found."});
+    return;
+  }
+
+  auto potential_channel = channel_store_.GetAssignedChannel(connection_id);
+  if (!potential_channel.has_value()) {
+    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "No channel joined."});
+    return;
+  }
+
+  const auto& user = potential_user->get();
+  const auto& channel = potential_channel->get();
+  auto chat_message = adapter_.CreateChatMessage(channel.id, user.id, content);
+  if (!chat_message) {
+    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "Unable to create message."});
+    return;
+  }
+
+  std::cout << "created message with id: " << chat_message->id << std::endl;
+
+  auto connections_range = channel_store_.GetConnections(channel.id);
+  if (!connections_range) {
+    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "No users found in channel."});
+    return;
+  }
+
+  tcp_system_.Broadcast<api::PrintMessage>(*connections_range, {"[" + channel.name + "] " + user.name + " says: " + content });
 }
 
-std::vector<api::ChatMessage> ChatServerSystem::GetChatMessages(const api::PersistenceId& channel_id) {
-  return adapter_.GetChatMessages(channel_id);
+void ChatServerSystem::CreateChatChannel(network::ConnectionId connection_id, const std::string& name) {
+  if (!user_system_->ValidateSession(api::CreateChannelRequestMessage::TypeId, connection_id)) return;
+
+  auto potential_user = user_system_->GetSessionUser(connection_id);
+  if (!potential_user) return;
+
+  auto channel = adapter_.CreateChatChannel(name);
+  if (!channel) {
+    auto existing_channel = adapter_.GetChatChannel(name);
+    if (!existing_channel) return;
+
+    tcp_system_.Send<api::CreateChannelResponseMessage>(connection_id, {*existing_channel});
+    return;
+  }
+
+  std::cout << "created channel: " << name << "with id: " << channel->id << std::endl;
+
+  const auto& user = potential_user->get();
+  tcp_system_.Send<api::CreateChannelResponseMessage>(connection_id, {*channel});
+  tcp_system_.Broadcast<api::PrintMessage>({"[" + channel->name + "] has been created by " + user.name});
 }
 
 }

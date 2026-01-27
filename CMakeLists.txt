@@ -66,6 +66,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/users/adapters/user_persistence_adapter.h
         source/users/adapters/sqlite_user_persistence_adapter.cc
         source/users/adapters/sqlite_user_persistence_adapter.h
+        source/chat/chat_channel_store.cc
+        source/chat/chat_channel_store.h
 )
 
 if(NOT BUILD_CLIENT)

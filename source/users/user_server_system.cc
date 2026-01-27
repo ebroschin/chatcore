@@ -40,15 +40,16 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
     api::User& user = result.value();
     user_sessions_.emplace(id, user);
     tcp_system_.Send<api::AuthenticateUserResponseMessage>(id, {user});
-    tcp_system_.Broadcast<api::PrintMessage>({"User has logged in: " + user.name + " [" + std::to_string(user.id) + "]"});
+    tcp_system_.Broadcast<api::PrintMessage>({user.name + " has logged in"});
   });
 }
 
-bool UserServerSystem::ValidateSession(const network::ConnectionId& id) {
+bool UserServerSystem::ValidateSession(std::uint64_t request_type_id, const network::ConnectionId& id) {
   auto result = user_sessions_.contains(id);
   if (!result) {
-    tcp_system_.Send<api::PrintMessage>(id, {"Not authorized."});
+    tcp_system_.Send<api::ErrorMessage>(id, {request_type_id, "Not authorized."});
   }
+
   return result;
 }
 

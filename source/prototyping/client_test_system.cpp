@@ -15,8 +15,12 @@ ClientTestSystem::ClientTestSystem(const core::SystemContext& ctx):
 System(ctx),
 chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
 tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
-  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionId id, const chat::api::PrintMessage& message) {
-    std::cout << "[" << id << "] " << "server says: " << message.value << std::endl;
+  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionId, const chat::api::PrintMessage& message) {
+    std::cout << "[server::print] " << message.value << std::endl;
+  });
+
+  tcp_system_.RegisterMessageHandler<chat::api::ErrorMessage>([&](network::ConnectionId, const chat::api::ErrorMessage& message) {
+    std::cout << "[server::error] " << message.value << std::endl;
   });
 
   tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatsResponseMessage& message) {
@@ -66,7 +70,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
   if (line.starts_with("write")) {
     const std::string message = line.substr(std::strlen("write"));
-    tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {1, {1, message}});
+    tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {message});
     return;
   }
 
@@ -78,7 +82,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
   }
 
   if (line.starts_with("create")) {
-    const std::string name = line.substr(std::strlen("create"));
+    const std::string name = line.substr(std::strlen("create") + 1);
     tcp_system_.Send<chat::api::CreateChannelRequestMessage>(connection_id_, {name});
     return;
   }
@@ -103,8 +107,17 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     return;
   }
 
+  if (line.starts_with("join")) {
+    ParseCommand(line, parameter_buffer);
+    if (parameter_buffer.size() <= 1) return;
+
+    auto channel_id = static_cast<chat::api::PersistenceId>(std::stoul(parameter_buffer[1]));
+    tcp_system_.Send<chat::api::JoinChatChannelRequestMessage>(connection_id_, {channel_id});
+    return;
+  }
+
   if (user_ == nullptr) return;
-  tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {1, {user_->id, line}});
+  tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {line});
 }
 
 void ClientTestSystem::ParseCommand(std::string_view view, std::vector<std::string>& result) {
