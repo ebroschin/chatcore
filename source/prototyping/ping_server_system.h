@@ -9,18 +9,21 @@ namespace claw::prototyping {
 class PingServerSystem final : public core::System {
 public:
   explicit PingServerSystem(const core::SystemContext& ctx):
-    System(ctx), running_{false}
+    System(ctx)
   {}
 
   void Initialize() override {
     running_ = true;
 
-    auto* processor = ctx_.Get<chat::server::ChatServerTcpSystem>()->CreateMessageProcessor();
+    auto* tcp_system = ctx_.Get<chat::server::ChatServerTcpSystem>();
+    auto* processor = tcp_system->CreateMessageProcessor();
     worker_ = std::thread{[this, processor]() {
       while (running_) {
         processor->ProcessBlocking();
       }
     }};
+
+    tcp_system->Connect({"0.0.0.0", 1338});
   }
 
   void Deinitialize() override {
@@ -30,7 +33,7 @@ public:
   }
 
 private:
-  std::atomic<bool> running_;
+  std::atomic<bool> running_{false};
   std::thread worker_{};
 };
 

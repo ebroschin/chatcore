@@ -29,11 +29,10 @@ void ChatServerApplication::Initialize() {
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
   persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 
-  auto* tcp_system = ctx_.Register<ChatServerTcpSystem>();
+  ctx_.Register<ChatServerTcpSystem>();
   ctx_.Register<ChatServerSystem>();
   ctx_.Register<UserServerSystem>();
   ctx_.Register<prototyping::PingServerSystem>();
-  tcp_system->Connect({"0.0.0.0", 1338});
 #else
   ctx_.Register<ChatClientTcpSystem>();
   ctx_.Register<client::ChatInputSystem>();
