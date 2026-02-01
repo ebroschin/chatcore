@@ -23,26 +23,28 @@ void ChatServerSystem::Initialize() {
     std::cout << "[client::print " << id << "]" << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([&](network::ConnectionId id, const api::WriteChatMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([this](network::ConnectionId id, const api::WriteChatMessage& message) {
     WriteChatMessage(id, message.content);
   });
 
-  tcp_system_.RegisterMessageHandler<api::CreateChannelRequestMessage>([&](network::ConnectionId id, const api::CreateChannelRequestMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::CreateChannelRequestMessage>([this](network::ConnectionId id, const api::CreateChannelRequestMessage& message) {
     CreateChatChannel(id, message.name);
   });
 
-  tcp_system_.RegisterMessageHandler<api::JoinChatChannelRequestMessage>([&](network::ConnectionId id, const api::JoinChatChannelRequestMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::JoinChatChannelRequestMessage>([this](network::ConnectionId id, const api::JoinChatChannelRequestMessage& message) {
     JoinChatChannel(id, message.channel_id);
   });
 
-  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([&](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
+  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([this](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
     if (!user_system_->ValidateSession(api::GetChatsRequestMessage::TypeId, id)) return;
 
     std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
 
-    auto result = adapter_.GetChatMessages(message.channel_id);
+    auto result = message_store_.GetMessagesBefore(message.channel_id, message.max_message_id, message.limit);
     tcp_system_.Send<api::GetChatsResponseMessage>(id, {message.channel_id, std::move(result)});
   });
+
+  message_store_.Prewarm();
 }
 
 void ChatServerSystem::JoinChatChannel(network::ConnectionId id, api::PersistenceId channel_id) {
@@ -86,13 +88,7 @@ void ChatServerSystem::WriteChatMessage(network::ConnectionId connection_id, con
 
   const auto& user = potential_user->get();
   const auto& channel = potential_channel->get();
-  auto chat_message = adapter_.CreateChatMessage(channel.id, user.id, content);
-  if (!chat_message) {
-    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "Unable to create message."});
-    return;
-  }
-
-  std::cout << "created message with id: " << chat_message->id << std::endl;
+  message_store_.CreateMessage(channel.id, user.id, content);
 
   auto connections_range = channel_store_.GetConnections(channel.id);
   if (!connections_range) {
@@ -118,7 +114,7 @@ void ChatServerSystem::CreateChatChannel(network::ConnectionId connection_id, co
     return;
   }
 
-  std::cout << "created channel: " << name << "with id: " << channel->id << std::endl;
+  std::cout << "created channel: " << name << " with id: " << channel->id << std::endl;
 
   const auto& user = potential_user->get();
   tcp_system_.Send<api::CreateChannelResponseMessage>(connection_id, {*channel});

@@ -6,6 +6,8 @@ namespace claw::chat::server {
 void SqliteChatPersistenceAdapter::Initialize() {
   auto& db = store_.Database();
   db.exec("PRAGMA foreign_keys = ON;");
+  db.exec("PRAGMA synchronous=NORMAL;");
+  db.exec("PRAGMA journal_mode=WAL;");
 
   db.exec("CREATE TABLE IF NOT EXISTS chat_channels (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE)");
   db.exec(R"(
@@ -43,17 +45,81 @@ std::optional<api::ChatMessage> SqliteChatPersistenceAdapter::CreateChatMessage(
   return api::ChatMessage{id, channel_id, user_id, content};
 }
 
-std::vector<api::ChatMessage> SqliteChatPersistenceAdapter::GetChatMessages(api::PersistenceId channel_id) {
+std::optional<api::PersistenceId> SqliteChatPersistenceAdapter::PersistChatMessages(std::span<const api::ChatMessage> messages) {
+  if (messages.empty()) return std::nullopt;
+
+  auto& db = store_.Database();
+  SQLite::Transaction transaction(db);
+  SQLite::Statement statement(db, "INSERT INTO chat_messages (id, channel_id, user_id, content) VALUES (?,?,?,?)");
+
+  std::optional<api::PersistenceId> last_persisted_id{std::nullopt};
+  for(const auto& message : messages) {
+    last_persisted_id = message.id;
+    statement.bind(1, message.id);
+    statement.bind(2, message.channel_id);
+    statement.bind(3, message.user_id);
+    statement.bind(4, message.content);
+
+    statement.exec();
+    statement.reset();
+    statement.clearBindings();
+  }
+
+  transaction.commit();
+
+  return last_persisted_id;
+}
+
+std::optional<api::PersistenceId>
+SqliteChatPersistenceAdapter::GetFirstChatMessageId(api::PersistenceId channel_id) {
+  const auto& db = store_.Database();
+  SQLite::Statement query(db,
+    "SELECT MIN(id) FROM chat_messages "
+    "WHERE channel_id = ? "
+  );
+
+  query.bind(1, channel_id);
+  query.executeStep();
+
+  if (query.isColumnNull(0)) return std::nullopt;
+  return query.getColumn(0).getUInt();
+}
+
+std::optional<api::PersistenceId>
+SqliteChatPersistenceAdapter::GetLastChatMessageId() {
+  const auto& db = store_.Database();
+  SQLite::Statement query(db,
+    "SELECT MAX(id) FROM chat_messages; "
+  );
+
+  query.executeStep();
+
+  if (query.isColumnNull(0)) return std::nullopt;
+  return query.getColumn(0).getUInt();
+}
+
+std::vector<api::ChatMessage>
+SqliteChatPersistenceAdapter::GetChatMessagesBefore
+(api::PersistenceId channel_id, api::PersistenceId max_message_id, std::uint32_t limit) {
   std::vector<api::ChatMessage> result;
   const auto& db = store_.Database();
 
   SQLite::Statement query(db,
-      "SELECT id, user_id, content FROM chat_messages "
-      "WHERE channel_id = ? "
-      "ORDER BY id ASC;"
-  );
+  R"(SELECT id, user_id, content
+    FROM (
+      SELECT id, user_id, content
+      FROM chat_messages
+      WHERE channel_id = ?
+        AND id <= ?
+      ORDER BY id DESC
+      LIMIT ?
+    )
+    ORDER BY id ASC;
+  )");
 
   query.bind(1, channel_id);
+  query.bind(2, max_message_id);
+  query.bind(3, limit);
 
   while (query.executeStep()) {
     auto id = query.getColumn(0).getUInt();
@@ -94,11 +160,27 @@ std::optional<api::ChatChannel> SqliteChatPersistenceAdapter::GetChatChannel(api
   query.bind(1, id);
 
   while (query.executeStep()) {
-    auto name = query.getColumn(0).getString();
-    return api::ChatChannel{id, std::move(name)};
+    const auto& name = query.getColumn(0).getString();
+    return api::ChatChannel{id, name};
   }
 
   return std::nullopt;
+}
+
+std::vector<api::ChatChannel> SqliteChatPersistenceAdapter::GetChatChannels() {
+  std::vector<api::ChatChannel> result;
+  const auto& db = store_.Database();
+  SQLite::Statement query(db,
+    "SELECT id, name FROM chat_channels;"
+  );
+
+  while (query.executeStep()) {
+    auto id = query.getColumn(0).getUInt();
+    const auto& name = query.getColumn(1).getString();
+    result.emplace_back(id, name);
+  }
+
+  return result;
 }
 
 }

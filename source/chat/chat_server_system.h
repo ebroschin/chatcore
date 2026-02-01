@@ -2,6 +2,7 @@
 
 #include "../application/chat_tcp_system.h"
 #include "chat_channel_store.h"
+#include "chat_message_store.h"
 
 #include <claw/core/system.h>
 #include <string>
@@ -29,6 +30,7 @@ private:
 
   //this is state. this will need to be thread safe as soon as multiple message processors perform actions on this object
   ChatChannelStore channel_store_{adapter_};
+  ChatMessageStore message_store_{adapter_};
 };
 
 }

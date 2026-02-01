@@ -75,9 +75,17 @@ void ClientTestSystem::HandleLine(const std::string& line) {
   }
 
   if (line.starts_with("get")) {
-    const std::string channel_id = line.substr(std::strlen("get"));
+    ParseCommand(line, parameter_buffer);
+    if (parameter_buffer.size() <= 1) return;
+
+    const auto& channel_id = parameter_buffer[1];
+    const auto& limit = parameter_buffer.size() > 2? parameter_buffer[2] : "";
+
     const auto channel_id_param = static_cast<chat::api::PersistenceId>(std::stoul(channel_id));
-    tcp_system_.Send<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param});
+    const auto limit_param = static_cast<chat::api::PersistenceId>(std::stoul(limit));
+
+    constexpr auto max_message_id = std::numeric_limits<chat::api::PersistenceId>::max();
+    tcp_system_.Send<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param, max_message_id, limit_param});
     return;
   }
 
