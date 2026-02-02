@@ -1,7 +1,6 @@
 #pragma once
 
 #include <claw/chat/api.h>
-#include <optional>
 
 namespace claw::chat::server {
 
@@ -29,9 +28,7 @@ private:
   //invariant: unique and sorted ascending
   std::vector<api::PersistenceId> channel_message_ids_{};
 
-  std::optional<api::PersistenceId> first_channel_message_id_{std::nullopt};
-  //api::PersistenceId min_message_id_{};
-  //api::PersistenceId max_message_id_{};
+  bool cache_complete_{false};
 };
 
 }

@@ -20,7 +20,6 @@ void ChatChannelMessageLog::Prewarm() {
   if (messages.empty()) return;
 
   store_.CacheMessages(channel_id_, std::move(messages));
-  first_channel_message_id_ = adapter_.GetFirstChatMessageId(channel_id_);
 }
 
 void ChatChannelMessageLog::AppendMessageId(api::PersistenceId message_id) {
@@ -69,24 +68,20 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
   std::advance(start_iterator, -cached_take_count);
   std::ranges::copy(start_iterator, end_iterator, std::back_inserter(cached_result));
 
-  //case 3: some of the requested data is only available in persistent storage
-  if (limit_diff_t > cached_take_count) {
-    auto limit_remaining = static_cast<std::uint32_t>(limit_diff_t - cached_take_count);
-    auto first_result_message_id = *start_iterator;
-
-    std::vector<api::PersistenceId> persistence_result;
-
-    //TODO this causes unnecessary queries if first_channel_message_id_ is nullopt
-    if (!first_channel_message_id_ || first_result_message_id != first_channel_message_id_) {
-      auto remaining_messages = QueryAndCacheMessages(first_result_message_id, limit_remaining);
-      std::ranges::copy(remaining_messages, std::back_inserter(persistence_result));
-    }
-
-    std::ranges::copy(cached_result, std::back_inserter(persistence_result));
-    return persistence_result;
+  if (cache_complete_ || limit_diff_t <= cached_take_count) {
+    return cached_result;
   }
 
-  return cached_result;
+  //case 3: some of the requested data is only available in persistent storage
+  auto limit_remaining = static_cast<std::uint32_t>(limit_diff_t - cached_take_count);
+  auto first_result_message_id = *start_iterator;
+
+  std::vector<api::PersistenceId> persistence_result;
+  auto remaining_messages = QueryAndCacheMessages(first_result_message_id, limit_remaining);
+  std::ranges::copy(remaining_messages, std::back_inserter(persistence_result));
+  std::ranges::copy(cached_result, std::back_inserter(persistence_result));
+
+  return persistence_result;
 }
 
 std::vector<api::PersistenceId> ChatChannelMessageLog::QueryAndCacheMessages(api::PersistenceId message_id, std::uint32_t limit) {
@@ -98,6 +93,7 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::QueryAndCacheMessages(api
     result.push_back(message.id);
   }
 
+  cache_complete_ = cache_complete_ || limit > messages.size();
   store_.CacheMessages(channel_id_, std::move(messages));
   return result;
 }

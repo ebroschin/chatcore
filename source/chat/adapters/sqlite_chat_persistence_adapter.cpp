@@ -110,7 +110,7 @@ SqliteChatPersistenceAdapter::GetChatMessagesBefore
       SELECT id, user_id, content
       FROM chat_messages
       WHERE channel_id = ?
-        AND id <= ?
+        AND id < ?
       ORDER BY id DESC
       LIMIT ?
     )
