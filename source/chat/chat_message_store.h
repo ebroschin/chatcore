@@ -3,6 +3,7 @@
 #include "chat_channel_message_log.h"
 
 #include <claw/chat/api.h>
+#include <mutex>
 #include <optional>
 #include <queue>
 #include <unordered_map>
@@ -31,7 +32,8 @@ public:
 private:
   ChatPersistenceAdapter& adapter_;
 
-  std::optional<api::PersistenceId> last_persisted_id_{std::nullopt};
+  std::mutex persist_mutex_;
+  std::optional<api::PersistenceId> latest_persisted_id_{std::nullopt};
   api::PersistenceId next_id_{0};
 
   std::unordered_map<api::PersistenceId, api::ChatMessage> message_cache_{};

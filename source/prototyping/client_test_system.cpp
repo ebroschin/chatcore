@@ -30,6 +30,13 @@ tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
     }
   });
 
+  tcp_system_.RegisterMessageHandler<chat::api::GetChatChannelsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatChannelsResponseMessage& message) {
+    std::cout << "received channels: " << std::endl;
+    for (const auto& channel : message.channels) {
+      std::cout << channel.id << ": " << channel.name << std::endl;
+    }
+  });
+
   tcp_system_.RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](network::ConnectionId, const chat::api::AuthenticateUserResponseMessage& message) {
     std::cout << "login successful" << std::endl;
     user_ = std::make_unique<chat::api::User>(message.user);
@@ -122,6 +129,10 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     auto channel_id = static_cast<chat::api::PersistenceId>(std::stoul(parameter_buffer[1]));
     tcp_system_.Send<chat::api::JoinChatChannelRequestMessage>(connection_id_, {channel_id});
     return;
+  }
+
+  if (line.starts_with("channels")) {
+    tcp_system_.Send<chat::api::GetChatChannelsRequestMessage>(connection_id_, {});
   }
 
   if (user_ == nullptr) return;

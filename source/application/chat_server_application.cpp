@@ -6,7 +6,7 @@
 #include "../prototyping/chat_input_system.h"
 #include "../prototyping/client_test_system.h"
 #include "../prototyping/ping_server_system.h"
-#include "../prototyping/prototyping_system.h"
+#include "../scheduling/scheduling_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "../users/adapters/sqlite_user_persistence_adapter.h"
 #include "../users/user_server_system.h"
@@ -15,15 +15,12 @@
 
 #include <boost/stacktrace.hpp>
 #include <iostream>
-#include <string>
 
 using namespace claw::persistence::sqlite;
 
 namespace claw::chat::server {
 
 void ChatServerApplication::Initialize() {
-  ctx_.Register<prototyping::PrototypingSystem>();
-
 #ifdef SERVER_SIDE
   auto* persistence_system = ctx_.Register<ChatPersistenceSystem>("sqlite.db3");
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
@@ -33,6 +30,7 @@ void ChatServerApplication::Initialize() {
   ctx_.Register<ChatServerSystem>();
   ctx_.Register<UserServerSystem>();
   ctx_.Register<prototyping::PingServerSystem>();
+  ctx_.Register<SchedulingSystem>();
 #else
   ctx_.Register<ChatClientTcpSystem>();
   ctx_.Register<client::ChatInputSystem>();

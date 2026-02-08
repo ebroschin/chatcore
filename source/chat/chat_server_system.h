@@ -27,8 +27,6 @@ private:
   ChatServerTcpSystem& tcp_system_;
 
   UserServerSystem* user_system_{};
-
-  //this is state. this will need to be thread safe as soon as multiple message processors perform actions on this object
   ChatChannelStore channel_store_{adapter_};
   ChatMessageStore message_store_{adapter_};
 };

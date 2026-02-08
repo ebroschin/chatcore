@@ -2,6 +2,8 @@
 
 #include "adapters/chat_persistence_adapter.h"
 
+#include <iostream>
+
 namespace claw::chat::server {
 
 ChatMessageStore::ChatMessageStore(ChatPersistenceAdapter& adapter):
@@ -9,8 +11,8 @@ ChatMessageStore::ChatMessageStore(ChatPersistenceAdapter& adapter):
 { }
 
 void ChatMessageStore::Prewarm() {
-  last_persisted_id_ = adapter_.GetLastChatMessageId();
-  next_id_ = last_persisted_id_.has_value()? *last_persisted_id_ + 1 : 0;
+  latest_persisted_id_ = adapter_.GetLastChatMessageId();
+  next_id_ = latest_persisted_id_.has_value()? *latest_persisted_id_ + 1 : 0;
 
   auto channels = adapter_.GetChatChannels();
   for (const auto& channel : channels) {
@@ -23,13 +25,7 @@ api::ChatMessage
 ChatMessageStore::CreateMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& message) {
   api::PersistenceId id = next_id_++;
   api::ChatMessage result{id, channel_id, user_id, message};
-
   CacheMessage(result);
-
-  //test mechanism
-  if (pending_message_ids_.size() > 10) {
-    Persist();
-  }
 
   return result;
 }
@@ -41,7 +37,7 @@ void ChatMessageStore::CacheMessage(api::ChatMessage chat_message) {
 
   //TODO code duplication
   message_cache_.insert_or_assign(chat_message.id, std::move(chat_message));
-  if (last_persisted_id_ && chat_message.id <= *last_persisted_id_) return;
+  if (latest_persisted_id_ && chat_message.id <= *latest_persisted_id_) return;
   pending_message_ids_.push(chat_message.id);
 }
 
@@ -54,7 +50,7 @@ void ChatMessageStore::CacheMessages(api::PersistenceId channel_id, std::vector<
 
     //TODO code duplication
     message_cache_.insert_or_assign(chat_message.id, std::move(chat_message));
-    if (last_persisted_id_ && chat_message.id <= *last_persisted_id_) continue;
+    if (latest_persisted_id_ && chat_message.id <= *latest_persisted_id_) continue;
     pending_message_ids_.push(chat_message.id);
   }
 
@@ -63,10 +59,12 @@ void ChatMessageStore::CacheMessages(api::PersistenceId channel_id, std::vector<
 }
 
 void ChatMessageStore::Persist() {
-  if (pending_message_ids_.empty()) return;
-
   thread_local std::vector<api::ChatMessage> messages;
   messages.clear();
+
+  std::unique_lock lock(persist_mutex_);
+  if (pending_message_ids_.empty()) return;
+
   messages.reserve(pending_message_ids_.size());
 
   while (!pending_message_ids_.empty()) {
@@ -79,7 +77,12 @@ void ChatMessageStore::Persist() {
     messages.push_back(*message);
   }
 
-  last_persisted_id_ = adapter_.PersistChatMessages(messages);
+  lock.unlock();
+  std::cout << "persisting" << std::endl;
+  auto latest_persisted_id = adapter_.PersistChatMessages(messages);
+  lock.lock();
+
+  latest_persisted_id_ = latest_persisted_id;
 }
 
 std::optional<std::reference_wrapper<const api::ChatMessage>>

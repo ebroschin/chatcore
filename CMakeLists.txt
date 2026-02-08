@@ -45,7 +45,6 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/chat_server_application.h
         source/prototyping/client_test_system.cpp
         source/prototyping/client_test_system.h
-        source/prototyping/prototyping_system.h
         source/persistence/persistence_system.h
         source/persistence/persistence_store.h
         source/persistence/persistence_adapter.h
@@ -72,6 +71,9 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/chat_message_store.h
         source/chat/chat_channel_message_log.cc
         source/chat/chat_channel_message_log.h
+        source/scheduling/scheduling_system.cc
+        source/scheduling/scheduling_system.h
+        source/scheduling/schedule_task.h
 )
 
 if(NOT BUILD_CLIENT)

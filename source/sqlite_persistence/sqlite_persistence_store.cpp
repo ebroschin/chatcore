@@ -2,12 +2,7 @@
 
 namespace claw::persistence::sqlite {
 
-void SqlitePersistenceStore::Initialize() {
-
-}
-
-void SqlitePersistenceStore::Deinitialize() {
-
-}
+void SqlitePersistenceStore::Initialize() { }
+void SqlitePersistenceStore::Deinitialize() { }
 
 }

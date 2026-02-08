@@ -15,9 +15,7 @@ void SqliteUserPersistenceAdapter::Initialize() {
   )");
 }
 
-void SqliteUserPersistenceAdapter::Deinitialize()  {
-
-}
+void SqliteUserPersistenceAdapter::Deinitialize() { }
 
 std::optional<api::PersistenceId> SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password)  {
   SQLite::Statement query(store_.Database(), "INSERT INTO chat_users (name, password) VALUES (?,?) ON CONFLICT(name) DO NOTHING;");

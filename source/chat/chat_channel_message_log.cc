@@ -16,7 +16,7 @@ ChatChannelMessageLog::ChatChannelMessageLog(api::PersistenceId channel_id, Chat
 
 void ChatChannelMessageLog::Prewarm() {
   constexpr auto max_message_id = std::numeric_limits<api::PersistenceId>::max();
-  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, 10);
+  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, 100);
   if (messages.empty()) return;
 
   store_.CacheMessages(channel_id_, std::move(messages));
@@ -74,10 +74,10 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
 
   //case 3: some of the requested data is only available in persistent storage
   auto limit_remaining = static_cast<std::uint32_t>(limit_diff_t - cached_take_count);
-  auto first_result_message_id = *start_iterator;
+  auto oldest_cached_message_id = *start_iterator;
 
   std::vector<api::PersistenceId> persistence_result;
-  auto remaining_messages = QueryAndCacheMessages(first_result_message_id, limit_remaining);
+  auto remaining_messages = QueryAndCacheMessages(oldest_cached_message_id, limit_remaining);
   std::ranges::copy(remaining_messages, std::back_inserter(persistence_result));
   std::ranges::copy(cached_result, std::back_inserter(persistence_result));
 
