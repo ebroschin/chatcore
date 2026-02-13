@@ -135,6 +135,10 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     tcp_system_.Send<chat::api::GetChatChannelsRequestMessage>(connection_id_, {});
   }
 
+  if (line.starts_with("shutdown")) {
+    tcp_system_.Send<chat::api::ShutdownMessage>(connection_id_, {});
+  }
+
   if (user_ == nullptr) return;
   tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {line});
 }

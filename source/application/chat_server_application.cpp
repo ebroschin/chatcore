@@ -27,7 +27,7 @@ void ChatServerApplication::Initialize() {
   persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 
   ctx_.Register<ChatServerTcpSystem>();
-  ctx_.Register<ChatServerSystem>();
+  ctx_.Register<ChatServerSystem>(*this);
   ctx_.Register<UserServerSystem>();
   ctx_.Register<prototyping::PingServerSystem>();
   ctx_.Register<SchedulingSystem>();

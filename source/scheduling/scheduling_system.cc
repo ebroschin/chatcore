@@ -1,5 +1,6 @@
 #include "scheduling_system.h"
 
+#include <iostream>
 #include <ranges>
 
 namespace claw::chat::server {
@@ -19,6 +20,8 @@ void SchedulingSystem::Deinitialize() {
 
   if (!scheduler_thread_.joinable()) return;
   scheduler_thread_.join();
+
+  std::cout << "deinitialize scheduling system" << std::endl;
 }
 
 int SchedulingSystem::AddScheduledTask(steady_clock::duration interval, std::function<void()> task) {

@@ -24,7 +24,6 @@ private:
   UserPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
 
-  //this is state. this will need to be thread safe as soon as multiple message processors perform actions on this object
   std::unordered_map<network::ConnectionId, api::User> user_sessions_{};
 };
 

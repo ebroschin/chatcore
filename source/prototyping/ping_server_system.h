@@ -7,8 +7,6 @@
 #include <claw/network/tcp/tcp_system.h>
 #include <iostream>
 
-using namespace std::chrono_literals;
-
 namespace claw::prototyping {
 
 class PingServerSystem final : public core::System {
@@ -35,6 +33,8 @@ public:
     running_ = false;
     if (!worker_.joinable()) return;
     worker_.join();
+
+    std::cout << "deinitialize ping server system" << std::endl;
   }
 
 private:

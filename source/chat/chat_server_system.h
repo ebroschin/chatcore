@@ -9,20 +9,23 @@
 
 namespace claw::chat::server {
 
+class ChatServerApplication;
 class ChatPersistenceAdapter;
 class UserServerSystem;
 
 class ChatServerSystem final : public core::System {
 public:
-  explicit ChatServerSystem(const core::SystemContext& ctx);
+  explicit ChatServerSystem(const core::SystemContext& ctx, ChatServerApplication& app);
 
   void Initialize() override;
+  void Deinitialize() override;
 
   void JoinChatChannel(network::ConnectionId id, api::PersistenceId channel_id);
   void WriteChatMessage(network::ConnectionId connection_id, const std::string& content);
   void CreateChatChannel(network::ConnectionId connection_id, const std::string& name);
 
 private:
+  ChatServerApplication& app_;
   ChatPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
 

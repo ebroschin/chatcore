@@ -1,6 +1,7 @@
 #include "chat_server_system.h"
 
 #include "../application/chat_persistence_system.h"
+#include "../application/chat_server_application.h"
 #include "../scheduling/scheduling_system.h"
 #include "adapters/chat_persistence_adapter.h"
 #include <claw/network/tcp/tcp_system.h>
@@ -14,8 +15,9 @@ using namespace std::chrono_literals;
 
 namespace claw::chat::server {
 
-ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
+ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx, ChatServerApplication& app):
   System(ctx),
+  app_(app),
   adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<ChatPersistenceAdapter>()},
   tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
 {}
@@ -39,6 +41,11 @@ void ChatServerSystem::Initialize() {
     JoinChatChannel(id, message.channel_id);
   });
 
+  tcp_system_.RegisterMessageHandler<api::ShutdownMessage>([this](network::ConnectionId id, const api::ShutdownMessage&) {
+    if (!user_system_->ValidateSession(api::ShutdownMessage::TypeId, id)) return;
+    app_.Quit();
+  });
+
   tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([this](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
     if (!user_system_->ValidateSession(api::GetChatsRequestMessage::TypeId, id)) return;
 
@@ -60,6 +67,11 @@ void ChatServerSystem::Initialize() {
   auto scheduling_system = ctx_.Get<SchedulingSystem>();
   int handle = scheduling_system->AddScheduledTask({5s}, [this] { message_store_.Persist(); });
   scheduling_system->SetTaskActive(handle, true);
+}
+
+void ChatServerSystem::Deinitialize() {
+  message_store_.Persist();
+  std::cout << "deinitialize chat server system" << std::endl;
 }
 
 void ChatServerSystem::JoinChatChannel(network::ConnectionId id, api::PersistenceId channel_id) {
