@@ -71,9 +71,6 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/chat_message_store.h
         source/chat/chat_channel_message_log.cc
         source/chat/chat_channel_message_log.h
-        source/scheduling/scheduling_system.cc
-        source/scheduling/scheduling_system.h
-        source/scheduling/schedule_task.h
 )
 
 if(NOT BUILD_CLIENT)
@@ -98,6 +95,7 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-core")
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-network-modules")
 add_subdirectory("${CMAKE_SOURCE_DIR}/external/chat-server-api")
+add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-scheduling")
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
@@ -111,4 +109,5 @@ target_link_libraries(${TARGET_NAME}
         claw::network
         claw::network-modules
         claw::chat-api
+        claw::scheduling
 )

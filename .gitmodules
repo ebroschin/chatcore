@@ -16,3 +16,6 @@
 [submodule "external/chat-server-api"]
 	path = external/chat-server-api
 	url = git@192.168.178.20:claw/chat-server-api.git
+[submodule "external/claw-scheduling"]
+	path = external/claw-scheduling
+	url = git@192.168.178.20:claw/claw-scheduler.git

@@ -1,8 +1,9 @@
 #include "chat_server_system.h"
 
+#include <claw/scheduling/scheduling_system.h>
+
 #include "../application/chat_persistence_system.h"
 #include "../application/chat_server_application.h"
-#include "../scheduling/scheduling_system.h"
 #include "adapters/chat_persistence_adapter.h"
 #include <claw/network/tcp/tcp_system.h>
 
@@ -64,7 +65,7 @@ void ChatServerSystem::Initialize() {
 
   message_store_.Prewarm();
 
-  auto scheduling_system = ctx_.Get<SchedulingSystem>();
+  auto scheduling_system = ctx_.Get<scheduling::SchedulingSystem>();
   int handle = scheduling_system->AddScheduledTask({5s}, [this] { message_store_.Persist(); });
   scheduling_system->SetTaskActive(handle, true);
 }
