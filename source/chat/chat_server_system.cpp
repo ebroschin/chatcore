@@ -104,13 +104,13 @@ void ChatServerSystem::WriteChatMessage(network::ConnectionId connection_id, con
 
   auto potential_user = user_system_->GetSessionUser(connection_id);
   if (!potential_user.has_value()) {
-    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "User not found."});
+    tcp_system_.Send<api::ErrorMessage>(connection_id, { api::WriteChatMessage::TypeId, "User not found." });
     return;
   }
 
   auto potential_channel = channel_store_.GetAssignedChannel(connection_id);
   if (!potential_channel.has_value()) {
-    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "No channel joined."});
+    tcp_system_.Send<api::ErrorMessage>(connection_id, { api::WriteChatMessage::TypeId, "No channel joined." });
     return;
   }
 
@@ -120,11 +120,11 @@ void ChatServerSystem::WriteChatMessage(network::ConnectionId connection_id, con
 
   auto connections_range = channel_store_.GetConnections(channel.id);
   if (!connections_range) {
-    tcp_system_.Send<api::ErrorMessage>(connection_id, {api::WriteChatMessage::TypeId, "No users found in channel."});
+    tcp_system_.Send<api::ErrorMessage>(connection_id, { api::WriteChatMessage::TypeId, "No users found in channel." });
     return;
   }
 
-  tcp_system_.Broadcast<api::PrintMessage>(*connections_range, {"[" + channel.name + "] " + user.name + " says: " + content });
+  tcp_system_.Broadcast<api::ReceiveChatMessage>(*connections_range, { user.id, channel.id, content });
 }
 
 void ChatServerSystem::CreateChatChannel(network::ConnectionId connection_id, const std::string& name) {
