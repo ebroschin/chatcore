@@ -10,6 +10,7 @@
 #include <ranges>
 #include <typeindex>
 #include <unordered_map>
+#include <iostream>
 
 namespace claw::persistence {
 
@@ -49,6 +50,16 @@ public:
     const std::type_index key = typeid(TAdapterInterface);
     const auto it = adapters_.find(key);
     return it != adapters_.end()? dynamic_cast<TAdapterInterface*>(it->second.get()) : nullptr;
+  }
+
+  template <typename TAdapterInterface>
+  TAdapterInterface& Require() {
+    auto adapter = Get<TAdapterInterface>();
+    if (!adapter) {
+      std::cerr << "Required PersistenceAdapter not registered" << std::endl;
+      std::abort();
+    }
+    return *adapter;
   }
 
 private:

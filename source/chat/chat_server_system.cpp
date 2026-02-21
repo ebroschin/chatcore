@@ -1,5 +1,7 @@
 #include "chat_server_system.h"
 
+#include "../application/application_system.h"
+
 #include <claw/scheduling/scheduling_system.h>
 
 #include "../application/chat_persistence_system.h"
@@ -19,36 +21,36 @@ namespace claw::chat::server {
 ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx, ChatServerApplication& app):
   System(ctx),
   app_(app),
-  adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<ChatPersistenceAdapter>()},
-  tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
+  adapter_(ctx.Require<ChatPersistenceSystem>().Require<ChatPersistenceAdapter>()),
+  tcp_system_(ctx.Require<ChatServerTcpSystem>()),
+  user_system_(ctx.Require<UserServerSystem>())
 {}
 
 void ChatServerSystem::Initialize() {
-  user_system_ = ctx_.Get<UserServerSystem>();
-
-  tcp_system_.RegisterMessageHandler<api::PrintMessage>([&](network::ConnectionId id, const api::PrintMessage& message) {
+  auto& application_system = ctx_.Require<ApplicationSystem>();
+  application_system.RegisterMessageHandler<api::PrintMessage>([&](network::ConnectionId id, const api::PrintMessage& message) {
     std::cout << "[client::print " << id << "]" << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<api::WriteChatMessage>([this](network::ConnectionId id, const api::WriteChatMessage& message) {
+  application_system.RegisterMessageHandler<api::WriteChatMessage>([this](network::ConnectionId id, const api::WriteChatMessage& message) {
     WriteChatMessage(id, message.content);
   });
 
-  tcp_system_.RegisterMessageHandler<api::CreateChannelRequestMessage>([this](network::ConnectionId id, const api::CreateChannelRequestMessage& message) {
+  application_system.RegisterMessageHandler<api::CreateChannelRequestMessage>([this](network::ConnectionId id, const api::CreateChannelRequestMessage& message) {
     CreateChatChannel(id, message.name);
   });
 
-  tcp_system_.RegisterMessageHandler<api::JoinChatChannelRequestMessage>([this](network::ConnectionId id, const api::JoinChatChannelRequestMessage& message) {
+  application_system.RegisterMessageHandler<api::JoinChatChannelRequestMessage>([this](network::ConnectionId id, const api::JoinChatChannelRequestMessage& message) {
     JoinChatChannel(id, message.channel_id);
   });
 
-  tcp_system_.RegisterMessageHandler<api::ShutdownMessage>([this](network::ConnectionId id, const api::ShutdownMessage&) {
-    if (!user_system_->ValidateSession(api::ShutdownMessage::TypeId, id)) return;
+  application_system.RegisterMessageHandler<api::ShutdownMessage>([this](network::ConnectionId id, const api::ShutdownMessage&) {
+    if (!user_system_.ValidateSession(api::ShutdownMessage::TypeId, id)) return;
     app_.Quit();
   });
 
-  tcp_system_.RegisterMessageHandler<api::GetChatsRequestMessage>([this](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
-    if (!user_system_->ValidateSession(api::GetChatsRequestMessage::TypeId, id)) return;
+  application_system.RegisterMessageHandler<api::GetChatsRequestMessage>([this](network::ConnectionId id, const api::GetChatsRequestMessage& message) {
+    if (!user_system_.ValidateSession(api::GetChatsRequestMessage::TypeId, id)) return;
 
     std::cout << "requested chat log for channel: " << message.channel_id << std::endl;
 
@@ -56,8 +58,8 @@ void ChatServerSystem::Initialize() {
     tcp_system_.Send<api::GetChatsResponseMessage>(id, {message.channel_id, std::move(result)});
   });
 
-  tcp_system_.RegisterMessageHandler<api::GetChatChannelsRequestMessage>([this](network::ConnectionId id, const api::GetChatChannelsRequestMessage&) {
-    if (!user_system_->ValidateSession(api::GetChatChannelsRequestMessage::TypeId, id)) return;
+  application_system.RegisterMessageHandler<api::GetChatChannelsRequestMessage>([this](network::ConnectionId id, const api::GetChatChannelsRequestMessage&) {
+    if (!user_system_.ValidateSession(api::GetChatChannelsRequestMessage::TypeId, id)) return;
 
     auto channels = adapter_.GetChatChannels(); //TODO use cache
     tcp_system_.Send<api::GetChatChannelsResponseMessage>(id, {std::move(channels)});
@@ -65,9 +67,8 @@ void ChatServerSystem::Initialize() {
 
   message_store_.Prewarm();
 
-  auto scheduling_system = ctx_.Get<scheduling::SchedulingSystem>();
-  int handle = scheduling_system->AddScheduledTask({5s}, [this] { message_store_.Persist(); });
-  scheduling_system->SetTaskActive(handle, true);
+  auto& scheduling_system = ctx_.Require<scheduling::SchedulingSystem>();
+  scheduling_system.SchedulePeriodically({5s}, [this] { message_store_.Persist(); });
 }
 
 void ChatServerSystem::Deinitialize() {
@@ -76,9 +77,9 @@ void ChatServerSystem::Deinitialize() {
 }
 
 void ChatServerSystem::JoinChatChannel(network::ConnectionId id, api::PersistenceId channel_id) {
-  if (!user_system_->ValidateSession(api::JoinChatChannelRequestMessage::TypeId, id)) return;
+  if (!user_system_.ValidateSession(api::JoinChatChannelRequestMessage::TypeId, id)) return;
 
-  auto potential_user = user_system_->GetSessionUser(id);
+  auto potential_user = user_system_.GetSessionUser(id);
   if (!potential_user) return;
 
   auto channel = adapter_.GetChatChannel(channel_id);
@@ -100,9 +101,9 @@ void ChatServerSystem::JoinChatChannel(network::ConnectionId id, api::Persistenc
 }
 
 void ChatServerSystem::WriteChatMessage(network::ConnectionId connection_id, const std::string& content) {
-  if (!user_system_->ValidateSession(api::WriteChatMessage::TypeId, connection_id)) return;
+  if (!user_system_.ValidateSession(api::WriteChatMessage::TypeId, connection_id)) return;
 
-  auto potential_user = user_system_->GetSessionUser(connection_id);
+  auto potential_user = user_system_.GetSessionUser(connection_id);
   if (!potential_user.has_value()) {
     tcp_system_.Send<api::ErrorMessage>(connection_id, { api::WriteChatMessage::TypeId, "User not found." });
     return;
@@ -128,9 +129,9 @@ void ChatServerSystem::WriteChatMessage(network::ConnectionId connection_id, con
 }
 
 void ChatServerSystem::CreateChatChannel(network::ConnectionId connection_id, const std::string& name) {
-  if (!user_system_->ValidateSession(api::CreateChannelRequestMessage::TypeId, connection_id)) return;
+  if (!user_system_.ValidateSession(api::CreateChannelRequestMessage::TypeId, connection_id)) return;
 
-  auto potential_user = user_system_->GetSessionUser(connection_id);
+  auto potential_user = user_system_.GetSessionUser(connection_id);
   if (!potential_user) return;
 
   auto channel = adapter_.CreateChatChannel(name);

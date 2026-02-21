@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../application/chat_tcp_system.h"
+#include "../application/commons.h"
 
+#include <claw/chat/api.h>
 #include <claw/core/system.h>
+#include <optional>
 #include <string>
 #include <unordered_map>
-#include <optional>
-#include <claw/chat/api.h>
 
 namespace claw::chat::server {
 
@@ -15,6 +15,8 @@ class UserPersistenceAdapter;
 class UserServerSystem final : public core::System {
 public:
   explicit UserServerSystem(const core::SystemContext& ctx);
+
+  void Initialize() override;
 
   std::optional<api::PersistenceId> CreateUser(const std::string& name, const std::string& password);
   bool ValidateSession(std::uint64_t request_type_id, const network::ConnectionId& id);

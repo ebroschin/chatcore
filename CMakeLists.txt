@@ -58,7 +58,7 @@ add_executable(${TARGET_NAME} source/main.cc
         source/prototyping/chat_input_system.cc
         source/prototyping/chat_input_system.h
         source/prototyping/ping_server_system.h
-        source/application/chat_tcp_system.h
+        source/application/commons.h
         source/application/chat_persistence_system.h
         source/users/user_server_system.cc
         source/users/user_server_system.h
@@ -71,6 +71,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/chat_message_store.h
         source/chat/chat_channel_message_log.cc
         source/chat/chat_channel_message_log.h
+        source/application/application_system.cc
+        source/application/application_system.h
 )
 
 if(NOT BUILD_CLIENT)

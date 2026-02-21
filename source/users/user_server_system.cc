@@ -3,6 +3,8 @@
 #include "adapters/sqlite_user_persistence_adapter.h"
 #include "user_server_system.h"
 
+#include "../application/application_system.h"
+
 #include <claw/core/system_context.h>
 
 #include <iostream>
@@ -11,10 +13,13 @@ namespace claw::chat::server {
 
 UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
   System(ctx),
-  adapter_{*ctx.Get<ChatPersistenceSystem>()->Get<UserPersistenceAdapter>()},
-  tcp_system_{*ctx.Get<ChatServerTcpSystem>()}
-{
-  tcp_system_.RegisterMessageHandler<api::CreateUserRequestMessage>([&](network::ConnectionId id, const api::CreateUserRequestMessage& message) {
+  adapter_(ctx_.Require<ChatPersistenceSystem>().Require<UserPersistenceAdapter>()),
+  tcp_system_(ctx_.Require<ChatServerTcpSystem>())
+{ }
+
+void UserServerSystem::Initialize() {
+  auto& application_system = ctx_.Require<ApplicationSystem>();
+  application_system.RegisterMessageHandler<api::CreateUserRequestMessage>([&](network::ConnectionId id, const api::CreateUserRequestMessage& message) {
     const auto user_id = CreateUser(message.name, message.password);
     if (!user_id) {
       auto user = adapter_.GetUser(message.name);
@@ -30,7 +35,7 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
     tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(*user_id) + "]"});
   });
 
-  tcp_system_.RegisterMessageHandler<api::AuthenticateUserRequestMessage>([&](network::ConnectionId id, const api::AuthenticateUserRequestMessage& message) {
+  application_system.RegisterMessageHandler<api::AuthenticateUserRequestMessage>([&](network::ConnectionId id, const api::AuthenticateUserRequestMessage& message) {
     auto result = adapter_.AuthenticateUser(message.name, message.password);
     if (!result.has_value()) {
       tcp_system_.Send<api::PrintMessage>(id, {"Wrong user or password"});

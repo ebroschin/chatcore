@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../application/chat_tcp_system.h"
+#include "../application/commons.h"
 #include "chat_channel_store.h"
 #include "chat_message_store.h"
 
@@ -28,8 +28,8 @@ private:
   ChatServerApplication& app_;
   ChatPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
+  UserServerSystem& user_system_;
 
-  UserServerSystem* user_system_{};
   ChatChannelStore channel_store_{adapter_};
   ChatMessageStore message_store_{adapter_};
 };

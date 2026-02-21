@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../application/chat_tcp_system.h"
+#include "../application/commons.h"
 #include <claw/core/system.h>
 
 namespace claw::chat::client {
@@ -23,8 +23,10 @@ public:
 private:
   void ParseCommand(std::string_view view, std::vector<std::string>& result);
 
-  chat::client::ChatInputSystem& chat_input_system_;
-  chat::server::ChatClientTcpSystem& tcp_system_;
+  chat::client::ChatInputSystem* chat_input_system_{nullptr};
+  chat::server::ChatClientTcpSystem* tcp_system_{nullptr};
+  chat::server::ChatClientTcpSystem::MessageProcessor* processor_{nullptr};
+
   network::ConnectionId connection_id_{};
   std::unique_ptr<chat::api::User> user_{};
 

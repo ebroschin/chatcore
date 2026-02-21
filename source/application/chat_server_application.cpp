@@ -6,12 +6,13 @@
 #include "../prototyping/chat_input_system.h"
 #include "../prototyping/client_test_system.h"
 #include "../prototyping/ping_server_system.h"
-#include <claw/scheduling/scheduling_system.h>
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "../users/adapters/sqlite_user_persistence_adapter.h"
 #include "../users/user_server_system.h"
+#include "application_system.h"
 #include "chat_persistence_system.h"
-#include "chat_tcp_system.h"
+#include "commons.h"
+#include <claw/scheduling/scheduling_system.h>
 
 #include <boost/stacktrace.hpp>
 #include <iostream>
@@ -22,15 +23,16 @@ namespace claw::chat::server {
 
 void ChatServerApplication::Initialize() {
 #ifdef SERVER_SIDE
+  ctx_.Register<scheduling::SchedulingSystem>();
+  ctx_.Register<ChatServerTcpSystem>();
+  ctx_.Register<ApplicationSystem>();
+
   auto* persistence_system = ctx_.Register<ChatPersistenceSystem>("sqlite.db3");
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
   persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 
-  ctx_.Register<ChatServerTcpSystem>();
-  ctx_.Register<ChatServerSystem>(*this);
   ctx_.Register<UserServerSystem>();
-  ctx_.Register<prototyping::PingServerSystem>();
-  ctx_.Register<scheduling::SchedulingSystem>();
+  ctx_.Register<ChatServerSystem>(*this);
 #else
   ctx_.Register<ChatClientTcpSystem>();
   ctx_.Register<client::ChatInputSystem>();

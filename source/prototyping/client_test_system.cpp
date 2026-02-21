@@ -4,7 +4,7 @@
 #include <claw/chat/api.h>
 #include <claw/core/system_context.h>
 
-#include "../application/chat_tcp_system.h"
+#include "../application/commons.h"
 #include "chat_input_system.h"
 
 #include <iostream>
@@ -12,54 +12,61 @@
 namespace claw::prototyping {
 
 ClientTestSystem::ClientTestSystem(const core::SystemContext& ctx):
-System(ctx),
-chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
-tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()} {
-  tcp_system_.RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionId, const chat::api::PrintMessage& message) {
+  System(ctx)
+{ }
+
+void ClientTestSystem::Initialize() {
+  //chat_input_system_{*ctx.Get<chat::client::ChatInputSystem>()},
+  //tcp_system_{*ctx.Get<chat::server::ChatClientTcpSystem>()}
+
+  chat_input_system_ = &ctx_.Require<chat::client::ChatInputSystem>();
+  tcp_system_ = &ctx_.Require<chat::server::ChatClientTcpSystem>();
+
+  processor_ = tcp_system_->CreateMessageProcessor();
+
+  processor_->RegisterMessageHandler<chat::api::PrintMessage>([&](network::ConnectionId, const chat::api::PrintMessage& message) {
     std::cout << "[server::print] " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::ErrorMessage>([&](network::ConnectionId, const chat::api::ErrorMessage& message) {
+  processor_->RegisterMessageHandler<chat::api::ErrorMessage>([&](network::ConnectionId, const chat::api::ErrorMessage& message) {
     std::cout << "[server::error] " << message.value << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::ReceiveChatMessage>([&](network::ConnectionId, const chat::api::ReceiveChatMessage& message) {
+  processor_->RegisterMessageHandler<chat::api::ReceiveChatMessage>([&](network::ConnectionId, const chat::api::ReceiveChatMessage& message) {
     if (!user_) return;
     if (user_->id == message.user_id) return;
     std::cout << "[" << message.channel_id << "] " << message.user_id << ": " << message.content << std::endl;
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatsResponseMessage& message) {
+  processor_->RegisterMessageHandler<chat::api::GetChatsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatsResponseMessage& message) {
     std::cout << "received chats: " << std::endl;
     for (const auto& chat_message : message.messages) {
       std::cout << chat_message.user_id << ": " << chat_message.content << std::endl;
     }
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::GetChatChannelsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatChannelsResponseMessage& message) {
+  processor_->RegisterMessageHandler<chat::api::GetChatChannelsResponseMessage>([&](network::ConnectionId, const chat::api::GetChatChannelsResponseMessage& message) {
     std::cout << "received channels: " << std::endl;
     for (const auto& channel : message.channels) {
       std::cout << channel.id << ": " << channel.name << std::endl;
     }
   });
 
-  tcp_system_.RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](network::ConnectionId, const chat::api::AuthenticateUserResponseMessage& message) {
+  processor_->RegisterMessageHandler<chat::api::AuthenticateUserResponseMessage>([&](network::ConnectionId, const chat::api::AuthenticateUserResponseMessage& message) {
     std::cout << "login successful" << std::endl;
     user_ = std::make_unique<chat::api::User>(message.user);
   });
-}
 
-void ClientTestSystem::Initialize() {
-  auto* processor = tcp_system_.CreateMessageProcessor();
-  worker_ = std::thread{[this, processor]() {
+  worker_ = std::thread{[this]() {
     while (running_) {
-      processor->ProcessBlocking();
+      processor_->ProcessBlocking();
     }
   }};
 }
 
 void ClientTestSystem::Deinitialize() {
   running_ = false;
+
   if (!worker_.joinable()) return;
   worker_.join();
 }
@@ -71,7 +78,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     ParseCommand(line, parameter_buffer);
     if (parameter_buffer.size() <= 1) return;
 
-    tcp_system_.Connect({parameter_buffer[1], "1338"}, [this](network::ConnectionId id) {
+    tcp_system_->Connect({parameter_buffer[1], "1338"}, [this](network::ConnectionId id) {
       connection_id_ = id;
       std::cout << "connection established: " << id << std::endl;
     });
@@ -83,7 +90,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
   if (line.starts_with("write")) {
     const std::string message = line.substr(std::strlen("write"));
-    tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {message});
+    tcp_system_->Send<chat::api::WriteChatMessage>(connection_id_, {message});
     return;
   }
 
@@ -98,13 +105,13 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     const auto limit_param = static_cast<chat::api::PersistenceId>(std::stoul(limit));
 
     constexpr auto max_message_id = std::numeric_limits<chat::api::PersistenceId>::max();
-    tcp_system_.Send<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param, max_message_id, limit_param});
+    tcp_system_->Send<chat::api::GetChatsRequestMessage>(connection_id_, {channel_id_param, max_message_id, limit_param});
     return;
   }
 
   if (line.starts_with("create")) {
     const std::string name = line.substr(std::strlen("create") + 1);
-    tcp_system_.Send<chat::api::CreateChannelRequestMessage>(connection_id_, {name});
+    tcp_system_->Send<chat::api::CreateChannelRequestMessage>(connection_id_, {name});
     return;
   }
 
@@ -114,7 +121,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
     const auto& name = parameter_buffer[1];
     const auto& password = parameter_buffer[2];
-    tcp_system_.Send<chat::api::CreateUserRequestMessage>(connection_id_, {name, password});
+    tcp_system_->Send<chat::api::CreateUserRequestMessage>(connection_id_, {name, password});
     return;
   }
 
@@ -124,7 +131,7 @@ void ClientTestSystem::HandleLine(const std::string& line) {
 
     const auto& name = parameter_buffer[1];
     const auto& password = parameter_buffer[2];
-    tcp_system_.Send<chat::api::AuthenticateUserRequestMessage>(connection_id_, {name, password});
+    tcp_system_->Send<chat::api::AuthenticateUserRequestMessage>(connection_id_, {name, password});
     return;
   }
 
@@ -133,20 +140,20 @@ void ClientTestSystem::HandleLine(const std::string& line) {
     if (parameter_buffer.size() <= 1) return;
 
     auto channel_id = static_cast<chat::api::PersistenceId>(std::stoul(parameter_buffer[1]));
-    tcp_system_.Send<chat::api::JoinChatChannelRequestMessage>(connection_id_, {channel_id});
+    tcp_system_->Send<chat::api::JoinChatChannelRequestMessage>(connection_id_, {channel_id});
     return;
   }
 
   if (line.starts_with("channels")) {
-    tcp_system_.Send<chat::api::GetChatChannelsRequestMessage>(connection_id_, {});
+    tcp_system_->Send<chat::api::GetChatChannelsRequestMessage>(connection_id_, {});
   }
 
   if (line.starts_with("shutdown")) {
-    tcp_system_.Send<chat::api::ShutdownMessage>(connection_id_, {});
+    tcp_system_->Send<chat::api::ShutdownMessage>(connection_id_, {});
   }
 
   if (user_ == nullptr) return;
-  tcp_system_.Send<chat::api::WriteChatMessage>(connection_id_, {line});
+  tcp_system_->Send<chat::api::WriteChatMessage>(connection_id_, {line});
 }
 
 void ClientTestSystem::ParseCommand(std::string_view view, std::vector<std::string>& result) {
