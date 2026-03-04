@@ -3,9 +3,6 @@
 #include "../chat/adapters/sqlite_chat_persistence_adapter.h"
 #include "../chat/chat_server_system.h"
 #include "../persistence/persistence_system.h"
-#include "../prototyping/chat_input_system.h"
-#include "../prototyping/client_test_system.h"
-#include "../prototyping/ping_server_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "../users/adapters/sqlite_user_persistence_adapter.h"
 #include "../users/user_server_system.h"
@@ -22,7 +19,6 @@ using namespace claw::persistence::sqlite;
 namespace claw::chat::server {
 
 void ChatServerApplication::Initialize() {
-#ifdef SERVER_SIDE
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ChatServerTcpSystem>();
   ctx_.Register<ApplicationSystem>();
@@ -33,11 +29,6 @@ void ChatServerApplication::Initialize() {
 
   ctx_.Register<UserServerSystem>();
   ctx_.Register<ChatServerSystem>(*this);
-#else
-  ctx_.Register<ChatClientTcpSystem>();
-  ctx_.Register<client::ChatInputSystem>();
-  ctx_.Register<prototyping::ClientTestSystem>();
-#endif
 }
 
 void ChatServerApplication::HandleTerminate() {

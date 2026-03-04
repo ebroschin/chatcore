@@ -18,8 +18,8 @@ public:
 
   void Initialize() override;
 
-  std::optional<api::PersistenceId> CreateUser(const std::string& name, const std::string& password);
-  bool ValidateSession(std::uint64_t request_type_id, const network::ConnectionId& id);
+  bool ValidateSession(network::RequestId request_id, const network::ConnectionId& id) const;
+  bool ValidateSession(const network::ConnectionId& id) const;
   std::optional<std::reference_wrapper<const api::User>> GetSessionUser(const network::ConnectionId& id);
 
 private:

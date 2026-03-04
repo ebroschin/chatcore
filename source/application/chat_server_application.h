@@ -8,6 +8,7 @@ class ChatServerApplication final : public core::Application {
 protected:
   void Initialize() override;
   void HandleTerminate() override;
+
 };
 
 }

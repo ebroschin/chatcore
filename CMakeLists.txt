@@ -32,19 +32,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     )
 endif()
 
-option(BUILD_CLIENT "Build the chat-client instead of chat-server" OFF)
-
-if(BUILD_CLIENT)
-    set(TARGET_NAME chat-client)
-else()
-    set(TARGET_NAME chat-server)
-endif()
+set(TARGET_NAME chat-server)
 
 add_executable(${TARGET_NAME} source/main.cc
         source/application/chat_server_application.cpp
         source/application/chat_server_application.h
-        source/prototyping/client_test_system.cpp
-        source/prototyping/client_test_system.h
         source/persistence/persistence_system.h
         source/persistence/persistence_store.h
         source/persistence/persistence_adapter.h
@@ -55,9 +47,6 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/adapters/sqlite_chat_persistence_adapter.h
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
-        source/prototyping/chat_input_system.cc
-        source/prototyping/chat_input_system.h
-        source/prototyping/ping_server_system.h
         source/application/commons.h
         source/application/chat_persistence_system.h
         source/users/user_server_system.cc
@@ -74,10 +63,6 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/application_system.cc
         source/application/application_system.h
 )
-
-if(NOT BUILD_CLIENT)
-    target_compile_definitions(${TARGET_NAME} PRIVATE SERVER_SIDE)
-endif()
 
 if(WIN32)
     set(BOOST_STACKTRACE stacktrace_windbg)
