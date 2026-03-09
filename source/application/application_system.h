@@ -17,7 +17,7 @@ public:
   template<typename TMessage>
   void RegisterMessageHandler(std::function<void(network::ConnectionId id, const TMessage&)> function) {
     assert(processor_);
-    processor_->RegisterMessageHandler<TMessage>(function);
+    processor_->GetMessageHandler().Register<TMessage>(function);
   }
 
 private:

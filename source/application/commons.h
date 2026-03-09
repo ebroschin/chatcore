@@ -5,19 +5,15 @@
 #include <claw/network/tcp/tcp_system.h>
 #include <claw/network/tcp/tcp_system_builder.h>
 #include <claw/network-modules/codecs/json_network_codec.h>
+#include <claw/network/message_handler_registry.h>
 #include <claw/chat/json_api.h>
 
 namespace claw::chat::server {
 
-using ChatClientTcpSystem = network::tcp::TcpSystemBuilder<
-    network::modules::BoostTcpResolver,
-    network::modules::JsonNetworkCodec,
-    api::MessageTypes
->::Type;
-
 using ChatServerTcpSystem = network::tcp::TcpSystemBuilder<
     network::modules::BoostTcpAcceptor,
     network::modules::JsonNetworkCodec,
+    network::MessageHandlerRegistry,
     api::MessageTypes
 >::Type;
 

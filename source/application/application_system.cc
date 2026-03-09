@@ -11,7 +11,7 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx):
 
 void ApplicationSystem::Initialize() {
   auto* tcp_system = ctx_.Get<ChatServerTcpSystem>();
-  processor_ = tcp_system->CreateMessageProcessor();
+  processor_ = &tcp_system->GetMessageProcessor();
   application_thread_ = std::jthread{[this](std::stop_token st) {
     while (!st.stop_requested()) {
       processor_->ProcessBlocking();
