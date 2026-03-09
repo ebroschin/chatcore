@@ -1,6 +1,11 @@
+# Visual Studio
+.vs/
+out/
+
 # CLion
 .idea/
 cmake-build-*/
+build/
 
 # CMake
 CMakeFiles/

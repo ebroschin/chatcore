@@ -1,6 +1,8 @@
-#include <iostream>
+#include "application/chat_server_application.h"
 
-int main(int argc, char** argv) {
-  std::cout << "hello world" << std::endl;
+int main(int, char**) {
+  claw::chat::server::ChatServerApplication application{};
+  application.RunBlocking();
+
   return 0;
 }
