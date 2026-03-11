@@ -9,8 +9,8 @@ ChatChannelStore::ChatChannelStore(ChatPersistenceAdapter& adapter):
 {}
 
 void ChatChannelStore::Prewarm() {
-  const auto channels = adapter_.GetChatChannels();
-  for (const auto& channel : channels) {
+  auto channels = adapter_.GetChatChannels();
+  for (auto& channel : channels) {
     CacheChannel(std::move(channel));
   }
 }
@@ -48,11 +48,25 @@ std::optional<ChatChannelStore::ConnectionsRange> ChatChannelStore::GetConnectio
   return ConnectionsRange{set.cbegin(), set.cend()};
 }
 
-std::optional<std::reference_wrapper<const api::ChatChannel>> ChatChannelStore::GetChannel(api::PersistenceId channel_id) {
+std::optional<std::reference_wrapper<const api::ChatChannel>>
+ChatChannelStore::GetChannel(api::PersistenceId channel_id) {
   const auto* cached_channel = GetCachedChannel(channel_id);
   if (cached_channel != nullptr) return *cached_channel;
 
-  const auto potential_channel = adapter_.GetChatChannel(channel_id);
+  auto potential_channel = adapter_.GetChatChannel(channel_id);
+  if (!potential_channel) return std::nullopt;
+
+  return CacheChannel(std::move(*potential_channel));
+}
+
+std::optional<std::reference_wrapper<const api::ChatChannel>>
+ChatChannelStore::GetChannel(const std::string& channel_name) {
+  for (const auto& channel : channel_cache_ | std::ranges::views::values) {
+    if (channel.name != channel_name) continue;
+    return channel;
+  }
+
+  auto potential_channel = adapter_.GetChatChannel(channel_name);
   if (!potential_channel) return std::nullopt;
 
   return CacheChannel(std::move(*potential_channel));

@@ -110,13 +110,14 @@ void ChatServerSystem::HandleCreateChatChannel(network::ConnectionId connection_
   const auto potential_user = user_system_.GetSessionUser(connection_id);
   if (!potential_user) return;
 
-  const auto channel = adapter_.CreateChatChannel(message.name);
+  auto channel = adapter_.CreateChatChannel(message.name);
   if (!channel) {
-    tcp_system_.Send(connection_id, api::ErrorResponseMessage{message.request_id, "Channel already exists."});
+    const auto cached_channel = channel_store_.GetChannel(message.name);
+    tcp_system_.Send(connection_id, api::CreateChannelResponseMessage{message.request_id, *cached_channel});
     return;
   }
 
-  const auto cached_channel = channel_store_.CacheChannel(std::move(*channel));
+  const auto& cached_channel = channel_store_.CacheChannel(std::move(*channel));
   const auto& user = potential_user->get();
   tcp_system_.Send(connection_id, api::CreateChannelResponseMessage{message.request_id, cached_channel});
   tcp_system_.Broadcast<api::PrintMessage>({"[" + channel->name + "] has been created by " + user.name});

@@ -35,6 +35,7 @@ public:
 
   std::optional<ConnectionsRange> GetConnections(api::PersistenceId channel_id);
   std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(api::PersistenceId channel_id);
+  std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(const std::string& channel_name);
 
   [[nodiscard]] std::vector<api::ChatChannel> GetChannels() const noexcept {
     const auto range = channel_cache_ | std::ranges::views::values;
