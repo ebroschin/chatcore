@@ -21,14 +21,14 @@ namespace claw::chat::server {
 void ChatServerApplication::Initialize() {
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ChatServerTcpSystem>();
-  ctx_.Register<ApplicationSystem>();
 
   auto* persistence_system = ctx_.Register<ChatPersistenceSystem>("sqlite.db3");
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
   persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 
+  ctx_.Register<ApplicationSystem>(*this);
   ctx_.Register<UserServerSystem>();
-  ctx_.Register<ChatServerSystem>(*this);
+  ctx_.Register<ChatServerSystem>();
 }
 
 void ChatServerApplication::HandleTerminate() {

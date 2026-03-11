@@ -14,7 +14,7 @@ void ChatMessageStore::Prewarm() {
   latest_persisted_id_ = adapter_.GetLastChatMessageId();
   next_id_ = latest_persisted_id_.has_value()? *latest_persisted_id_ + 1 : 0;
 
-  auto channels = adapter_.GetChatChannels();
+  const auto channels = adapter_.GetChatChannels();
   for (const auto& channel : channels) {
     auto [it, _] = message_logs_.try_emplace(channel.id, channel.id, *this, adapter_);
     it->second.Prewarm();
@@ -68,7 +68,7 @@ void ChatMessageStore::Persist() {
   messages.reserve(pending_message_ids_.size());
 
   while (!pending_message_ids_.empty()) {
-    auto id = pending_message_ids_.front();
+    const auto id = pending_message_ids_.front();
     pending_message_ids_.pop();
 
     auto message = GetMessage(id);
@@ -79,7 +79,7 @@ void ChatMessageStore::Persist() {
 
   lock.unlock();
   std::cout << "persisting" << std::endl;
-  auto latest_persisted_id = adapter_.PersistChatMessages(messages);
+  const auto latest_persisted_id = adapter_.PersistChatMessages(messages);
   lock.lock();
 
   latest_persisted_id_ = latest_persisted_id;
@@ -95,11 +95,11 @@ ChatMessageStore::GetMessage(api::PersistenceId message_id) {
 
 std::vector<api::ChatMessage>
 ChatMessageStore::GetMessagesBefore(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit) {
-  auto it = message_logs_.find(channel_id);
+  const auto it = message_logs_.find(channel_id);
   if (it == message_logs_.end()) return {};
 
   std::vector<api::ChatMessage> result;
-  auto ids = it->second.GetChatMessagesBefore(message_id, limit);
+  const auto ids = it->second.GetChatMessagesBefore(message_id, limit);
   for (auto id : ids) {
     auto message = GetMessage(id);
     if (!message) continue;

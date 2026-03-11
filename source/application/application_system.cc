@@ -1,20 +1,24 @@
 #include "application_system.h"
 
+#include "chat_server_application.h"
 #include "claw/core/system_context.h"
 #include "commons.h"
 
 namespace claw::chat::server {
 
-ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx):
-  System(ctx)
+ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app):
+  System(ctx),
+  app_(app),
+  tcp_system_(ctx.Require<ChatServerTcpSystem>()),
+  message_handler_(tcp_system_.GetMessageProcessor().GetMessageHandler())
 {}
 
 void ApplicationSystem::Initialize() {
   auto* tcp_system = ctx_.Get<ChatServerTcpSystem>();
-  processor_ = &tcp_system->GetMessageProcessor();
   application_thread_ = std::jthread{[this](std::stop_token st) {
+    auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
-      processor_->ProcessBlocking();
+      processor.ProcessBlocking();
     }
   }};
 
@@ -23,9 +27,11 @@ void ApplicationSystem::Initialize() {
 
 void ApplicationSystem::Deinitialize() {
   if (!application_thread_.joinable()) return;
-
-  application_thread_.request_stop();
-  application_thread_.join();
+  application_thread_ = {};
 }
 
-} // namespace claw::chat::server
+void ApplicationSystem::Shutdown() const noexcept {
+  app_.Quit();
+}
+
+}
