@@ -14,6 +14,8 @@
 
 namespace claw::persistence {
 
+//this could have been implemented as static registry as the concrete adapter types are known at compile time
+//kept dynamic as it demonstrates the tradeoffs of dynamic registration vs. static registration (e.g. TcpSystem)
 template <typename TStore>
 requires std::derived_from<TStore, PersistenceStore>
 class PersistenceSystem final : public core::System {
@@ -40,9 +42,9 @@ public:
   TAdapterInterface* Register(TArgs&&... args) {
     const std::type_index key = typeid(TAdapterInterface);
     auto ptr = std::make_unique<TAdapter>(*store_, std::forward<TArgs>(args)...);
-    auto [it, success] = adapters_.emplace(key, std::move(ptr));
+    auto [it, _] = adapters_.emplace(key, std::move(ptr));
 
-    return success? dynamic_cast<TAdapterInterface*>(it->second.get()) : nullptr;
+    return dynamic_cast<TAdapterInterface*>(it->second.get());
   }
 
   template <typename TAdapterInterface>
@@ -59,6 +61,7 @@ public:
       std::cerr << "Required PersistenceAdapter not registered" << std::endl;
       std::abort();
     }
+
     return *adapter;
   }
 

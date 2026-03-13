@@ -26,7 +26,6 @@ void ApplicationSystem::Initialize() {
 }
 
 void ApplicationSystem::Deinitialize() {
-  if (!application_thread_.joinable()) return;
   application_thread_ = {};
 }
 

@@ -17,7 +17,7 @@ void SqliteUserPersistenceAdapter::Initialize() {
 
 void SqliteUserPersistenceAdapter::Deinitialize() { }
 
-std::optional<api::PersistenceId> SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password)  {
+std::optional<api::PersistenceId> SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password) {
   SQLite::Statement query(store_.Database(), "INSERT INTO chat_users (name, password) VALUES (?,?) ON CONFLICT(name) DO NOTHING;");
   query.bind(1, name);
   query.bind(2, password);
@@ -26,7 +26,7 @@ std::optional<api::PersistenceId> SqliteUserPersistenceAdapter::CreateUser(const
   return static_cast<api::PersistenceId>(store_.Database().getLastInsertRowid());
 }
 
-std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::PersistenceId& id)  {
+std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::PersistenceId& id) {
   const auto& db = store_.Database();
   SQLite::Statement query(db,
       "SELECT id, name FROM chat_users "
@@ -46,7 +46,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::Persis
   return std::nullopt;
 }
 
-std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const std::string& name)  {
+std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const std::string& name) {
   const auto& db = store_.Database();
   SQLite::Statement query(db,
       "SELECT id FROM chat_users "
@@ -65,7 +65,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const std::string
   return std::nullopt;
 }
 
-std::optional<api::User> SqliteUserPersistenceAdapter::AuthenticateUser(const std::string& name, const std::string& password)  {
+std::optional<api::User> SqliteUserPersistenceAdapter::AuthenticateUser(const std::string& name, const std::string& password) {
   const auto& db = store_.Database();
   SQLite::Statement query(db,
       "SELECT id FROM chat_users "
@@ -86,5 +86,34 @@ std::optional<api::User> SqliteUserPersistenceAdapter::AuthenticateUser(const st
   return std::nullopt;
 }
 
+std::vector<api::User> SqliteUserPersistenceAdapter::GetUsers(const std::vector<api::PersistenceId>& ids) {
+  const auto& db = store_.Database();
+
+  std::vector<api::User> result;
+  if (ids.empty()) return result;
+
+  std::ostringstream placeholders;
+  placeholders << "?";
+  for (std::size_t i = 1; i < ids.size(); i++) {
+    placeholders << ", ?";
+  }
+
+  SQLite::Statement query(db,
+      "SELECT id, name FROM chat_users "
+      "WHERE id IN (" + placeholders.str() + ");"
+  );
+
+  for (std::size_t i = 0; i < ids.size(); i++) {
+    query.bind(static_cast<int>(i + 1), ids[i]);
+  }
+
+  while (query.executeStep()) {
+    auto user_id = query.getColumn(0).getUInt();
+    auto name = query.getColumn(1).getString();
+    result.emplace_back(user_id, name);
+  }
+
+  return result;
+}
 
 }

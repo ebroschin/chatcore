@@ -9,8 +9,10 @@
 
 namespace claw::chat::server {
 
-class ChatPersistenceAdapter : public virtual persistence::PersistenceAdapterBase {
+class ChatPersistenceAdapter {
 public:
+  virtual ~ChatPersistenceAdapter() = default;
+
   virtual std::optional<api::ChatChannel> CreateChatChannel(const std::string& name) = 0;
   virtual std::optional<api::ChatChannel> GetChatChannel(api::PersistenceId id) = 0;
   virtual std::optional<api::ChatChannel> GetChatChannel(const std::string& name) = 0;

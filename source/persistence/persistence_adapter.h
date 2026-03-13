@@ -17,8 +17,7 @@ public:
 
 template<typename TPersistenceStore, typename TAdapterInterface>
 requires std::derived_from<TPersistenceStore, PersistenceStore>
-  && utility::VirtuallyDerivedFrom<TAdapterInterface, PersistenceAdapterBase>
-class PersistenceAdapter : public virtual PersistenceAdapterBase, public TAdapterInterface {
+class PersistenceAdapter : public PersistenceAdapterBase, public TAdapterInterface {
 public:
   explicit PersistenceAdapter(TPersistenceStore& store):
     store_{store}

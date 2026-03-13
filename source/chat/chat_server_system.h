@@ -29,6 +29,7 @@ private:
   void HandleGetChats(network::ConnectionId connection_id, const api::GetChatsRequestMessage& message);
   void HandleGetChatChannels(network::ConnectionId connection_id, const api::GetChatChannelsRequestMessage& message);
 
+  //TODO code duplication, write helper utility, mixin or something
   template <typename TMessage>
   void RegisterMessageHandler(void(ChatServerSystem::*method)(network::ConnectionId, const TMessage&)) {
     app_system_.RegisterMessageHandler<TMessage>([this, method](network::ConnectionId id, const TMessage& message) {

@@ -11,11 +11,14 @@ struct User;
 
 namespace claw::chat::server {
 
-class UserPersistenceAdapter : public virtual persistence::PersistenceAdapterBase {
+class UserPersistenceAdapter {
 public:
+  virtual ~UserPersistenceAdapter() = default;
+
   virtual std::optional<api::PersistenceId> CreateUser(const std::string& name, const std::string& password) = 0;
   virtual std::optional<api::User> GetUser(const api::PersistenceId& id) = 0;
   virtual std::optional<api::User> GetUser(const std::string& name) = 0;
+  virtual std::vector<api::User> GetUsers(const std::vector<api::PersistenceId>& ids) = 0;
   virtual std::optional<api::User> AuthenticateUser(const std::string& name, const std::string& password) = 0;
 };
 
