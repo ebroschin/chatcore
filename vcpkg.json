@@ -8,6 +8,7 @@
     "sqlitecpp",
     "claw-core",
     "claw-utility",
-    "claw-network"
+    "claw-network",
+    "claw-scheduling"
   ]
 }

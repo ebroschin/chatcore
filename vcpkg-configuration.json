@@ -8,8 +8,8 @@
     {
       "kind": "git",
       "repository": "git@192.168.178.20:claw/vcpkg-ports.git",
-      "baseline": "d8ab5496d3d5cb2ae3125fb43ade8c509a458a0c",
-      "packages": [ "claw-core", "claw-utility", "claw-network" ]
+      "baseline": "ca0768e0480436528eddaea4c44fddbacc30ac0b",
+      "packages": [ "claw-core", "claw-utility", "claw-network", "claw-scheduling" ]
     }
   ],
   "overlay-triplets": [

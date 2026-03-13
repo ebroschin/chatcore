@@ -14,7 +14,6 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerA
 {}
 
 void ApplicationSystem::Initialize() {
-  auto* tcp_system = ctx_.Get<ChatServerTcpSystem>();
   application_thread_ = std::jthread{[this](std::stop_token st) {
     auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
@@ -22,7 +21,7 @@ void ApplicationSystem::Initialize() {
     }
   }};
 
-  tcp_system->Connect({"0.0.0.0", 1338});
+  tcp_system_.Connect({"0.0.0.0", 1338});
 }
 
 void ApplicationSystem::Deinitialize() {
