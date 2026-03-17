@@ -62,6 +62,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/chat_channel_message_log.h
         source/application/application_system.cc
         source/application/application_system.h
+        source/application/chat_server_arguments.cc
+        source/application/chat_server_arguments.h
 )
 
 if(WIN32)

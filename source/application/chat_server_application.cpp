@@ -18,11 +18,15 @@ using namespace claw::persistence::sqlite;
 
 namespace claw::chat::server {
 
+ChatServerApplication::ChatServerApplication(ChatServerArguments arguments):
+  arguments_(std::move(arguments))
+{ }
+
 void ChatServerApplication::Initialize() {
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ChatServerTcpSystem>();
 
-  auto* persistence_system = ctx_.Register<ChatPersistenceSystem>("sqlite.db3");
+  auto* persistence_system = ctx_.Register<ChatPersistenceSystem>(arguments_.GetSqliteFilename());
   persistence_system->Register<ChatPersistenceAdapter, SqliteChatPersistenceAdapter>();
   persistence_system->Register<UserPersistenceAdapter, SqliteUserPersistenceAdapter>();
 

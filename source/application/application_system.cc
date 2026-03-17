@@ -21,7 +21,8 @@ void ApplicationSystem::Initialize() {
     }
   }};
 
-  tcp_system_.Connect({"0.0.0.0", 1338});
+  const auto& arguments = app_.GetArguments();
+  tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()});
 }
 
 void ApplicationSystem::Deinitialize() {
