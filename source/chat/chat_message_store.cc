@@ -21,13 +21,9 @@ void ChatMessageStore::Prewarm() {
   }
 }
 
-api::ChatMessage
-ChatMessageStore::CreateMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& message) {
-  api::PersistenceId id = next_id_++;
-  api::ChatMessage result{id, channel_id, user_id, message};
-  CacheMessage(result);
-
-  return result;
+void ChatMessageStore::CreateMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& message) {
+  const auto id = next_id_++;
+  CacheMessage({id, channel_id, user_id, message});
 }
 
 void ChatMessageStore::CacheMessage(api::ChatMessage chat_message) {
@@ -87,7 +83,7 @@ void ChatMessageStore::Persist() {
 
 std::optional<std::reference_wrapper<const api::ChatMessage>>
 ChatMessageStore::GetMessage(api::PersistenceId message_id) {
-  auto it = message_cache_.find(message_id);
+  const auto it = message_cache_.find(message_id);
   if (it == message_cache_.end()) return std::nullopt;
 
   return it->second;
@@ -100,8 +96,8 @@ ChatMessageStore::GetMessagesBefore(api::PersistenceId channel_id, api::Persiste
 
   std::vector<api::ChatMessage> result;
   const auto ids = it->second.GetChatMessagesBefore(message_id, limit);
-  for (auto id : ids) {
-    auto message = GetMessage(id);
+  for (const auto id : ids) {
+    const auto message = GetMessage(id);
     if (!message) continue;
 
     result.push_back(*message);

@@ -20,7 +20,6 @@ public:
   {}
 
   void Initialize() override;
-  void Deinitialize() override;
 
   std::optional<api::ChatChannel> CreateChatChannel(const std::string &name) override;
   std::optional<api::ChatChannel> GetChatChannel(const std::string& name) override;

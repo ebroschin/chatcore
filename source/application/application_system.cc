@@ -1,16 +1,17 @@
 #include "application_system.h"
 
+#include <claw/core/system_context.h>
+
 #include "chat_server_application.h"
-#include "claw/core/system_context.h"
-#include "commons.h"
+#include "chat_tcp_system.h"
 
 namespace claw::chat::server {
 
 ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app):
-  System(ctx),
-  app_(app),
-  tcp_system_(ctx.Require<ChatServerTcpSystem>()),
-  message_handler_(tcp_system_.GetMessageProcessor().GetMessageHandler())
+  System{ctx},
+  app_{app},
+  tcp_system_{ctx.Require<ChatServerTcpSystem>()},
+  message_handler_{tcp_system_.GetMessageProcessor().GetMessageHandler()}
 {}
 
 void ApplicationSystem::Initialize() {

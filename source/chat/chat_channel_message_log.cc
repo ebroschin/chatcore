@@ -14,9 +14,9 @@ ChatChannelMessageLog::ChatChannelMessageLog(api::PersistenceId channel_id, Chat
   adapter_(adapter)
 {}
 
-void ChatChannelMessageLog::Prewarm() {
+void ChatChannelMessageLog::Prewarm() const {
   constexpr auto max_message_id = std::numeric_limits<api::PersistenceId>::max();
-  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, 100);
+  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, 100); //TODO constant
   if (messages.empty()) return;
 
   store_.CacheMessages(channel_id_, std::move(messages));
@@ -54,12 +54,12 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
   }
 
   //case 2: at least some of the requested data is available in cache
-  auto end_iterator = std::ranges::lower_bound(channel_message_ids_, message_id);
+  const auto end_iterator = std::ranges::lower_bound(channel_message_ids_, message_id);
   auto cached_available_count = std::distance(channel_message_ids_.begin(), end_iterator);
   if (cached_available_count == 0) return QueryAndCacheMessages(message_id, limit);
 
-  auto limit_diff_t = static_cast<decltype(cached_available_count)>(limit);
-  auto cached_take_count = std::min(cached_available_count, limit_diff_t);
+  const auto limit_diff_t = static_cast<decltype(cached_available_count)>(limit);
+  const auto cached_take_count = std::min(cached_available_count, limit_diff_t);
 
   std::vector<api::PersistenceId> cached_result;
   cached_result.reserve(static_cast<size_t>(cached_take_count));
@@ -73,8 +73,8 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
   }
 
   //case 3: some of the requested data is only available in persistent storage
-  auto limit_remaining = static_cast<std::uint32_t>(limit_diff_t - cached_take_count);
-  auto oldest_cached_message_id = *start_iterator;
+  const auto limit_remaining = static_cast<std::uint32_t>(limit_diff_t - cached_take_count);
+  const auto oldest_cached_message_id = *start_iterator;
 
   std::vector<api::PersistenceId> persistence_result;
   auto remaining_messages = QueryAndCacheMessages(oldest_cached_message_id, limit_remaining);

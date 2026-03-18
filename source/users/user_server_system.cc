@@ -50,28 +50,35 @@ std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSess
 void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, const api::CreateUserRequestMessage& message) {
   const auto user_id = adapter_.CreateUser(message.name, message.password);
   if (!user_id) {
-    const auto user = adapter_.GetUser(message.name);
-    if (!user) return;
+    const auto user = adapter_.GetUser(message.name); //TODO use cache
+    if (!user) {
+      tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Unexpected error"});
+      return;
+    }
 
     tcp_system_.Send(connection_id, api::CreateUserResponseMessage(message.request_id, {user->id, message.name}));
     return;
   }
 
   tcp_system_.Send(connection_id, api::CreateUserResponseMessage{message.request_id, {*user_id, message.name}});
-  tcp_system_.Broadcast<api::PrintMessage>({"A new user has registered: " + message.name + " [" + std::to_string(*user_id) + "]"});
 }
 
 void UserServerSystem::HandleAuthenticateUser(network::ConnectionId connection_id, const api::AuthenticateUserRequestMessage& message) {
-  const auto result = adapter_.AuthenticateUser(message.name, message.password);
-  if (!result.has_value()) {
-    tcp_system_.Send<api::PrintMessage>(connection_id, {"Wrong user or password"});
+  if (user_sessions_.contains(connection_id)) {
+    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Already authenticated."});
     return;
   }
 
-  const api::User& user = result.value();
+  const auto result = adapter_.MatchUserCredentials(message.name, message.password);
+  if (!result) {
+    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Wrong username or password"});
+    return;
+  }
+
+  const auto& user = *result;
   user_sessions_.emplace(connection_id, user);
   tcp_system_.Send(connection_id, api::AuthenticateUserResponseMessage{message.request_id, user});
-  tcp_system_.Broadcast<api::PrintMessage>({user.name + " has logged in"});
+  tcp_system_.Broadcast<api::PrintMessage>({user.name + " has logged in"}); //TODO typed event message
 }
 
 void UserServerSystem::HandleGetUsers(network::ConnectionId connection_id, const api::GetUsersRequestMessage& message) {

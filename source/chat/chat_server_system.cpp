@@ -59,6 +59,7 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
   if (previous_channel) {
     const auto previous_channel_connections = channel_store_.GetConnections(previous_channel->get().id);
     if (previous_channel_connections) {
+      //TODO typed message instead of print
       tcp_system_.Broadcast<api::PrintMessage>(*previous_channel_connections, { user.name + " left channel " + previous_channel->get().name});
     }
   }
@@ -67,6 +68,7 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
 
   const auto connections_range = channel_store_.GetConnections(message.channel_id);
   if (connections_range) {
+    //TODO typed message instead of print
     tcp_system_.Broadcast<api::PrintMessage>(*connections_range, { user.name + " joined channel " + channel->get().name });
   }
 

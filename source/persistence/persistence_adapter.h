@@ -12,7 +12,7 @@ class PersistenceAdapterBase {
 public:
   virtual ~PersistenceAdapterBase() = default;
   virtual void Initialize() = 0;
-  virtual void Deinitialize() = 0;
+  virtual void Deinitialize() {}
 };
 
 template<typename TPersistenceStore, typename TAdapterInterface>

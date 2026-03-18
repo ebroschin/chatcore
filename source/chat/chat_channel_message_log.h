@@ -11,7 +11,7 @@ class ChatChannelMessageLog {
 public:
   explicit ChatChannelMessageLog(api::PersistenceId channel_id, ChatMessageStore& store, ChatPersistenceAdapter& adapter);
 
-  void Prewarm();
+  void Prewarm() const;
   void AppendMessageId(api::PersistenceId message_id);
   void AssignMessageIds(std::vector<api::PersistenceId> message_ids);
 

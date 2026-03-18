@@ -47,7 +47,7 @@ add_executable(${TARGET_NAME} source/main.cc
         source/chat/adapters/sqlite_chat_persistence_adapter.h
         source/chat/chat_server_system.cpp
         source/chat/chat_server_system.h
-        source/application/commons.h
+        source/application/chat_tcp_system.h
         source/application/chat_persistence_system.h
         source/users/user_server_system.cc
         source/users/user_server_system.h

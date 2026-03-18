@@ -1,7 +1,6 @@
 #pragma once
 
 #include <claw/chat/api.h>
-#include "../../persistence/persistence_adapter.h"
 #include <string>
 #include <vector>
 #include <optional>

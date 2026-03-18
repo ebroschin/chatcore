@@ -14,9 +14,9 @@ public:
   {}
 
   void Initialize() override;
-  void Deinitialize() override;
 
-  SQLite::Database& Database() { return db_; }
+  [[nodiscard]] SQLite::Database& GetDatabase() noexcept
+  { return db_; }
 
 private:
   SQLite::Database db_;
