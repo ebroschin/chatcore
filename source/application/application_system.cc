@@ -4,6 +4,7 @@
 
 #include "chat_server_application.h"
 #include "chat_tcp_system.h"
+#include "../users/user_server_system.h"
 
 namespace claw::chat::server {
 
@@ -22,8 +23,9 @@ void ApplicationSystem::Initialize() {
     }
   }};
 
+  connection_event_handler_ = std::make_unique<ConnectionEventHandler>(ctx_.Require<UserServerSystem>());
   const auto& arguments = app_.GetArguments();
-  tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()});
+  tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, connection_event_handler_.get());
 }
 
 void ApplicationSystem::Deinitialize() {

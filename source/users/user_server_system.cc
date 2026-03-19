@@ -4,6 +4,7 @@
 #include "user_server_system.h"
 
 #include "../application/application_system.h"
+#include "../chat/chat_server_system.h"
 
 #include <claw/core/system_context.h>
 
@@ -20,6 +21,7 @@ void UserServerSystem::Initialize() {
   RegisterMessageHandler(&UserServerSystem::HandleCreateUser);
   RegisterMessageHandler(&UserServerSystem::HandleAuthenticateUser);
   RegisterMessageHandler(&UserServerSystem::HandleGetUsers);
+  RegisterMessageHandler(&UserServerSystem::HandleLogout);
 }
 
 bool UserServerSystem::ValidateSession(network::RequestId request_id, network::ConnectionId id) const {
@@ -40,8 +42,17 @@ bool UserServerSystem::ValidateSession(network::ConnectionId id) const {
   return result;
 }
 
-std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSessionUser(network::ConnectionId id) {
-  const auto it = user_sessions_.find(id);
+void UserServerSystem::RemoveSession(network::ConnectionId connection_id) {
+  const auto it = user_sessions_.find(connection_id);
+  if (it == user_sessions_.end()) return;
+
+  const auto& user = it->second;
+  tcp_system_.Broadcast<api::UserLogoutEventMessage>({user.id});
+  user_sessions_.erase(connection_id);
+}
+
+std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSessionUser(network::ConnectionId connection_id) {
+  const auto it = user_sessions_.find(connection_id);
   if (it == user_sessions_.end()) return std::nullopt;
 
   return it->second;
@@ -65,7 +76,7 @@ void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, con
 
 void UserServerSystem::HandleAuthenticateUser(network::ConnectionId connection_id, const api::AuthenticateUserRequestMessage& message) {
   if (user_sessions_.contains(connection_id)) {
-    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Already authenticated."});
+    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "User already logged in."});
     return;
   }
 
@@ -78,13 +89,21 @@ void UserServerSystem::HandleAuthenticateUser(network::ConnectionId connection_i
   const auto& user = *result;
   user_sessions_.emplace(connection_id, user);
   tcp_system_.Send(connection_id, api::AuthenticateUserResponseMessage{message.request_id, user});
-  tcp_system_.Broadcast<api::PrintMessage>({user.name + " has logged in"}); //TODO typed event message
+  tcp_system_.Broadcast<api::UserLoginEventMessage>({user.id});
 }
 
 void UserServerSystem::HandleGetUsers(network::ConnectionId connection_id, const api::GetUsersRequestMessage& message) {
   if (!ValidateSession(message.request_id, connection_id)) return;
+
   auto result = adapter_.GetUsers(message.user_ids); //TODO use cache
   tcp_system_.Send(connection_id, api::GetUsersResponseMessage{message.request_id, std::move(result)});
+}
+
+void UserServerSystem::HandleLogout(network::ConnectionId connection_id, const api::LogoutRequestMessage& message) {
+  if (!ValidateSession(message.request_id, connection_id)) return;
+
+  RemoveSession(connection_id);
+  tcp_system_.Send(connection_id, api::LogoutResponseMessage{message.request_id});
 }
 
 }

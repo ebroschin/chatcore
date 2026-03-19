@@ -13,6 +13,7 @@
 namespace claw::chat::server {
 
 class UserPersistenceAdapter;
+class ChatServerSystem;
 
 class UserServerSystem final : public core::System {
 public:
@@ -20,14 +21,16 @@ public:
 
   void Initialize() override;
 
-  bool ValidateSession(network::RequestId request_id, network::ConnectionId id) const;
-  bool ValidateSession(network::ConnectionId id) const;
-  std::optional<std::reference_wrapper<const api::User>> GetSessionUser(network::ConnectionId id);
+  bool ValidateSession(network::RequestId, network::ConnectionId) const;
+  bool ValidateSession(network::ConnectionId) const;
+  void RemoveSession(network::ConnectionId);
+  std::optional<std::reference_wrapper<const api::User>> GetSessionUser(network::ConnectionId);
 
 private:
   void HandleCreateUser(network::ConnectionId, const api::CreateUserRequestMessage&);
   void HandleAuthenticateUser(network::ConnectionId, const api::AuthenticateUserRequestMessage&);
   void HandleGetUsers(network::ConnectionId, const api::GetUsersRequestMessage&);
+  void HandleLogout(network::ConnectionId, const api::LogoutRequestMessage&);
 
   //TODO code duplication, write helper utility, mixin or something
   template <typename TMessage>

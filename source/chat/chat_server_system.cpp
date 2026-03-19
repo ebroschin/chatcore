@@ -48,31 +48,22 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
   const auto potential_user = user_system_.GetSessionUser(connection_id);
   if (!potential_user) return;
 
-  const auto channel = channel_store_.GetChannel(message.channel_id);
-  if (!channel) {
+  const auto potential_channel = channel_store_.GetChannel(message.channel_id);
+  if (!potential_channel) {
     tcp_system_.Send(connection_id, api::ErrorResponseMessage{message.request_id, "Channel not found."});
     return;
   }
 
   const auto& user = potential_user->get();
-  const auto previous_channel = channel_store_.GetAssignedChannel(connection_id);
-  if (previous_channel) {
-    const auto previous_channel_connections = channel_store_.GetConnections(previous_channel->get().id);
-    if (previous_channel_connections) {
-      //TODO typed message instead of print
-      tcp_system_.Broadcast<api::PrintMessage>(*previous_channel_connections, { user.name + " left channel " + previous_channel->get().name});
-    }
+  const auto potential_previous_channel = channel_store_.GetAssignedChannel(connection_id);
+  if (potential_previous_channel) {
+    const auto& previous_channel = potential_previous_channel->get();
+    ChannelBroadcast<api::ChannelLeaveEventMessage>(previous_channel, { user.id, previous_channel.id});
   }
 
-  channel_store_.AssignConnection(connection_id, message.channel_id);
-
-  const auto connections_range = channel_store_.GetConnections(message.channel_id);
-  if (connections_range) {
-    //TODO typed message instead of print
-    tcp_system_.Broadcast<api::PrintMessage>(*connections_range, { user.name + " joined channel " + channel->get().name });
-  }
-
-  tcp_system_.Send(connection_id, api::JoinChatChannelResponseMessage{message.request_id, message.channel_id});
+  const auto& channel = potential_channel->get();
+  ChannelBroadcast<api::ChannelLeaveEventMessage>(channel, {user.id, channel.id});
+  tcp_system_.Send(connection_id, api::JoinChatChannelResponseMessage{message.request_id, channel.id});
 }
 
 void ChatServerSystem::HandleWriteChatMessage(network::ConnectionId connection_id, const api::WriteChatMessage& message) {
@@ -121,7 +112,7 @@ void ChatServerSystem::HandleCreateChatChannel(network::ConnectionId connection_
   const auto& cached_channel = channel_store_.CacheChannel(std::move(*channel));
   const auto& user = potential_user->get();
   tcp_system_.Send(connection_id, api::CreateChannelResponseMessage{message.request_id, cached_channel});
-  tcp_system_.Broadcast<api::PrintMessage>({"[" + cached_channel.name + "] has been created by " + user.name});
+  tcp_system_.Broadcast<api::ChannelCreateEventMessage>({cached_channel, user.id});
 }
 
 void ChatServerSystem::HandleShutdown(network::ConnectionId connection_id, const api::ShutdownMessage&) {
@@ -132,7 +123,8 @@ void ChatServerSystem::HandleShutdown(network::ConnectionId connection_id, const
 void ChatServerSystem::HandleGetChats(network::ConnectionId connection_id, const api::GetChatsRequestMessage& message) {
   if (!user_system_.ValidateSession(message.request_id, connection_id)) return;
 
-  auto result = message_store_.GetMessagesBefore(message.channel_id, message.max_message_id, message.limit);
+  constexpr auto max_message_id = std::numeric_limits<api::PersistenceId>::max();
+  auto result = message_store_.GetMessagesBefore(message.channel_id, max_message_id, message.limit);
   tcp_system_.Send(connection_id, api::GetChatsResponseMessage{message.request_id, message.channel_id, std::move(result)});
 }
 

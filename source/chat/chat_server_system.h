@@ -21,6 +21,22 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
+  template <typename TMessage>
+  void ChannelBroadcast(const api::ChatChannel& channel, const TMessage& message) {
+    const auto channel_connections = channel_store_.GetConnections(channel.id);
+    if (!channel_connections) return;
+
+    tcp_system_.Broadcast<TMessage>(*channel_connections, message);
+  }
+
+  template <typename TMessage>
+  void ChannelBroadcast(network::ConnectionId connection_id, const TMessage& message) {
+    const auto potential_channel = channel_store_.GetAssignedChannel(connection_id);
+    if (!potential_channel) return;
+
+    ChannelBroadcast(potential_channel->get(), message);
+  }
+
 private:
   void HandleJoinChatChannel(network::ConnectionId id, const api::JoinChatChannelRequestMessage& message);
   void HandleWriteChatMessage(network::ConnectionId connection_id, const api::WriteChatMessage& message);

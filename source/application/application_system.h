@@ -4,6 +4,9 @@
 #include <claw/core/system.h>
 #include <functional>
 #include <thread>
+#include <memory>
+
+#include "connection_event_handler.h"
 
 namespace claw::chat::server {
 
@@ -28,6 +31,7 @@ private:
   ChatServerTcpSystem& tcp_system_;
   ChatServerTcpSystem::MessageHandler& message_handler_;
   std::jthread application_thread_{};
+  std::unique_ptr<ConnectionEventHandler> connection_event_handler_{};
 };
 
 }
