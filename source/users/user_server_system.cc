@@ -21,7 +21,7 @@ void UserServerSystem::Initialize() {
   RegisterMessageHandler(&UserServerSystem::HandleCreateUser);
   RegisterMessageHandler(&UserServerSystem::HandleAuthenticateUser);
   RegisterMessageHandler(&UserServerSystem::HandleGetUsers);
-  
+
   user_store_.Prewarm();
 }
 

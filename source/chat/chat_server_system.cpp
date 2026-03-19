@@ -59,13 +59,13 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
   const auto potential_previous_channel = channel_store_.GetAssignedChannel(connection_id);
   if (potential_previous_channel) {
     const auto& previous_channel = potential_previous_channel->get();
-    ChannelBroadcast<api::ChannelLeaveEventMessage>(previous_channel, { user.id, previous_channel.id});
+    ChannelBroadcast<api::ChannelLeaveEventMessage>(previous_channel, { previous_channel.id, user.id});
   }
 
   channel_store_.AssignConnection(connection_id, message.channel_id);
 
   const auto& channel = potential_channel->get();
-  ChannelBroadcast<api::ChannelLeaveEventMessage>(channel, {user.id, channel.id});
+  ChannelBroadcast<api::ChannelJoinEventMessage>(channel, {channel.id, user.id});
   tcp_system_.Send(connection_id, api::JoinChatChannelResponseMessage{message.request_id, channel.id});
 }
 
