@@ -42,6 +42,7 @@ private:
   void HandleWriteChatMessage(network::ConnectionId connection_id, const api::WriteChatMessage& message);
   void HandleCreateChatChannel(network::ConnectionId connection_id, const api::CreateChannelRequestMessage& message);
   void HandleShutdown(network::ConnectionId connection_id, const api::ShutdownMessage& message);
+  void HandleLogout(network::ConnectionId, const api::LogoutRequestMessage&);
   void HandleGetChats(network::ConnectionId connection_id, const api::GetChatsRequestMessage& message);
   void HandleGetChatChannels(network::ConnectionId connection_id, const api::GetChatChannelsRequestMessage& message);
 

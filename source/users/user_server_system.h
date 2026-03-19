@@ -6,9 +6,9 @@
 #include <claw/core/system.h>
 #include <optional>
 #include <string>
-#include <unordered_map>
 
 #include "../application/application_system.h"
+#include "user_store.h"
 
 namespace claw::chat::server {
 
@@ -30,7 +30,6 @@ private:
   void HandleCreateUser(network::ConnectionId, const api::CreateUserRequestMessage&);
   void HandleAuthenticateUser(network::ConnectionId, const api::AuthenticateUserRequestMessage&);
   void HandleGetUsers(network::ConnectionId, const api::GetUsersRequestMessage&);
-  void HandleLogout(network::ConnectionId, const api::LogoutRequestMessage&);
 
   //TODO code duplication, write helper utility, mixin or something
   template <typename TMessage>
@@ -44,7 +43,7 @@ private:
   UserPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
 
-  std::unordered_map<network::ConnectionId, api::User> user_sessions_{};
+  UserStore user_store_{adapter_};
 };
 
 }

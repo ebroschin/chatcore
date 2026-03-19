@@ -66,6 +66,8 @@ add_executable(${TARGET_NAME} source/main.cc
         source/application/chat_server_arguments.h
         source/application/connection_event_handler.cc
         source/application/connection_event_handler.h
+        source/users/user_store.cc
+        source/users/user_store.h
 )
 
 if(WIN32)

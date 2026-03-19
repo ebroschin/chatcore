@@ -4,6 +4,8 @@
   "dependencies": [
     "boost-stacktrace",
     "boost-asio",
+    "boost-bimap",
+    "boost-multi-index",
     "nlohmann-json",
     "sqlitecpp",
     "claw-core",

@@ -30,12 +30,13 @@ void ChatServerSystem::Initialize() {
   RegisterMessageHandler(&ChatServerSystem::HandleGetChats);
   RegisterMessageHandler(&ChatServerSystem::HandleGetChatChannels);
   RegisterMessageHandler(&ChatServerSystem::HandleShutdown);
+  RegisterMessageHandler(&ChatServerSystem::HandleLogout);
 
   channel_store_.Prewarm();
   message_store_.Prewarm();
 
   auto& scheduling_system = ctx_.Require<scheduling::SchedulingSystem>();
-  scheduling_system.SchedulePeriodically({5s}, [this] { message_store_.Persist(); });
+  scheduling_system.SchedulePeriodically(5s, [this] { message_store_.Persist(); });
 }
 
 void ChatServerSystem::Deinitialize() {
@@ -60,6 +61,8 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
     const auto& previous_channel = potential_previous_channel->get();
     ChannelBroadcast<api::ChannelLeaveEventMessage>(previous_channel, { user.id, previous_channel.id});
   }
+
+  channel_store_.AssignConnection(connection_id, message.channel_id);
 
   const auto& channel = potential_channel->get();
   ChannelBroadcast<api::ChannelLeaveEventMessage>(channel, {user.id, channel.id});
@@ -133,6 +136,14 @@ void ChatServerSystem::HandleGetChatChannels(network::ConnectionId connection_id
 
   auto channels = channel_store_.GetChannels();
   tcp_system_.Send(connection_id, api::GetChatChannelsResponseMessage{message.request_id, std::move(channels)});
+}
+
+void ChatServerSystem::HandleLogout(network::ConnectionId connection_id, const api::LogoutRequestMessage& message) {
+  if (!user_system_.ValidateSession(message.request_id, connection_id)) return;
+
+  user_system_.RemoveSession(connection_id);
+  channel_store_.UnassignConnection(connection_id);
+  tcp_system_.Send<api::LogoutResponseMessage>(connection_id, {message.request_id});
 }
 
 }

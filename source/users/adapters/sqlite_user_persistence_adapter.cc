@@ -14,14 +14,15 @@ void SqliteUserPersistenceAdapter::Initialize() {
   )");
 }
 
-std::optional<api::PersistenceId> SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password) {
+std::optional<api::User> SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password) {
   const auto& db = store_.GetDatabase();
   SQLite::Statement query(db, "INSERT INTO chat_users (name, password) VALUES (?,?) ON CONFLICT(name) DO NOTHING;");
   query.bind(1, name);
   query.bind(2, password);
 
   if (query.exec() <= 0) return std::nullopt;
-  return static_cast<api::PersistenceId>(db.getLastInsertRowid());
+  const auto user_id = static_cast<api::PersistenceId>(db.getLastInsertRowid());
+  return api::User{user_id, name};
 }
 
 std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::PersistenceId& id) {
@@ -95,6 +96,21 @@ std::vector<api::User> SqliteUserPersistenceAdapter::GetUsers(const std::vector<
   for (std::size_t i = 0; i < ids.size(); i++) {
     query.bind(static_cast<int>(i + 1), ids[i]);
   }
+
+  while (query.executeStep()) {
+    auto user_id = query.getColumn(0).getUInt();
+    auto name = query.getColumn(1).getString();
+    result.emplace_back(user_id, name);
+  }
+
+  return result;
+}
+
+std::vector<api::User> SqliteUserPersistenceAdapter::GetUsers() {
+  const auto& db = store_.GetDatabase();
+
+  std::vector<api::User> result;
+  SQLite::Statement query{db, "SELECT id, name FROM chat_users;"};
 
   while (query.executeStep()) {
     auto user_id = query.getColumn(0).getUInt();
