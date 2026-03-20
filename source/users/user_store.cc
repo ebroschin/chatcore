@@ -10,14 +10,12 @@ UserStore::UserStore(UserPersistenceAdapter& adapter) noexcept:
 
 void UserStore::Prewarm() {
   for (auto& user : adapter_.GetUsers()) {
-    const auto user_id = user.id;
-    users_.emplace(user_id, std::move(user));
+    users_.emplace(std::move(user));
   }
 }
 
 const api::User& UserStore::CacheUser(api::User user) {
-  const auto user_id = user.id;
-  auto [result, _] = users_.emplace(user_id, std::move(user));
+  auto [result, _] = users_.emplace(std::move(user));
   return result->user;
 }
 
@@ -55,7 +53,7 @@ UserStore::GetUser(api::PersistenceId user_id) {
   const auto potential_user = adapter_.GetUser(user_id);
   if (!potential_user) return std::nullopt;
 
-  return CacheUser(std::move(*potential_user));
+  return CacheUser(*potential_user);
 }
 
 std::optional<std::reference_wrapper<const api::User>>
@@ -67,7 +65,7 @@ UserStore::GetUser(const std::string& name) {
   const auto potential_user = adapter_.GetUser(name);
   if (!potential_user) return std::nullopt;
 
-  return CacheUser(std::move(*potential_user));
+  return CacheUser(*potential_user);
 }
 
 std::vector<api::User> UserStore::GetUsers(std::span<const api::PersistenceId> user_ids) {

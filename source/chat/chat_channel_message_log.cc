@@ -23,7 +23,7 @@ void ChatChannelMessageLog::Prewarm() const {
 }
 
 void ChatChannelMessageLog::AppendMessageId(api::PersistenceId message_id) {
-  if (!channel_message_ids_.empty() && message_id <= channel_message_ids_.back()) return; //TODO error logging, fallback mechanism
+  if (!channel_message_ids_.empty() && message_id <= channel_message_ids_.back()) return;
   channel_message_ids_.push_back(message_id);
 }
 

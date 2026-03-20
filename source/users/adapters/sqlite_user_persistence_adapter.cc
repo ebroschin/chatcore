@@ -76,36 +76,6 @@ std::optional<api::User> SqliteUserPersistenceAdapter::MatchUserCredentials(cons
   return api::User{user_id, name};
 }
 
-std::vector<api::User> SqliteUserPersistenceAdapter::GetUsers(const std::vector<api::PersistenceId>& ids) {
-  const auto& db = store_.GetDatabase();
-
-  std::vector<api::User> result;
-  if (ids.empty()) return result;
-
-  std::ostringstream placeholders;
-  placeholders << "?";
-  for (std::size_t i = 1; i < ids.size(); i++) {
-    placeholders << ", ?";
-  }
-
-  SQLite::Statement query(db,
-      "SELECT id, name FROM chat_users "
-      "WHERE id IN (" + placeholders.str() + ");"
-  );
-
-  for (std::size_t i = 0; i < ids.size(); i++) {
-    query.bind(static_cast<int>(i + 1), ids[i]);
-  }
-
-  while (query.executeStep()) {
-    auto user_id = query.getColumn(0).getUInt();
-    auto name = query.getColumn(1).getString();
-    result.emplace_back(user_id, name);
-  }
-
-  return result;
-}
-
 std::vector<api::User> SqliteUserPersistenceAdapter::GetUsers() {
   const auto& db = store_.GetDatabase();
 

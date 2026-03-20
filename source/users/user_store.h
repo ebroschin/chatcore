@@ -32,21 +32,21 @@ public:
   std::vector<api::User> GetUsers(std::span<const api::PersistenceId> user_ids);
 
 private:
-  struct UserSession {
-    network::ConnectionId connection_id{};
+  struct CachedUser {
     api::User user{};
 
+    [[nodiscard]] const api::PersistenceId& GetUserId() const { return user.id; }
     [[nodiscard]] const std::string& GetUserName() const { return user.name; }
   };
 
   using UserMultiIndex = multi_index_container<
-    UserSession,
+    CachedUser,
     multi_index::indexed_by<
       multi_index::ordered_unique<
-        multi_index::member<UserSession, network::ConnectionId, &UserSession::connection_id>
+        multi_index::const_mem_fun<CachedUser, const api::PersistenceId&, &CachedUser::GetUserId>
       >,
       multi_index::ordered_non_unique<
-        multi_index::const_mem_fun<UserSession, const std::string&, &UserSession::GetUserName>
+        multi_index::const_mem_fun<CachedUser, const std::string&, &CachedUser::GetUserName>
       >
     >
   >;

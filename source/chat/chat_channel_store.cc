@@ -15,43 +15,35 @@ void ChatChannelStore::Prewarm() {
   }
 }
 
-api::ChatChannel& ChatChannelStore::CacheChannel(api::ChatChannel channel) {
-  const auto channel_id = channel.id;
-  auto [it, _] = channel_cache_.emplace(channel_id, std::move(channel));
-  return it->second;
+const api::ChatChannel& ChatChannelStore::CacheChannel(api::ChatChannel channel) {
+  auto [it, _] = channels_.emplace(std::move(channel));
+  return it->channel;
 }
 
 void ChatChannelStore::AssignConnection(network::ConnectionId connection_id, api::PersistenceId channel_id) {
   UnassignConnection(connection_id);
-  channel_to_connections_lookup_[channel_id].emplace(connection_id);
-  connection_to_channel_lookup_[connection_id] = channel_id;
+  connection_channel_map_.insert({connection_id, channel_id});
 }
 
 void ChatChannelStore::UnassignConnection(network::ConnectionId connection_id) {
-  const auto connection_to_channel_iterator = connection_to_channel_lookup_.find(connection_id);
-  if (connection_to_channel_iterator == connection_to_channel_lookup_.end()) return;
-
-  const auto channel_id = connection_to_channel_iterator->second;
-  const auto channel_to_connections_iterator = channel_to_connections_lookup_.find(channel_id);
-  if (channel_to_connections_iterator == channel_to_connections_lookup_.end()) return;
-
-  auto& connections_set = channel_to_connections_iterator->second;
-  connections_set.erase(connection_id);
-  connection_to_channel_lookup_.erase(connection_to_channel_iterator);
+  connection_channel_map_.left.erase(connection_id);
 }
 
 std::optional<ChatChannelStore::ConnectionsRange> ChatChannelStore::GetConnections(api::PersistenceId channel_id) {
-  const auto it = channel_to_connections_lookup_.find(channel_id);
-  if (it == channel_to_connections_lookup_.end()) return std::nullopt;
+  const auto& map = connection_channel_map_.right;
+  const auto range = map.equal_range(channel_id);
+  if (range.first == range.second) return std::nullopt;
 
-  const auto& set = it->second;
-  return ConnectionsRange{set.cbegin(), set.cend()};
+  const auto begin = ConnectionsRange::Iterator(range.first, &ConnectionsRange::Transform);
+  const auto end = ConnectionsRange::Iterator(range.second, &ConnectionsRange::Transform);
+  return ConnectionsRange{begin, end};
 }
 
 std::optional<std::reference_wrapper<const api::ChatChannel>>
 ChatChannelStore::GetChannel(api::PersistenceId channel_id) {
-  const auto* cached_channel = GetCachedChannel(channel_id);
-  if (cached_channel != nullptr) return *cached_channel;
+  const auto& map = channels_.get<0>();
+  const auto it = map.find(channel_id);
+  if (it != map.end()) return it->channel;
 
   auto potential_channel = adapter_.GetChatChannel(channel_id);
   if (!potential_channel) return std::nullopt;
@@ -61,10 +53,9 @@ ChatChannelStore::GetChannel(api::PersistenceId channel_id) {
 
 std::optional<std::reference_wrapper<const api::ChatChannel>>
 ChatChannelStore::GetChannel(const std::string& channel_name) {
-  for (const auto& channel : channel_cache_ | std::ranges::views::values) {
-    if (channel.name != channel_name) continue;
-    return channel;
-  }
+  const auto& map = channels_.get<1>();
+  const auto it = map.find(channel_name);
+  if (it != map.end()) return it->channel;
 
   auto potential_channel = adapter_.GetChatChannel(channel_name);
   if (!potential_channel) return std::nullopt;
@@ -73,18 +64,11 @@ ChatChannelStore::GetChannel(const std::string& channel_name) {
 }
 
 std::optional<std::reference_wrapper<const api::ChatChannel>> ChatChannelStore::GetAssignedChannel(network::ConnectionId connection_id) {
-  const auto it = connection_to_channel_lookup_.find(connection_id);
-  if (it == connection_to_channel_lookup_.end()) return std::nullopt;
+  const auto& map = connection_channel_map_.left;
+  const auto it = map.find(connection_id);
+  if (it == map.end()) return std::nullopt;
 
-  const auto id = it->second;
-  return GetChannel(id);
-}
-
-api::ChatChannel* ChatChannelStore::GetCachedChannel(api::PersistenceId channel_id) {
-  const auto it = channel_cache_.find(channel_id);
-  if (it == channel_cache_.end()) return nullptr;
-
-  return &it->second;
+  return GetChannel(it->second);
 }
 
 }

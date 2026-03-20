@@ -5,17 +5,56 @@
 #include <optional>
 #include <ranges>
 
-#include <unordered_map>
-#include <unordered_set>
+#include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
+#include <boost/bimap/unordered_multiset_of.hpp>
+#include <boost/iterator/transform_iterator.hpp>
 
 namespace claw::chat::server {
 
+using namespace boost;
+
 class ChatPersistenceAdapter;
+struct ConnectionsRange;
 
 class ChatChannelStore {
-public:
+  struct CachedChannel {
+    api::ChatChannel channel{};
+
+    [[nodiscard]] const api::PersistenceId& GetId() const { return channel.id; }
+    [[nodiscard]] const std::string& GetName() const { return channel.name; }
+  };
+
+  using ChannelMultiIndex = multi_index_container<
+    CachedChannel,
+    multi_index::indexed_by<
+      multi_index::ordered_unique<
+        multi_index::const_mem_fun<CachedChannel, const api::PersistenceId&, &CachedChannel::GetId>
+      >,
+      multi_index::ordered_non_unique<
+        multi_index::const_mem_fun<CachedChannel, const std::string&, &CachedChannel::GetName>
+      >
+    >
+  >;
+
+  using ConnectionChannelMap = bimap<
+    bimaps::unordered_set_of<network::ConnectionId>,
+    bimaps::unordered_multiset_of<api::PersistenceId>
+  >;
+
   struct ConnectionsRange {
-    using Iterator = std::unordered_set<network::ConnectionId>::const_iterator;
+    using PairIterator = ConnectionChannelMap::right_map::const_iterator;
+    using Pair = ConnectionChannelMap::right_map::value_type;
+    using ValueType = Pair::second_type;
+
+    static ValueType Transform(const Pair& value) {
+      return value.second;
+    }
+
+    using Iterator = transform_iterator<decltype(&Transform), PairIterator>;
 
     Iterator begin_iterator;
     Iterator end_iterator;
@@ -24,10 +63,11 @@ public:
     [[nodiscard]] Iterator end() const noexcept { return end_iterator; }
   };
 
+public:
   explicit ChatChannelStore(ChatPersistenceAdapter& adapter);
 
   void Prewarm();
-  api::ChatChannel& CacheChannel(api::ChatChannel channel);
+  const api::ChatChannel& CacheChannel(api::ChatChannel channel);
 
   void AssignConnection(network::ConnectionId connection_id, api::PersistenceId channel_id);
   void UnassignConnection(network::ConnectionId connection_id);
@@ -38,18 +78,15 @@ public:
   std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(const std::string& channel_name);
 
   [[nodiscard]] std::vector<api::ChatChannel> GetChannels() const noexcept {
-    const auto range = channel_cache_ | std::ranges::views::values;
-    return {range.begin(), range.end()};
+    const auto view = channels_ | std::views::transform([](const auto& c) { return c.channel; });
+    return {view.begin(), view.end()};
   }
 
 private:
-  api::ChatChannel* GetCachedChannel(api::PersistenceId channel_id);
-
   ChatPersistenceAdapter& adapter_;
-  std::unordered_map<api::PersistenceId, api::ChatChannel> channel_cache_{};
 
-  std::unordered_map<network::ConnectionId, api::PersistenceId> connection_to_channel_lookup_{};
-  std::unordered_map<api::PersistenceId, std::unordered_set<network::ConnectionId>> channel_to_connections_lookup_{};
+  ChannelMultiIndex channels_{};
+  ConnectionChannelMap connection_channel_map_{};
 };
 
 }
