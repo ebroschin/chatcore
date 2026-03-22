@@ -18,9 +18,9 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
 { }
 
 void UserServerSystem::Initialize() {
-  RegisterMessageHandler(&UserServerSystem::HandleCreateUser);
-  RegisterMessageHandler(&UserServerSystem::HandleAuthenticateUser);
-  RegisterMessageHandler(&UserServerSystem::HandleGetUsers);
+  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleCreateUser);
+  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleAuthenticateUser);
+  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUsers);
 
   user_store_.Prewarm();
 }

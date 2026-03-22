@@ -31,14 +31,6 @@ private:
   void HandleAuthenticateUser(network::ConnectionId, const api::AuthenticateUserRequestMessage&);
   void HandleGetUsers(network::ConnectionId, const api::GetUsersRequestMessage&);
 
-  //TODO code duplication, write helper utility, mixin or something
-  template <typename TMessage>
-  void RegisterMessageHandler(void(UserServerSystem::*method)(network::ConnectionId, const TMessage&)) {
-    app_system_.RegisterMessageHandler<TMessage>([this, method](network::ConnectionId id, const TMessage& message) {
-      (this->*method)(id, message);
-    });
-  }
-
   ApplicationSystem& app_system_;
   UserPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;

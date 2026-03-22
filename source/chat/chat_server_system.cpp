@@ -24,13 +24,13 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
 {}
 
 void ChatServerSystem::Initialize() {
-  RegisterMessageHandler(&ChatServerSystem::HandleWriteChatMessage);
-  RegisterMessageHandler(&ChatServerSystem::HandleCreateChatChannel);
-  RegisterMessageHandler(&ChatServerSystem::HandleJoinChatChannel);
-  RegisterMessageHandler(&ChatServerSystem::HandleGetChats);
-  RegisterMessageHandler(&ChatServerSystem::HandleGetChatChannels);
-  RegisterMessageHandler(&ChatServerSystem::HandleShutdown);
-  RegisterMessageHandler(&ChatServerSystem::HandleLogout);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleWriteChatMessage);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleCreateChatChannel);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleJoinChatChannel);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChats);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannels);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleShutdown);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleLogout);
 
   channel_store_.Prewarm();
   message_store_.Prewarm();

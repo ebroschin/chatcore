@@ -21,9 +21,12 @@ public:
 
   void Shutdown() const noexcept;
 
-  template<typename TMessage>
-  void RegisterMessageHandler(std::function<void(network::ConnectionId id, const TMessage&)> function) {
-    message_handler_.Register<TMessage>(function);
+  template <typename TSystem, typename TMessage>
+  void RegisterMessageHandler(TSystem* system, void(TSystem::*method)(network::ConnectionId, const TMessage&)) {
+    if (system == nullptr) return;
+    message_handler_.Register<TMessage>([system, method](network::ConnectionId id, const TMessage& message) {
+      (system->*method)(id, message);
+    });
   }
 
 private:
