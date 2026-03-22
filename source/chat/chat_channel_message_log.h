@@ -19,6 +19,8 @@ public:
   std::vector<api::PersistenceId> GetChatMessagesBefore(api::PersistenceId message_id, std::uint32_t limit);
 
 private:
+  static constexpr std::uint32_t PrewarmMessageCount = 100;
+
   std::vector<api::PersistenceId> QueryAndCacheMessages(api::PersistenceId message_id, std::uint32_t limit);
 
   api::PersistenceId channel_id_;

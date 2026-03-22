@@ -16,7 +16,7 @@ ChatChannelMessageLog::ChatChannelMessageLog(api::PersistenceId channel_id, Chat
 
 void ChatChannelMessageLog::Prewarm() const {
   constexpr auto max_message_id = std::numeric_limits<api::PersistenceId>::max();
-  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, 100); //TODO constant
+  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, PrewarmMessageCount);
   if (messages.empty()) return;
 
   store_.CacheMessages(channel_id_, std::move(messages));
@@ -28,16 +28,22 @@ void ChatChannelMessageLog::AppendMessageId(api::PersistenceId message_id) {
 }
 
 void ChatChannelMessageLog::AssignMessageIds(std::vector<api::PersistenceId> message_ids) {
+  if (message_ids.empty()) return;
+
+  //sort and deduplicate incoming ids
   std::ranges::sort(message_ids);
   message_ids.erase(std::ranges::unique(message_ids).begin(), message_ids.end());
 
-  std::vector<api::PersistenceId> result;
-  result.reserve(channel_message_ids_.size() + message_ids.size());
+  //insert incoming message ids
+  channel_message_ids_.reserve(channel_message_ids_.size() + message_ids.size());
+  channel_message_ids_.insert(channel_message_ids_.end(), message_ids.begin(), message_ids.end());
 
-  std::ranges::merge(channel_message_ids_, message_ids, std::back_inserter(result));
-  result.erase(std::ranges::unique(result).begin(), result.end());
+  //perform inplace merge to guarantee global sorting
+  const auto message_count = static_cast<decltype(channel_message_ids_)::difference_type>(message_ids.size());
+  std::ranges::inplace_merge(channel_message_ids_, channel_message_ids_.end() - message_count);
 
-  channel_message_ids_.swap(result);
+  //assure deduplication
+  channel_message_ids_.erase(std::ranges::unique(channel_message_ids_).begin(), channel_message_ids_.end());
 }
 
 std::vector<api::PersistenceId> ChatChannelMessageLog::GetLatestChatMessages(std::uint32_t limit) {
@@ -66,7 +72,7 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
 
   auto start_iterator = end_iterator;
   std::advance(start_iterator, -cached_take_count);
-  std::ranges::copy(start_iterator, end_iterator, std::back_inserter(cached_result));
+  cached_result.insert(cached_result.end(), start_iterator, end_iterator);
 
   if (cache_complete_ || limit_diff_t <= cached_take_count) {
     return cached_result;
@@ -77,9 +83,11 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
   const auto oldest_cached_message_id = *start_iterator;
 
   std::vector<api::PersistenceId> persistence_result;
+  persistence_result.reserve(limit_remaining + cached_result.size());
+
   auto remaining_messages = QueryAndCacheMessages(oldest_cached_message_id, limit_remaining);
-  std::ranges::copy(remaining_messages, std::back_inserter(persistence_result));
-  std::ranges::copy(cached_result, std::back_inserter(persistence_result));
+  persistence_result.insert(persistence_result.end(), remaining_messages.begin(), remaining_messages.end());
+  persistence_result.insert(persistence_result.end(), cached_result.begin(), cached_result.end());
 
   return persistence_result;
 }

@@ -73,14 +73,11 @@ public:
   void UnassignConnection(network::ConnectionId connection_id);
   std::optional<std::reference_wrapper<const api::ChatChannel>> GetAssignedChannel(network::ConnectionId connection_id);
 
-  std::optional<ConnectionsRange> GetConnections(api::PersistenceId channel_id);
+  [[nodiscard]] std::optional<ConnectionsRange> GetConnections(api::PersistenceId channel_id) const;
   std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(api::PersistenceId channel_id);
   std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(const std::string& channel_name);
 
-  [[nodiscard]] std::vector<api::ChatChannel> GetChannels() const noexcept {
-    const auto view = channels_ | std::views::transform([](const auto& c) { return c.channel; });
-    return {view.begin(), view.end()};
-  }
+  [[nodiscard]] std::vector<api::ChatChannel> GetChannels() const;
 
 private:
   ChatPersistenceAdapter& adapter_;

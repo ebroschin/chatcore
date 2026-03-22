@@ -15,6 +15,11 @@ void ChatChannelStore::Prewarm() {
   }
 }
 
+std::vector<api::ChatChannel> ChatChannelStore::GetChannels() const {
+  const auto view = channels_ | std::views::transform([](const auto& c) { return c.channel; });
+  return {view.begin(), view.end()};
+}
+
 const api::ChatChannel& ChatChannelStore::CacheChannel(api::ChatChannel channel) {
   auto [it, _] = channels_.emplace(std::move(channel));
   return it->channel;
@@ -29,7 +34,7 @@ void ChatChannelStore::UnassignConnection(network::ConnectionId connection_id) {
   connection_channel_map_.left.erase(connection_id);
 }
 
-std::optional<ChatChannelStore::ConnectionsRange> ChatChannelStore::GetConnections(api::PersistenceId channel_id) {
+std::optional<ChatChannelStore::ConnectionsRange> ChatChannelStore::GetConnections(api::PersistenceId channel_id) const {
   const auto& map = connection_channel_map_.right;
   const auto range = map.equal_range(channel_id);
   if (range.first == range.second) return std::nullopt;

@@ -19,7 +19,7 @@ public:
   void Prewarm();
   void CreateMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& message);
   void CacheMessage(api::ChatMessage chat_message);
-  void CacheMessages(api::PersistenceId channel_id, std::vector<api::ChatMessage> chat_message);
+  void CacheMessages(api::PersistenceId channel_id, std::vector<api::ChatMessage> chat_messages);
   void Persist();
 
   std::optional<std::reference_wrapper<const api::ChatMessage>>
@@ -29,14 +29,16 @@ public:
   GetMessagesBefore(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit);
 
 private:
+  void AssignMessage(api::ChatMessage chat_message);
+
   ChatPersistenceAdapter& adapter_;
 
-  std::mutex persist_mutex_; //TODO rename to mutex and make the entire class thread safe
+  std::mutex mutex_;
   std::optional<api::PersistenceId> latest_persisted_id_{std::nullopt};
   api::PersistenceId next_id_{0};
 
   std::unordered_map<api::PersistenceId, api::ChatMessage> message_cache_{};
-  std::queue<api::PersistenceId> pending_message_ids_{};
+  std::vector<api::ChatMessage> pending_messages_{};
   std::unordered_map<api::PersistenceId, ChatChannelMessageLog> message_logs_{};
 };
 
