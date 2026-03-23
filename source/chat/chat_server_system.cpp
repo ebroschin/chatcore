@@ -20,7 +20,8 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   app_system_(ctx.Require<ApplicationSystem>()),
   adapter_(ctx.Require<ChatPersistenceSystem>().Require<ChatPersistenceAdapter>()),
   tcp_system_(ctx.Require<ChatServerTcpSystem>()),
-  user_system_(ctx.Require<UserServerSystem>())
+  user_system_(ctx.Require<UserServerSystem>()),
+  scheduling_system_(ctx.Require<scheduling::SchedulingSystem>())
 {}
 
 void ChatServerSystem::Initialize() {
@@ -35,11 +36,11 @@ void ChatServerSystem::Initialize() {
   channel_store_.Prewarm();
   message_store_.Prewarm();
 
-  auto& scheduling_system = ctx_.Require<scheduling::SchedulingSystem>();
-  scheduling_system.SchedulePeriodically(5s, [this] { message_store_.Persist(); });
+  message_persistence_task_ = scheduling_system_.SchedulePeriodically(5s, [this] { message_store_.Persist(); });
 }
 
 void ChatServerSystem::Deinitialize() {
+  scheduling_system_.RemoveTask(message_persistence_task_);
   message_store_.Persist();
 }
 

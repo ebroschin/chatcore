@@ -1,11 +1,12 @@
 #pragma once
 
+#include <claw/scheduling/scheduling_system.h>
+#include <claw/core/system.h>
+
 #include "../application/application_system.h"
 #include "../application/chat_tcp_system.h"
 #include "chat_channel_store.h"
 #include "chat_message_store.h"
-
-#include <claw/core/system.h>
 
 namespace claw::chat::server {
 
@@ -50,7 +51,9 @@ private:
   ChatPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
   UserServerSystem& user_system_;
+  scheduling::SchedulingSystem& scheduling_system_;
 
+  scheduling::TaskId message_persistence_task_{};
   ChatChannelStore channel_store_{adapter_};
   ChatMessageStore message_store_{adapter_};
 };
