@@ -1,8 +1,6 @@
 #pragma once
 #include "persistence_store.h"
-
 #include <concepts>
-#include <claw/utility/concepts.h>
 
 namespace claw::persistence {
 

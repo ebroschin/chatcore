@@ -4,8 +4,6 @@
 #include "user_server_system.h"
 
 #include "../application/application_system.h"
-#include "../chat/chat_server_system.h"
-
 #include <claw/core/system_context.h>
 
 namespace claw::chat::server {

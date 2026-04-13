@@ -12,7 +12,8 @@ void SqliteChatPersistenceAdapter::Initialize() {
         channel_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
         content TEXT NOT NULL,
-        FOREIGN KEY (channel_id) REFERENCES chat_channels(id) ON DELETE CASCADE
+        FOREIGN KEY (channel_id) REFERENCES chat_channels(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES chat_users(id) ON DELETE CASCADE
     );
   )");
 }
