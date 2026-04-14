@@ -10,7 +10,7 @@ ChatServerArguments::ChatServerArguments(int argc, char** argv) {
   ip_ = ParseIp(arguments).value_or("0.0.0.0");
   port_ = ParsePort(arguments).value_or(1338);
   sqlite_filename_ = ParseSqliteFilename(arguments).value_or("sqlite.db");
-  log_level_ = ParseLogLevel(arguments).value_or(0);
+  log_level_ = ParseLogLevel(arguments).value_or(ebroschin::logging::LogLevel::info);
 }
 
 std::optional<std::string> ChatServerArguments::ParseIp(const utility::Arguments& arguments) {
@@ -41,18 +41,19 @@ std::optional<std::string> ChatServerArguments::ParseSqliteFilename(const utilit
   return values->front();
 }
 
-std::optional<unsigned short> ChatServerArguments::ParseLogLevel(const utility::Arguments& arguments) {
+std::optional<ebroschin::logging::LogLevel> ChatServerArguments::ParseLogLevel(const utility::Arguments& arguments) {
   const auto values = arguments.GetValues("log");
   if (!values || values->empty()) return std::nullopt;
 
-  try {
-    const auto result = std::stoul(values->front());
-    if (result > std::numeric_limits<unsigned short>::max()) return std::nullopt;
+  const auto result = values->front();
+  if (result == "verbose") return ebroschin::logging::LogLevel::verbose;
+  if (result == "debug") return ebroschin::logging::LogLevel::debug;
+  if (result == "info") return ebroschin::logging::LogLevel::info;
+  if (result == "warning") return ebroschin::logging::LogLevel::warning;
+  if (result == "error") return ebroschin::logging::LogLevel::error;
+  if (result == "critical") return ebroschin::logging::LogLevel::critical;
 
-    return static_cast<unsigned short>(result);
-  } catch (const std::exception&) {
-    return std::nullopt;
-  }
+  return std::nullopt;
 }
 
 }

@@ -13,11 +13,8 @@
 
 #include <boost/stacktrace.hpp>
 #include <iostream>
-#include <spdlog/spdlog.h>
-
-#include <spdlog/async.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
+#include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
+#include <ebroschin/logging/log.hpp>
 
 using namespace claw::persistence::sqlite;
 
@@ -28,6 +25,10 @@ ChatServerApplication::ChatServerApplication(ChatServerArguments arguments):
 { }
 
 void ChatServerApplication::Initialize() {
+  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  ebroschin::logging::Log::SetLogLevel(arguments_.GetLogLevel());
+  ebroschin::logging::Log::Info("Starting initialization");
+
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ChatServerTcpSystem>();
 
@@ -38,46 +39,18 @@ void ChatServerApplication::Initialize() {
   ctx_.Register<ApplicationSystem>(*this);
   ctx_.Register<UserServerSystem>();
   ctx_.Register<ChatServerSystem>();
-
-  //TODO logging abstraction
-  spdlog::init_thread_pool(8192, 1);
-  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-  console_sink->set_level(spdlog::level::trace);
-
-  auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-      "logs/chat.log", 10 * 1024 * 1024, 5);
-  file_sink->set_level(spdlog::level::trace);
-
-  const unsigned short log_level = arguments_.GetLogLevel();
-  const auto logger = std::make_shared<spdlog::async_logger>(
-      "chat",
-      spdlog::sinks_init_list{console_sink, file_sink},
-      spdlog::thread_pool(),
-      spdlog::async_overflow_policy::block
-  );
-
-  if (log_level == 0) logger->set_level(spdlog::level::info);
-  else logger->set_level(spdlog::level::trace);
-
-  logger->flush_on(spdlog::level::err);
-  spdlog::flush_every(std::chrono::seconds(1));
-  spdlog::set_default_logger(logger);
 }
 
 void ChatServerApplication::HandleTerminate() {
-  using namespace std::string_literals;
-
   try {
     std::rethrow_exception(std::current_exception());
   } catch (const std::exception& e) {
-    spdlog::critical("Unhandled exception: "s + e.what());
+    std::cerr << "Unhandled exception" << e.what() << std::endl;
   } catch (...) {
-    spdlog::critical("Unhandled unknown exception");
+    std::cerr << "Unhandled unknown exception" << std::endl;
   }
 
-  std::stringstream stream;
-  stream << "Stacktrace:\n"s << stacktrace::stacktrace();
-  spdlog::critical(stream.str());
+  std::cerr << "Stacktrace:\n" << stacktrace::stacktrace() << std::endl;
 }
 
 }

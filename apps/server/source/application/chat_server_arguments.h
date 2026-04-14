@@ -3,6 +3,7 @@
 #include <string>
 #include <optional>
 #include <claw/utility/arguments.h>
+#include <ebroschin/logging/log_level.hpp>
 
 namespace claw::chat::server {
 
@@ -19,19 +20,19 @@ public:
   [[nodiscard]] const std::string& GetSqliteFilename() const noexcept
   { return sqlite_filename_; }
 
-  [[nodiscard]] unsigned short GetLogLevel() const noexcept
+  [[nodiscard]] ebroschin::logging::LogLevel GetLogLevel() const noexcept
   { return log_level_; }
 
 private:
   std::optional<std::string> ParseIp(const utility::Arguments& arguments);
   std::optional<unsigned short> ParsePort(const utility::Arguments& arguments);
   std::optional<std::string> ParseSqliteFilename(const utility::Arguments& arguments);
-  std::optional<unsigned short> ParseLogLevel(const utility::Arguments& arguments);
+  std::optional<ebroschin::logging::LogLevel> ParseLogLevel(const utility::Arguments& arguments);
 
   std::string ip_;
   unsigned short port_;
   std::string sqlite_filename_;
-  unsigned short log_level_;
+  ebroschin::logging::LogLevel log_level_;
 
 };
 

@@ -2,10 +2,10 @@
 
 #include <claw/core/system_context.h>
 
+#include "../users/user_server_system.h"
 #include "chat_server_application.h"
 #include "chat_tcp_system.h"
-#include "../users/user_server_system.h"
-#include <spdlog/spdlog.h>
+#include <ebroschin/logging/log.hpp>
 
 namespace claw::chat::server {
 
@@ -28,7 +28,7 @@ void ApplicationSystem::Initialize() {
   const auto& arguments = app_.GetArguments();
   tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, connection_event_handler_.get());
 
-  spdlog::info("ChatCore server started, accepting clients");
+  ebroschin::logging::Log::Info("ChatCore server started, accepting clients");
 }
 
 void ApplicationSystem::Deinitialize() {
@@ -40,7 +40,7 @@ void ApplicationSystem::Shutdown() const noexcept {
 }
 
 void ApplicationSystem::HandleRpcError(api::PersistenceId connection_id, network::RequestId request_id, const std::string& message) const {
-  spdlog::debug("RPC Error: " + message);
+  ebroschin::logging::Log::Verbose("RPC Error: " + message);
   tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {request_id, message});
 }
 

@@ -43,16 +43,16 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
 
 target_link_libraries(chatcore-server PRIVATE
     SQLiteCpp
     Boost::${BOOST_STACKTRACE}
-    spdlog::spdlog
     claw::core
     claw::utility
     claw::network
     claw::network-modules
     claw::chat-api
     claw::scheduling
+    ebroschin::logging
+    ebroschin::logging-modules
 )

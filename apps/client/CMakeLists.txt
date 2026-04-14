@@ -39,6 +39,8 @@ else()
     set(BOOST_STACKTRACE stacktrace_backtrace)
 endif()
 
+find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
+find_package(spdlog CONFIG REQUIRED)
 find_package(ftxui CONFIG REQUIRED)
 
 target_link_libraries(chatcore-client PRIVATE

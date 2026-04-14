@@ -12,12 +12,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-        set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
-    endif()
-
     add_compile_options(
         -Wall -Wextra -Werror -Wpedantic
         -Wshadow -Wconversion -Wsign-conversion
@@ -43,6 +37,8 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-core")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network-modules")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-scheduling")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-logging")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-logging-modules")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/chat-server-api")
 
 if(BUILD_SERVER)
