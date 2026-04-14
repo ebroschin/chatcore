@@ -39,7 +39,7 @@
       "cacheVariables": {
         "BUILD_CLIENT": "ON",
         "BUILD_SERVER": "OFF",
-        "BUILD_TESTER": "OFF",
+        "BUILD_LOAD_TESTER": "OFF",
         "VCPKG_MANIFEST_FEATURES": "client"
       }
     },
@@ -49,16 +49,16 @@
       "cacheVariables": {
         "BUILD_CLIENT": "OFF",
         "BUILD_SERVER": "ON",
-        "BUILD_TESTER": "OFF"
+        "BUILD_LOAD_TESTER": "OFF"
       }
     },
     {
-      "name": "linux-debug-tester",
+      "name": "linux-debug-load-tester",
       "inherits": "linux-debug",
       "cacheVariables": {
         "BUILD_CLIENT": "OFF",
         "BUILD_SERVER": "OFF",
-        "BUILD_TESTER": "ON"
+        "BUILD_LOAD_TESTER": "ON"
       }
     }
   ],

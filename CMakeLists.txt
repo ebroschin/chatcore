@@ -6,10 +6,8 @@ else()
     set(VCPKG_TARGET_TRIPLET "x64-linux-clang")
 endif()
 
-set(REPOSITORY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Repository Root")
-
 cmake_minimum_required(VERSION 3.28)
-project(chatcore-server)
+project(chatcore)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -58,6 +56,6 @@ if(BUILD_CLIENT)
     add_subdirectory("${CMAKE_SOURCE_DIR}/apps/client")
 endif()
 
-if(BUILD_TESTER)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/apps/tester")
+if(BUILD_LOAD_TESTER)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/apps/load-tester")
 endif()

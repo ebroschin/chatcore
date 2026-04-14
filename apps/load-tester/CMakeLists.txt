@@ -1,4 +1,4 @@
-add_executable(server-load-tester
+add_executable(chatcore-load-tester
     source/main.cc
     source/application/client_tcp_system.h
     source/application/load_tester_application.cc
@@ -17,7 +17,7 @@ add_executable(server-load-tester
     source/application/client_rpc_system.h
 )
 
-target_link_libraries(server-load-tester PRIVATE
+target_link_libraries(chatcore-load-tester PRIVATE
     Boost::${BOOST_STACKTRACE}
     claw::core
     claw::utility

@@ -1,4 +1,5 @@
-add_executable(chat-server source/main.cc
+add_executable(chatcore-server
+    source/main.cc
     source/application/chat_server_application.cpp
     source/application/chat_server_application.h
     source/persistence/persistence_system.h
@@ -43,14 +44,13 @@ endif()
 find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
 
-target_link_libraries(chat-server
-        PRIVATE
-        SQLiteCpp
-        Boost::${BOOST_STACKTRACE}
-        claw::core
-        claw::utility
-        claw::network
-        claw::network-modules
-        claw::chat-api
-        claw::scheduling
+target_link_libraries(chatcore-server PRIVATE
+    SQLiteCpp
+    Boost::${BOOST_STACKTRACE}
+    claw::core
+    claw::utility
+    claw::network
+    claw::network-modules
+    claw::chat-api
+    claw::scheduling
 )

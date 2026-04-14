@@ -1,4 +1,4 @@
-add_executable(chat-client
+add_executable(chatcore-client
     source/main.cc
     source/application/chat_client_application.cc
     source/application/chat_client_application.h
@@ -41,7 +41,7 @@ endif()
 
 find_package(ftxui CONFIG REQUIRED)
 
-target_link_libraries(chat-client PRIVATE
+target_link_libraries(chatcore-client PRIVATE
     Boost::${BOOST_STACKTRACE}
     claw::core
     claw::utility
