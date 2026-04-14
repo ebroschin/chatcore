@@ -7,6 +7,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/bimap.hpp>
+#include <span>
 
 namespace claw::chat::server {
 

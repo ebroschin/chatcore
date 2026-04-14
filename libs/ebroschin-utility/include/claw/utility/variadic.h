@@ -18,4 +18,15 @@ static constexpr std::size_t IndexOf() {
   else return 1 + IndexOf<T, Us...>();
 }
 
+template <typename TTuple>
+struct ForEachType;
+
+template <typename... TTypes>
+struct ForEachType<std::tuple<TTypes...>> {
+  template <typename TFunction>
+  static void Apply(TFunction&& function) {
+    (function.template operator()<TTypes>(), ...);
+  }
+};
+
 }

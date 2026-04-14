@@ -1,5 +1,5 @@
 {
-  "name": "chatcore-server",
+  "name": "chatcore",
   "version": "0.0.1",
   "dependencies": [
     "boost-stacktrace",
@@ -8,5 +8,13 @@
     "boost-multi-index",
     "nlohmann-json",
     "sqlitecpp"
-  ]
+  ],
+  "features": {
+    "client": {
+      "description": "chatcore-client dependencies",
+      "dependencies": [
+        "ftxui"
+      ]
+    }
+  }
 }

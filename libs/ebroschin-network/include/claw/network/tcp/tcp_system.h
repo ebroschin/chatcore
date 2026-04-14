@@ -20,7 +20,7 @@ typename... TMessages>
 requires NetworkCodec<TCodec, TMessages...>
   && NetworkMessageHandler<TMessageHandler, TMessages...>
 class TcpSystem final: public core::System {
-  struct NoBroadcastFilter { //TODO this is weird af
+  struct NoBroadcastFilter {
     bool operator()(ConnectionId) const noexcept { return true; }
   };
 
@@ -31,8 +31,8 @@ public:
   using Connector = TConnector;
   using ConnectionEventHandler = TcpConnectionEventHandler<typename Connector::Parameters>;
 
-  explicit TcpSystem(const core::SystemContext& ctx)
-    : System(ctx)
+  explicit TcpSystem(const core::SystemContext& ctx):
+    System(ctx)
   {}
 
   void Initialize() override {

@@ -42,8 +42,8 @@ concept RpcMessageHandler =
 
 template <typename TTcpSystem>
 concept RpcCompatibleTcpSystem =
-  []<typename... TMessages>(std::tuple<TMessages...>) {
+  []<typename... TMessages>(std::type_identity<std::tuple<TMessages...>>) {
     return (RpcMessageHandlerFor<typename TTcpSystem::MessageHandler, TMessages> && ...);
-  }(typename TTcpSystem::MessageTypes{});
+  }(std::type_identity<typename TTcpSystem::MessageTypes>{});
 
 }

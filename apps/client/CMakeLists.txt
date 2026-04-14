@@ -1,0 +1,55 @@
+add_executable(chat-client
+    source/main.cc
+    source/application/chat_client_application.cc
+    source/application/chat_client_application.h
+    source/application/application_system.cc
+    source/application/application_system.h
+    source/ui/ui_system.cc
+    source/ui/ui_system.h
+    source/commands/commands_system.h
+    source/commands/connect_command.cc
+    source/commands/connect_command.h
+    source/commands/add_user_command.cc
+    source/commands/add_user_command.h
+    source/session/session_system.cc
+    source/session/session_system.h
+    source/commands/client_commands_system.h
+    source/commands/login_command.cc
+    source/model/model_system.cc
+    source/model/model_system.h
+    source/commands/join_channel_command.cc
+    source/commands/join_channel_command.h
+    source/application/client_tcp_system.h
+    source/application/client_rpc_system.h
+    source/commands/get_channels_command.cc
+    source/commands/get_channels_command.h
+    source/commands/add_channel_command.h
+    source/commands/add_channel_command.cc
+    source/session/connection_event_handler.cc
+    source/session/connection_event_handler.h
+    source/commands/logout_command.h
+    source/commands/logout_command.cc
+    source/commands/help_command.cc
+    source/commands/help_command.h
+)
+
+if(WIN32)
+    set(BOOST_STACKTRACE stacktrace_windbg)
+else()
+    set(BOOST_STACKTRACE stacktrace_backtrace)
+endif()
+
+find_package(ftxui CONFIG REQUIRED)
+
+target_link_libraries(chat-client PRIVATE
+    Boost::${BOOST_STACKTRACE}
+    claw::core
+    claw::utility
+    claw::network
+    claw::network-modules
+    claw::chat-api
+    claw::scheduling
+    ftxui::screen
+    ftxui::dom
+    ftxui::component
+)
