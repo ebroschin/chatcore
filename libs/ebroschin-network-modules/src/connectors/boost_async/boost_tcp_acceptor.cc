@@ -29,12 +29,9 @@ void BoostTcpAcceptor::Connect(BoostTcpAcceptorParameters parameters, Connection
 }
 
 void BoostTcpAcceptor::StartAccept() {
-  std::cout << "waiting for client" << std::endl;
   acceptor_->async_accept([this](const system::error_code& error, asio::ip::tcp::socket socket) {
     if (error == asio::error::operation_aborted) return;
-
     if (!error) {
-      std::cout << "client connected" << std::endl;
       OnConnectionCreated(std::make_shared<Connection>(std::move(socket)), connection_event_handler_);
     }
 

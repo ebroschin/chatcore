@@ -78,7 +78,6 @@ void BoostTcpConnection::ReadBytes() {
 bool BoostTcpConnection::HandleError(const boost::system::error_code& error) const {
   if (!error) return false;
 
-  std::cout << "disconnected, reason: " << error.message() << std::endl;
   OnDisconnect();
   return true;
 }

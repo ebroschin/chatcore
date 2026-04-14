@@ -5,6 +5,7 @@
 #include "chat_server_application.h"
 #include "chat_tcp_system.h"
 #include "../users/user_server_system.h"
+#include <spdlog/spdlog.h>
 
 namespace claw::chat::server {
 
@@ -26,6 +27,8 @@ void ApplicationSystem::Initialize() {
   connection_event_handler_ = std::make_unique<ConnectionEventHandler>(ctx_.Require<UserServerSystem>());
   const auto& arguments = app_.GetArguments();
   tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, connection_event_handler_.get());
+
+  spdlog::info("ChatCore server started, accepting clients");
 }
 
 void ApplicationSystem::Deinitialize() {
@@ -34,6 +37,11 @@ void ApplicationSystem::Deinitialize() {
 
 void ApplicationSystem::Shutdown() const noexcept {
   app_.Quit();
+}
+
+void ApplicationSystem::HandleRpcError(api::PersistenceId connection_id, network::RequestId request_id, const std::string& message) const {
+  spdlog::debug("RPC Error: " + message);
+  tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {request_id, message});
 }
 
 }

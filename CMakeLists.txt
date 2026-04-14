@@ -38,9 +38,6 @@ else()
     set(BOOST_STACKTRACE stacktrace_backtrace)
 endif()
 
-find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
-find_package(SQLiteCpp CONFIG REQUIRED)
-
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-utility")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-core")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network")

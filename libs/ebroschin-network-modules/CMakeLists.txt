@@ -5,15 +5,9 @@ add_library(claw_network_modules
     include/claw/network-modules/connectors/boost_async/boost_tcp_acceptor.h
     include/claw/network-modules/connectors/boost_async/boost_tcp_resolver.h
     include/claw/network-modules/connectors/boost_async/boost_tcp_connection.h
-    include/claw/network-modules/connectors/boost_sync/sync_boost_tcp_acceptor.h
-    include/claw/network-modules/connectors/boost_sync/sync_boost_tcp_connection.h
-    include/claw/network-modules/connectors/boost_sync/sync_boost_tcp_resolver.h
     include/claw/network-modules/message_handler/direct_message_handler.h
     include/claw/network-modules/message_handler/observable_message_handler.h
     include/claw/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.h
-    src/connectors/boost_sync/sync_boost_tcp_acceptor.cc
-    src/connectors/boost_sync/sync_boost_tcp_resolver.cc
-    src/connectors/boost_sync/sync_boost_tcp_connection.cc
     src/connectors/boost_async/boost_tcp_acceptor.cc
     src/connectors/boost_async/boost_tcp_resolver.cc
     src/connectors/boost_async/boost_tcp_connection.cc

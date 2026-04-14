@@ -23,10 +23,10 @@ void UserServerSystem::Initialize() {
   user_store_.Prewarm();
 }
 
-bool UserServerSystem::ValidateSession(network::RequestId request_id, network::ConnectionId id) const {
-  const auto result = user_store_.HasSession(id);
+bool UserServerSystem::ValidateSession(network::RequestId request_id, network::ConnectionId connection_id) const {
+  const auto result = user_store_.HasSession(connection_id);
   if (!result) {
-    tcp_system_.Send<api::ErrorResponseMessage>(id, {request_id, "Not authorized."});
+    app_system_.HandleRpcError(connection_id, request_id, "Not authorized.");
   }
 
   return result;
@@ -59,7 +59,7 @@ void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, con
   if (!result) {
     const auto user = user_store_.GetUser(message.name);
     if (!user) {
-      tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Unexpected error"});
+      app_system_.HandleRpcError(connection_id, message.request_id, "Unexpected error");
       return;
     }
 
@@ -72,19 +72,19 @@ void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, con
 
 void UserServerSystem::HandleAuthenticateUser(network::ConnectionId connection_id, const api::AuthenticateUserRequestMessage& message) {
   if (user_store_.HasSession(connection_id)) {
-    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Already logged in."});
+    app_system_.HandleRpcError(connection_id, message.request_id, "Already logged in.");
     return;
   }
 
   const auto result = adapter_.MatchUserCredentials(message.name, message.password);
   if (!result) {
-    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, "Wrong username or password"});
+    app_system_.HandleRpcError(connection_id, message.request_id, "Wrong username or password");
     return;
   }
 
   const auto& user = *result;
   if (user_store_.HasSession(user.id)) {
-    tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {message.request_id, message.name + " is already logged in."});
+    app_system_.HandleRpcError(connection_id, message.request_id, message.name + " is already logged in.");
     return;
   }
 

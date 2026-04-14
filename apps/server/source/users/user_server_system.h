@@ -21,8 +21,8 @@ public:
 
   void Initialize() override;
 
-  bool ValidateSession(network::RequestId, network::ConnectionId) const;
-  bool ValidateSession(network::ConnectionId) const;
+  [[nodiscard]] bool ValidateSession(network::RequestId, network::ConnectionId) const;
+  [[nodiscard]] bool ValidateSession(network::ConnectionId) const;
   void RemoveSession(network::ConnectionId);
   std::optional<std::reference_wrapper<const api::User>> GetSessionUser(network::ConnectionId);
 

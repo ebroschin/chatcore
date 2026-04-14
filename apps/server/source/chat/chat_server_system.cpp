@@ -36,7 +36,7 @@ void ChatServerSystem::Initialize() {
   channel_store_.Prewarm();
   message_store_.Prewarm();
 
-  message_persistence_task_ = scheduling_system_.SchedulePeriodically(5s, [this] { message_store_.Persist(); });
+  message_persistence_task_ = scheduling_system_.SchedulePeriodically(1s, [this] { message_store_.Persist(); });
 }
 
 void ChatServerSystem::Deinitialize() {

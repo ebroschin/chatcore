@@ -10,6 +10,7 @@ ChatServerArguments::ChatServerArguments(int argc, char** argv) {
   ip_ = ParseIp(arguments).value_or("0.0.0.0");
   port_ = ParsePort(arguments).value_or(1338);
   sqlite_filename_ = ParseSqliteFilename(arguments).value_or("sqlite.db");
+  log_level_ = ParseLogLevel(arguments).value_or(0);
 }
 
 std::optional<std::string> ChatServerArguments::ParseIp(const utility::Arguments& arguments) {
@@ -38,6 +39,20 @@ std::optional<std::string> ChatServerArguments::ParseSqliteFilename(const utilit
   if (!values || values->empty()) return std::nullopt;
 
   return values->front();
+}
+
+std::optional<unsigned short> ChatServerArguments::ParseLogLevel(const utility::Arguments& arguments) {
+  const auto values = arguments.GetValues("log");
+  if (!values || values->empty()) return std::nullopt;
+
+  try {
+    const auto result = std::stoul(values->front());
+    if (result > std::numeric_limits<unsigned short>::max()) return std::nullopt;
+
+    return static_cast<unsigned short>(result);
+  } catch (const std::exception&) {
+    return std::nullopt;
+  }
 }
 
 }

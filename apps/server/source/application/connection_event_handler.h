@@ -9,7 +9,7 @@ class ConnectionEventHandler final : public ChatServerTcpSystem::ConnectionEvent
 public:
   explicit ConnectionEventHandler(UserServerSystem& user_system) noexcept;
 
-  void OnConnected(network::ConnectionId) override {}
+  void OnConnected(network::ConnectionId) override;
   void OnConnectionFailed(const network::modules::BoostTcpAcceptorParameters&) override {}
   void OnDisconnected(network::ConnectionId connection_id) override;
 
