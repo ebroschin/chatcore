@@ -1,13 +1,13 @@
 if(WIN32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
     set(VCPKG_TARGET_TRIPLET "x64-windows-static")
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/third_party/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 else()
     set(VCPKG_TARGET_TRIPLET "x64-linux-clang")
 endif()
 
 cmake_minimum_required(VERSION 3.28)
-project(chat-server)
+project(chatcore-server)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -76,19 +76,12 @@ else()
     set(BOOST_STACKTRACE stacktrace_backtrace)
 endif()
 
-#use submodules during library development
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-network")
-#find_package(claw-network CONFIG REQUIRED)
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-utility")
-#find_package(claw-utility CONFIG REQUIRED)
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-core")
-#find_package(claw-core CONFIG REQUIRED)
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-network-modules")
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/chat-server-api")
-add_subdirectory("${CMAKE_SOURCE_DIR}/external/claw-scheduling")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-utility")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-core")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network-modules")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-scheduling")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/chat-server-api")
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)

@@ -1,5 +1,5 @@
 {
-  "name": "chat-server",
+  "name": "chatcore-server",
   "version": "0.0.1",
   "dependencies": [
     "boost-stacktrace",
@@ -7,10 +7,6 @@
     "boost-bimap",
     "boost-multi-index",
     "nlohmann-json",
-    "sqlitecpp",
-    "claw-core",
-    "claw-utility",
-    "claw-network",
-    "claw-scheduling"
+    "sqlitecpp"
   ]
 }
