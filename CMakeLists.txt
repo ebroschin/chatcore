@@ -57,3 +57,7 @@ endif()
 if(BUILD_CLIENT)
     add_subdirectory("${CMAKE_SOURCE_DIR}/apps/client")
 endif()
+
+if(BUILD_TESTER)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/apps/tester")
+endif()
