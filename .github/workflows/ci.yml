@@ -2,9 +2,9 @@ name: ChatCore CI (Linux, Windows)
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "ci/github-actions" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "ci/github-actions" ]
   workflow_dispatch:
 
 jobs:
