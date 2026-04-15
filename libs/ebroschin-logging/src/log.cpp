@@ -4,8 +4,15 @@
 #include <shared_mutex>
 
 namespace {
-  std::shared_ptr<ebroschin::logging::Logger> logger_ = std::make_shared<ebroschin::logging::NullLogger>();
   std::shared_mutex mutex_{};
+
+  //Function-local static instance.
+  //Prevents the global constructor/destructor problem and creates the instance on demand instead
+  std::shared_ptr<ebroschin::logging::Logger>& GlobalLogger()
+  {
+    static std::shared_ptr<ebroschin::logging::Logger> instance = std::make_shared<ebroschin::logging::NullLogger>();
+    return instance;
+  }
 }
 
 namespace ebroschin::logging {
@@ -13,11 +20,11 @@ namespace ebroschin::logging {
 void Log::SetLogger(std::shared_ptr<Logger> logger) noexcept {
   std::unique_lock lock(mutex_);
   if (!logger) {
-    logger_ = std::make_shared<NullLogger>();
+    GlobalLogger() = std::make_shared<NullLogger>();
     return;
   }
 
-  logger_ = std::move(logger);
+  GlobalLogger() = std::move(logger);
 }
 
 void Log::Verbose(const std::string& message) {
@@ -48,7 +55,7 @@ void Log::SetLogLevel(LogLevel log_level) {
   std::shared_ptr<Logger> logger;
   {
     std::shared_lock lock(mutex_);
-    logger = logger_;
+    logger = GlobalLogger();
   }
   logger->SetLogLevel(log_level);
 }
@@ -56,7 +63,7 @@ void Log::SetLogLevel(LogLevel log_level) {
 void Log::Shutdown() {
   {
     std::scoped_lock lock(mutex_);
-    logger_->Shutdown();
+    GlobalLogger()->Shutdown();
   }
 
   SetLogger<NullLogger>();
@@ -66,7 +73,7 @@ void Log::Print(LogLevel log_level, const std::string& message) {
   std::shared_ptr<Logger> logger;
   {
     std::shared_lock lock(mutex_);
-    logger = logger_;
+    logger = GlobalLogger();
   }
 
   logger->Print(log_level, message);
@@ -99,7 +106,7 @@ LogStream Log::Print(LogLevel log_level) {
   std::shared_ptr<Logger> logger;
   {
     std::shared_lock lock(mutex_);
-    logger = logger_;
+    logger = GlobalLogger();
   }
 
   return LogStream{std::move(logger), log_level};

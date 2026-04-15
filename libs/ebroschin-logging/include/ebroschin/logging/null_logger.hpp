@@ -4,10 +4,10 @@
 
 namespace ebroschin::logging {
 
-class NullLogger : public Logger {
+class NullLogger final: public Logger {
 public:
-  void Print(LogLevel log_level, const std::string& message) override { }
-  void SetLogLevel(LogLevel log_level) override { }
+  void Print(LogLevel, const std::string&) override { }
+  void SetLogLevel(LogLevel) override { }
   void Shutdown() override { }
 };
 
