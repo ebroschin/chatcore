@@ -1,5 +1,7 @@
 #include "ui_system.h"
 
+#include "ftxui_logger.hpp"
+
 #include <claw/core/application.h>
 
 #include <ftxui/component/component.hpp>
@@ -9,6 +11,7 @@
 
 #include "../model/model_system.h"
 #include "../session/session_system.h"
+#include "ebroschin/logging/log.hpp"
 
 using namespace std::chrono_literals;
 
@@ -23,6 +26,8 @@ UiSystem::UiSystem(const core::SystemContext& ctx, core::Application& app):
 { }
 
 void UiSystem::Initialize() {
+  ebroschin::logging::Log::SetLogger<FtxuiLogger>(model_system_, *this);
+
   chat_log_view_model_.emplace_back("Welcome to ChatCore | Developed by Elias Broschin");
   chat_log_view_model_.emplace_back("-------------------------------------------------");
   chat_log_view_model_.emplace_back("Enter /help for more details");
@@ -45,8 +50,12 @@ void UiSystem::Initialize() {
 
 void UiSystem::Deinitialize() {
   line_added_subscription_.Unsubscribe();
-  screen_.Exit();
+  Shutdown();
   ui_thread_ = {};
+}
+
+void UiSystem::Shutdown() {
+  screen_.Exit();
 }
 
 void UiSystem::ProcessThread() {

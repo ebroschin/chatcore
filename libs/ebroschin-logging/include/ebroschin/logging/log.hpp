@@ -1,5 +1,7 @@
 #pragma once
 
+#include "log_stream.hpp"
+
 #include <memory>
 #include <string>
 
@@ -17,7 +19,16 @@ public:
   static void Critical(const std::string&);
   static void Print(LogLevel, const std::string&);
 
+  static LogStream Verbose();
+  static LogStream Debug();
+  static LogStream Info();
+  static LogStream Warning();
+  static LogStream Error();
+  static LogStream Critical();
+  static LogStream Print(LogLevel);
+
   static void SetLogLevel(LogLevel);
+  static void Shutdown();
 
   template <typename TLogger, typename... TArguments>
   static void SetLogger(TArguments&&... arguments) {

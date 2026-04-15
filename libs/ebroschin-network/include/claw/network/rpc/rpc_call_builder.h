@@ -3,6 +3,7 @@
 #include <claw/network/commons.h>
 #include <functional>
 
+#include "commons.h"
 #include "rpc_concepts.h"
 
 namespace claw::network::rpc {

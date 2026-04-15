@@ -24,6 +24,8 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
+  void Shutdown();
+
 private:
   void ProcessThread();
   [[nodiscard]] ftxui::Element Render() const;

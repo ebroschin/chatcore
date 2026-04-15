@@ -1,4 +1,5 @@
 #include "connection_event_handler.h"
+#include "ebroschin/logging/log.hpp"
 #include "session_system.h"
 
 namespace claw::chat::client {

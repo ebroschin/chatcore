@@ -6,8 +6,9 @@
 #include <iostream>
 #include <string>
 
-#include "../application/client_tcp_system.h"
 #include "../application/client_rpc_system.h"
+#include "../application/client_tcp_system.h"
+#include <ebroschin/logging/log.hpp>
 
 namespace claw::chat::tester {
 
@@ -20,21 +21,19 @@ public:
   explicit Client(ApplicationSystem& network_system,
     ClientTcpSystem& tcp_system,
     ClientRpcSystem& rpc_system,
-    const std::string& name);
+    std::string name);
 
   void Prepare();
 
 protected:
   virtual void OnPrepared() = 0;
 
-  [[nodiscard]] bool ValidateSession() const noexcept {
-    return connection_id_ && user_;
-  }
-
   template <typename TRpcCall>
   void RegisterDefaultErrorHandler(TRpcCall& rpc_call) const {
     rpc_call.OnError([this](const api::ErrorResponseMessage& response) {
-      std::cerr << "[Server::Error][" << name_ << "] " << response.value << std::endl;
+      std::stringstream stream;
+      stream << "[Server::Error][" << name_ << "] " << response.value;
+      ebroschin::logging::Log::Error(stream.str());
     });
   }
 
@@ -44,7 +43,9 @@ protected:
 
     rpc_call.SetTimeoutDuration(5s);
     rpc_call.OnTimeout([this, message] {
-      std::cerr << "[Client][" << name_ << "] " << message << std::endl;
+      std::stringstream stream;
+      stream << "[Client][" << name_ << "] " << message;
+      ebroschin::logging::Log::Error(stream.str());
     });
   }
 

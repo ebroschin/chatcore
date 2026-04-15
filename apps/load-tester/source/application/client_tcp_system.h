@@ -4,7 +4,6 @@
 #include <claw/network/tcp/tcp_system.h>
 #include <claw/network/tcp/tcp_system_builder.h>
 #include <claw/network-modules/connectors/boost_async/boost_tcp_resolver.h>
-#include <claw/network-modules/connectors/boost_sync/sync_boost_tcp_resolver.h>
 #include <claw/network-modules/message_handler/observable_message_handler.h>
 #include <claw/chat/json_api.h>
 

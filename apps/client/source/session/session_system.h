@@ -5,10 +5,11 @@
 
 #include <optional>
 
-#include "../application/client_rpc_system.h"
 #include "../application/application_system.h"
+#include "../application/client_rpc_system.h"
 #include "../model/model_system.h"
 #include "connection_event_handler.h"
+#include "ebroschin/logging/log.hpp"
 
 namespace claw::chat::client {
 
@@ -61,8 +62,8 @@ private:
 
   template <typename RpcCall>
   void RegisterDefaultErrorHandler(RpcCall&& rpcCall) const {
-    rpcCall.OnError([this](const api::ErrorResponseMessage& response) {
-      model_system_.AddLine("[Server::Error] " + response.value);
+    rpcCall.OnError([](const api::ErrorResponseMessage& response) {
+      ebroschin::logging::Log::Error() << response.value;
     });
   }
 
@@ -71,8 +72,8 @@ private:
     using namespace std::chrono_literals;
 
     rpcCall.SetTimeoutDuration(5s);
-    rpcCall.OnTimeout([this, message] {
-      model_system_.AddLine("[Client] " + message);
+    rpcCall.OnTimeout([message] {
+      ebroschin::logging::Log::Error() << message;
     });
   }
 

@@ -4,6 +4,8 @@
 #include "claw/core/system_context.h"
 #include "session_system.h"
 
+#include "ebroschin/logging/log.hpp"
+
 namespace claw::chat::client {
 
 SessionSystem::SessionSystem(const core::SystemContext& ctx) noexcept:
@@ -95,10 +97,13 @@ void SessionSystem::GetChannels() const {
 
   auto get_channels_rpc = rpc_system_.Prepare<api::GetChatChannelsRequestMessage>(*connection_id_);
   get_channels_rpc.OnSuccess([this](const api::GetChatChannelsResponseMessage& response) {
-    model_system_.AddLine("[Client] Available channels: ");
+    std::stringstream stream;
+    stream << "Available channels: \n";
     for (const auto& channel : response.channels) {
-      model_system_.AddLine("[Client] " + std::to_string(channel.id) + ": " + channel.name);
+      stream << channel.id << ": " << channel.name;
     }
+
+    model_system_.AddLine("[Client] " + stream.str());
   });
 
   RegisterDefaultErrorHandler(get_channels_rpc);
@@ -111,8 +116,7 @@ void SessionSystem::CreateChannel(std::string name) const {
 
   auto create_channel_rpc = rpc_system_.Prepare<api::CreateChannelRequestMessage>(*connection_id_, std::move(name));
   create_channel_rpc.OnSuccess([this](const api::CreateChannelResponseMessage& response) {
-    model_system_.AddLine("[Client] Created channel: ");
-    model_system_.AddLine("[Client] " + std::to_string(response.channel.id) +": " + response.channel.name);
+    model_system_.AddLine("[Client] Created channel:\n" + std::to_string(response.channel.id) + ": " + response.channel.name);
   });
 
   RegisterDefaultErrorHandler(create_channel_rpc);
@@ -248,27 +252,27 @@ void SessionSystem::LoadChannel(api::PersistenceId channel_id, std::function<voi
 
 void SessionSystem::OnConnected(network::ConnectionId connection_id) {
   connection_id_.emplace(connection_id);
-  model_system_.AddLine("[Client] Successfully connected to chat server.");
+  ebroschin::logging::Log::Info() << "Successfully connected to chat server.";
 }
 
 void SessionSystem::OnConnectionFailed(const network::modules::BoostTcpResolverParameters& parameters) const {
-  model_system_.AddLine("[Client] Connection to chat server failed " + parameters.ip + ":" + parameters.port);
+  ebroschin::logging::Log::Error() << "Connection to chat server failed " << parameters.ip + ":" + parameters.port;
 }
 
 void SessionSystem::OnDisconnected(network::ConnectionId) {
   connection_id_.reset();
   user_.reset();
-  model_system_.AddLine("[Client] Lost connection to chat server.");
+  ebroschin::logging::Log::Info() << "Lost connection to chat server.";
 }
 
 void SessionSystem::HandleErrorEvent(const api::ErrorMessage& message) {
   if (!connection_id_) return;
-  model_system_.AddLine("[Server::Error] " + message.value);
+  ebroschin::logging::Log::Error() << message.value;
 }
 
 void SessionSystem::HandlePrintEvent(const api::PrintMessage& message) {
   if (!connection_id_) return;
-  model_system_.AddLine("[Server::Print] " + message.value);
+  model_system_.AddLine("[Client] Server says: " + message.value);
 }
 
 void SessionSystem::HandleUserLogoutEvent(const api::UserLogoutEventMessage& message) {

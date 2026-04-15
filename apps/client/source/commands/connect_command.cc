@@ -17,7 +17,7 @@ void ConnectCommand::Execute(std::span<std::string_view> arguments) const {
   const auto address = std::string(arguments[0]);
   const auto port = std::string(arguments[1]);
   session_system_.Connect(address, port);
-  model_system_.AddLine("Connecting to " + address + ":" + port);
+  ebroschin::logging::Log::Info() << "Connecting to " << address << ":" << port;
 }
 
 }

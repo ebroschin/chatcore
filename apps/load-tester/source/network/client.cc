@@ -9,11 +9,11 @@ namespace claw::chat::tester {
 Client::Client(ApplicationSystem& app_system,
   ClientTcpSystem& tcp_system,
   ClientRpcSystem& rpc_system,
-  const std::string& name):
-  app_system_(app_system),
-  tcp_system_(tcp_system),
+  std::string name):
+  app_system_{app_system},
+  tcp_system_{tcp_system},
   rpc_system_{rpc_system},
-  name_(name)
+  name_{std::move(name)}
 {}
 
 void Client::Prepare() {

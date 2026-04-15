@@ -1,5 +1,4 @@
 #include <ebroschin/logging/log.hpp>
-
 #include <ebroschin/logging/null_logger.hpp>
 #include <mutex>
 #include <shared_mutex>
@@ -13,6 +12,11 @@ namespace ebroschin::logging {
 
 void Log::SetLogger(std::shared_ptr<Logger> logger) noexcept {
   std::unique_lock lock(mutex_);
+  if (!logger) {
+    logger_ = std::make_shared<NullLogger>();
+    return;
+  }
+
   logger_ = std::move(logger);
 }
 
@@ -46,9 +50,16 @@ void Log::SetLogLevel(LogLevel log_level) {
     std::shared_lock lock(mutex_);
     logger = logger_;
   }
-
-  if (!logger) return;
   logger->SetLogLevel(log_level);
+}
+
+void Log::Shutdown() {
+  std::shared_ptr<Logger> logger;
+  {
+    std::shared_lock lock(mutex_);
+    logger = logger_;
+  }
+  logger->Shutdown();
 }
 
 void Log::Print(LogLevel log_level, const std::string& message) {
@@ -58,15 +69,40 @@ void Log::Print(LogLevel log_level, const std::string& message) {
     logger = logger_;
   }
 
-  if (!logger) return;
-  switch (log_level) {
-    case LogLevel::verbose: logger->Verbose(message); break;
-    case LogLevel::debug: logger->Debug(message); break;
-    case LogLevel::info: logger->Info(message); break;
-    case LogLevel::warning: logger->Warning(message); break;
-    case LogLevel::error: logger->Error(message); break;
-    case LogLevel::critical: logger->Critical(message); break;
+  logger->Print(log_level, message);
+}
+
+LogStream Log::Verbose() {
+  return Print(LogLevel::verbose);
+}
+
+LogStream Log::Debug() {
+  return Print(LogLevel::debug);
+}
+LogStream Log::Info() {
+  return Print(LogLevel::info);
+}
+
+LogStream Log::Warning() {
+  return Print(LogLevel::warning);
+}
+
+LogStream Log::Error() {
+  return Print(LogLevel::error);
+}
+
+LogStream Log::Critical() {
+  return Print(LogLevel::critical);
+}
+
+LogStream Log::Print(LogLevel log_level) {
+  std::shared_ptr<Logger> logger;
+  {
+    std::shared_lock lock(mutex_);
+    logger = logger_;
   }
+
+  return LogStream{std::move(logger), log_level};
 }
 
 }

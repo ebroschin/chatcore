@@ -17,6 +17,14 @@ add_executable(chatcore-load-tester
     source/application/client_rpc_system.h
 )
 
+if(WIN32)
+    set(BOOST_STACKTRACE stacktrace_windbg)
+else()
+    set(BOOST_STACKTRACE stacktrace_backtrace)
+endif()
+
+find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
+
 target_link_libraries(chatcore-load-tester PRIVATE
     Boost::${BOOST_STACKTRACE}
     claw::core
@@ -25,4 +33,6 @@ target_link_libraries(chatcore-load-tester PRIVATE
     claw::network-modules
     claw::chat-api
     claw::scheduling
+    ebroschin::logging
+    ebroschin::logging-modules
 )

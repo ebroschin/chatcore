@@ -1,7 +1,6 @@
 #include "chat_client_application.h"
 
-#include <boost/stacktrace.hpp>
-#include <iostream>
+#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 
 #include "../commands/client_commands_system.h"
 #include "../model/model_system.h"
@@ -10,10 +9,14 @@
 #include "application_system.h"
 #include "client_rpc_system.h"
 #include "client_tcp_system.h"
+#include "ebroschin/logging-modules/spdlog/spdlog-logger.hpp"
 
 namespace claw::chat::client {
 
 void ChatClientApplication::Initialize() {
+  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  ebroschin::logging::Log::Info("Starting initialization");
+
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ClientTcpSystem>();
   ctx_.Register<ApplicationSystem>();
@@ -28,16 +31,11 @@ void ChatClientApplication::Initialize() {
 }
 
 void ChatClientApplication::HandleTerminate() {
-  //TODO COPY PASTE (project visualizer) reuse code from client (move to library)
-  try {
-    std::rethrow_exception(std::current_exception());
-  } catch (const std::exception& e) {
-    std::cerr << "Unhandled exception: " << e.what() << std::endl;
-  } catch (...) {
-    std::cerr << "Unhandled unknown exception" << std::endl;
-  }
+  ebroschin::logging::Log::Shutdown();
 
-  std::cerr << "Stacktrace:\n" << boost::stacktrace::stacktrace() << std::endl;
+  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  ebroschin::logging::modules::BoostStacktrace::PrintExceptionStacktrace();
+  ebroschin::logging::Log::Shutdown();
 }
 
 }
