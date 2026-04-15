@@ -59,7 +59,7 @@ jobs:
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Ninja (Windows)
+      - name: Install Ninja
         run: choco install ninja cmake -y
 
       - name: Prepare vcpkg cache
@@ -76,8 +76,8 @@ jobs:
           restore-keys: |
             vcpkg-downloads-${{ runner.os }}-
 
-      - name: Configure
-        run: cmake -S . -B build -G Ninja
-
       - name: Build
-        run: cmake --build build
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+          .\scripts\windows\build-all.ps1

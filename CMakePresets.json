@@ -68,6 +68,44 @@
         "BUILD_SERVER": "OFF",
         "BUILD_LOAD_TESTER": "ON"
       }
+    },
+    {
+      "name": "windows-release",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+      }
+    },
+    {
+      "name": "windows-release-client",
+      "inherits": "windows-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "OFF",
+        "VCPKG_MANIFEST_FEATURES": "client"
+      }
+    },
+    {
+      "name": "windows-release-server",
+      "inherits": "windows-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "OFF"
+      }
+    },
+    {
+      "name": "windows-release-load-tester",
+      "inherits": "windows-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "ON"
+      }
     }
   ],
   "buildPresets": [
