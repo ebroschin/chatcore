@@ -1,4 +1,3 @@
 # chat-server
 
-![CI Linux](https://github.com/PIXCLDEV/ChatCore/actions/workflows/linux.yml/badge.svg)
-![CI Windows](https://github.com/PIXCLDEV/ChatCore/actions/workflows/windows.yml/badge.svg)
+![CI (Linux, Windows)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml/badge.svg)
