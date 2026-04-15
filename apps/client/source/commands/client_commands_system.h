@@ -4,6 +4,7 @@
 #include "add_user_command.h"
 #include "commands_system.h"
 #include "connect_command.h"
+#include "exit_command.h"
 #include "get_channels_command.h"
 #include "join_channel_command.h"
 #include "login_command.h"
@@ -20,6 +21,7 @@ using ClientCommandsSystem = commands::CommandsSystem<
   GetChannelsCommand,
   AddChannelCommand,
   LogoutCommand,
+  ExitCommand,
   HelpCommand
 >;
 

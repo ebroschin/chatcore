@@ -9,7 +9,7 @@ namespace claw::chat::client {
 ConnectCommand::ConnectCommand(const core::SystemContext& ctx) noexcept:
   session_system_(ctx.Require<SessionSystem>()),
   model_system_(ctx.Require<ModelSystem>())
-{}
+{ }
 
 void ConnectCommand::Execute(std::span<std::string_view> arguments) const {
   if (arguments.size() < 2) {

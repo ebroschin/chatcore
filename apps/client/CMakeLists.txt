@@ -29,6 +29,8 @@ add_executable(chatcore-client
     source/session/connection_event_handler.h
     source/commands/logout_command.h
     source/commands/logout_command.cc
+    source/commands/exit_command.h
+    source/commands/exit_command.cc
     source/commands/help_command.cc
     source/commands/help_command.h
         source/ui/ftxui_logger.cpp

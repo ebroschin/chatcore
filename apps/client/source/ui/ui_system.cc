@@ -27,12 +27,11 @@ UiSystem::UiSystem(const core::SystemContext& ctx, core::Application& app):
 
 void UiSystem::Initialize() {
   ebroschin::logging::Log::SetLogger<FtxuiLogger>(model_system_, *this);
+  WriteLine("Welcome to ChatCore | Developed by Elias Broschin");
+  WriteLine("-------------------------------------------------");
+  WriteLine("Enter /help for more details");
 
-  chat_log_view_model_.emplace_back("Welcome to ChatCore | Developed by Elias Broschin");
-  chat_log_view_model_.emplace_back("-------------------------------------------------");
-  chat_log_view_model_.emplace_back("Enter /help for more details");
   ui_thread_ = std::jthread{[this] { ProcessThread(); }};
-
   line_added_subscription_ = model_system_.OnLineAdded([this](const std::string& line) {
     {
       std::unique_lock lock(mutex_);
@@ -65,6 +64,13 @@ void UiSystem::ProcessThread() {
 
   input_component_->TakeFocus();
   screen_.Loop(app);
+}
+
+void UiSystem::WriteLine(const std::string& line) {
+  chat_log_view_model_.emplace_back(line);
+
+  if (chat_log_view_model_.size() < 100) return;
+  chat_log_view_model_.pop_front();
 }
 
 ftxui::Element UiSystem::Render() const {
@@ -112,7 +118,7 @@ bool UiSystem::HandleEvent(const ftxui::Event& e) {
     }
 
     while (!buffer.empty()) {
-      chat_log_view_model_.emplace_back(std::move(buffer.front()));
+      WriteLine(std::move(buffer.front()));
       buffer.pop();
     }
 

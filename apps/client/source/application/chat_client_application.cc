@@ -19,7 +19,7 @@ void ChatClientApplication::Initialize() {
 
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ClientTcpSystem>();
-  ctx_.Register<ApplicationSystem>();
+  ctx_.Register<ApplicationSystem>(*this);
 
   auto rpc_timeout_handler = network::modules::SchedulerRpcTimeoutHandler{ctx_.Require<scheduling::SchedulingSystem>()};
   ctx_.Register<ClientRpcSystem>(std::move(rpc_timeout_handler));

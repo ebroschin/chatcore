@@ -34,6 +34,8 @@ private:
   bool HandleEvent(const ftxui::Event& e);
   void HandleInput(std::string_view input) const;
 
+  void WriteLine(const std::string&);
+
   core::Application& app_;
   ClientCommandsSystem& commands_system_;
   ModelSystem& model_system_;
@@ -45,7 +47,7 @@ private:
   utility::SignalSubscription line_added_subscription_{};
   utility::SignalSubscription channel_name_changed_subscription_{};
 
-  std::vector<std::string> chat_log_view_model_{};
+  std::deque<std::string> chat_log_view_model_{};
   std::optional<std::string> channel_name_{};
   std::string input_buffer_{};
   ftxui::ScreenInteractive screen_{ftxui::ScreenInteractive::Fullscreen()};
