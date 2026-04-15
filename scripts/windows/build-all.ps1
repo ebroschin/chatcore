@@ -7,11 +7,11 @@ $REPO_ROOT = Resolve-Path (Join-Path $SCRIPT_DIR "..\..") | Select-Object -Expan
 
 Set-Location $REPO_ROOT
 
-cmake --preset linux-debug-client
-cmake --build "$REPO_ROOT\build\linux-debug-client"
+cmake --preset windows-release-client
+cmake --build "$REPO_ROOT\build\windows-release-client"
 
-cmake --preset linux-debug-load-tester
-cmake --build "$REPO_ROOT\build\linux-debug-load-tester"
+cmake --preset windows-release-load-tester
+cmake --build "$REPO_ROOT\build\windows-release-load-tester"
 
-cmake --preset linux-debug-server
-cmake --build "$REPO_ROOT\build\linux-debug-server"
+cmake --preset windows-release-server
+cmake --build "$REPO_ROOT\build\windows-release-server"
