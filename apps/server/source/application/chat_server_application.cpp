@@ -9,10 +9,9 @@
 #include "application_system.h"
 #include "chat_persistence_system.h"
 #include "chat_tcp_system.h"
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 
-#include <boost/stacktrace.hpp>
-#include <iostream>
+#include <claw/scheduling/scheduling_system.h>
 #include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
 #include <ebroschin/logging/log.hpp>
 
@@ -42,15 +41,9 @@ void ChatServerApplication::Initialize() {
 }
 
 void ChatServerApplication::HandleTerminate() {
-  try {
-    std::rethrow_exception(std::current_exception());
-  } catch (const std::exception& e) {
-    std::cerr << "Unhandled exception" << e.what() << std::endl;
-  } catch (...) {
-    std::cerr << "Unhandled unknown exception" << std::endl;
-  }
-
-  std::cerr << "Stacktrace:\n" << stacktrace::stacktrace() << std::endl;
+  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  ebroschin::logging::modules::BoostStacktrace::PrintExceptionStacktrace();
+  ebroschin::logging::Log::Shutdown();
 }
 
 }

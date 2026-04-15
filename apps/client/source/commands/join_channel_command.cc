@@ -8,11 +8,18 @@ JoinChannelCommand::JoinChannelCommand(const core::SystemContext& ctx) noexcept:
 { }
 
 void JoinChannelCommand::Execute(std::span<std::string_view> arguments) const {
-  if (arguments.size() < 1) return;
+  if (arguments.empty()) {
+    ebroschin::logging::Log::Error() << Token << " requires argument <channel_id>";
+    return;
+  }
 
   const auto argument = std::string(arguments[0]);
-  const auto channel_id = static_cast<api::PersistenceId>(std::stoul(argument));
-  session_system_.JoinChannel(channel_id);
+  try {
+    const auto channel_id = static_cast<api::PersistenceId>(std::stoul(argument));
+    session_system_.JoinChannel(channel_id);
+  } catch (...) {
+    ebroschin::logging::Log::Error() << "invalid <channel_id>";
+  }
 }
 
 }

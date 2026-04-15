@@ -52,7 +52,7 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
 
   const auto potential_channel = channel_store_.GetChannel(message.channel_id);
   if (!potential_channel) {
-    tcp_system_.Send(connection_id, api::ErrorResponseMessage{message.request_id, "Channel not found."});
+    app_system_.HandleRpcError(connection_id, message.request_id, "Channel not found.");
     return;
   }
 
@@ -105,7 +105,7 @@ void ChatServerSystem::HandleCreateChatChannel(network::ConnectionId connection_
   if (!channel) {
     const auto cached_channel = channel_store_.GetChannel(message.name);
     if (!cached_channel) {
-      tcp_system_.Send(connection_id, api::ErrorResponseMessage{message.request_id, "Unable to create channel."});
+      app_system_.HandleRpcError(connection_id, message.request_id, "Unable to create channel.");
       return;
     }
 

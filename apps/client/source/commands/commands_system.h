@@ -29,11 +29,12 @@ public:
     (Register<TCommands>(), ...);
   }
 
-  void Execute(const std::string& token, CommandArguments arguments) {
+  bool Execute(const std::string& token, CommandArguments arguments) {
     const auto it = handlers_.find(token);
-    if (it == handlers_.end()) return;
+    if (it == handlers_.end()) return false;
 
     it->second(arguments);
+    return true;
   }
 
 private:

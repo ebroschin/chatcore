@@ -263,6 +263,7 @@ void SessionSystem::OnDisconnected(network::ConnectionId) {
   connection_id_.reset();
   user_.reset();
   ebroschin::logging::Log::Info() << "Lost connection to chat server.";
+  model_system_.SetChannelName(std::nullopt);
 }
 
 void SessionSystem::HandleErrorEvent(const api::ErrorMessage& message) {

@@ -150,7 +150,10 @@ void UiSystem::HandleInput(std::string_view input) const {
   }
 
   const auto token = std::string(split[0] | std::views::drop(1));
-  commands_system_.Execute(token, split | std::views::drop(1));
+  auto success = commands_system_.Execute(token, split | std::views::drop(1));
+  if (success) return;
+
+  ebroschin::logging::Log::Error() << "unknown command: " << token;
 }
 
 }
