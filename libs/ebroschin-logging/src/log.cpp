@@ -54,12 +54,12 @@ void Log::SetLogLevel(LogLevel log_level) {
 }
 
 void Log::Shutdown() {
-  std::shared_ptr<Logger> logger;
   {
-    std::shared_lock lock(mutex_);
-    logger = logger_;
+    std::scoped_lock lock(mutex_);
+    logger_->Shutdown();
   }
-  logger->Shutdown();
+
+  SetLogger<NullLogger>();
 }
 
 void Log::Print(LogLevel log_level, const std::string& message) {

@@ -32,6 +32,9 @@ void ApplicationSystem::Initialize() {
 }
 
 void ApplicationSystem::Deinitialize() {
+  auto& processor = tcp_system_.GetMessageProcessor();
+  processor.Stop();
+
   application_thread_ = {};
 }
 
@@ -40,7 +43,7 @@ void ApplicationSystem::Shutdown() const noexcept {
 }
 
 void ApplicationSystem::HandleRpcError(api::PersistenceId connection_id, network::RequestId request_id, const std::string& message) const {
-  ebroschin::logging::Log::Verbose("RPC Error: " + message);
+  ebroschin::logging::Log::Debug("RPC Error: " + message);
   tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {request_id, message});
 }
 

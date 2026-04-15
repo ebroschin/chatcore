@@ -1,7 +1,5 @@
 #include "client.h"
 
-#include <iostream>
-
 #include "../application/application_system.h"
 
 namespace claw::chat::tester {
@@ -15,6 +13,10 @@ Client::Client(ApplicationSystem& app_system,
   rpc_system_{rpc_system},
   name_{std::move(name)}
 {}
+
+void Client::Quit() const {
+  app_system_.Quit();
+}
 
 void Client::Prepare() {
   const auto& arguments = app_system_.GetArguments();
@@ -35,12 +37,12 @@ void Client::OnConnected(network::ConnectionId connection_id) {
 }
 
 void Client::OnUserCreated(const api::CreateUserResponseMessage& message) {
-  std::cout << "create successful: " << message.user.name << " / " << message.user.id << std::endl;
+  ebroschin::logging::Log::Verbose() << "user successfully created: " << message.user.name << " / " << message.user.id;
   user_.emplace(message.user);
 
   auto authenticate_call = rpc_system_.Prepare<api::AuthenticateUserRequestMessage>(*connection_id_, message.user.name, "123");
   authenticate_call.OnSuccess([this](const api::AuthenticateUserResponseMessage& auth_message) {
-    std::cout << "authentication successful: " << auth_message.user.name << std::endl;
+    ebroschin::logging::Log::Verbose() << "user successfully authenticated: " << auth_message.user.name;
     OnPrepared();
   });
 

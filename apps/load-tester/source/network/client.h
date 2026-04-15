@@ -3,7 +3,6 @@
 #include <claw/network/commons.h>
 
 #include <chrono>
-#include <iostream>
 #include <string>
 
 #include "../application/client_rpc_system.h"
@@ -18,7 +17,7 @@ class Client : ClientTcpSystem::ConnectionEventHandler {
 public:
   using PrepareCallback = std::function<void(network::ConnectionId)>;
 
-  explicit Client(ApplicationSystem& network_system,
+  explicit Client(ApplicationSystem& app_system,
     ClientTcpSystem& tcp_system,
     ClientRpcSystem& rpc_system,
     std::string name);
@@ -28,12 +27,13 @@ public:
 protected:
   virtual void OnPrepared() = 0;
 
+  void Quit() const;
+
   template <typename TRpcCall>
   void RegisterDefaultErrorHandler(TRpcCall& rpc_call) const {
     rpc_call.OnError([this](const api::ErrorResponseMessage& response) {
-      std::stringstream stream;
-      stream << "[Server::Error][" << name_ << "] " << response.value;
-      ebroschin::logging::Log::Error(stream.str());
+      ebroschin::logging::Log::Error() << "[Server::Error][" << name_ << "] " << response.value;
+      Quit();
     });
   }
 
@@ -43,9 +43,8 @@ protected:
 
     rpc_call.SetTimeoutDuration(5s);
     rpc_call.OnTimeout([this, message] {
-      std::stringstream stream;
-      stream << "[Client][" << name_ << "] " << message;
-      ebroschin::logging::Log::Error(stream.str());
+      ebroschin::logging::Log::Error() << "[Client][" << name_ << "] " << message;
+      Quit();
     });
   }
 

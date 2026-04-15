@@ -24,6 +24,8 @@ public:
   [[nodiscard]] const LoadTesterArguments& GetArguments() const noexcept
   { return app_.GetArguments(); }
 
+  void Quit() const;
+
 private:
   LoadTesterApplication& app_;
   ClientTcpSystem& tcp_system_;

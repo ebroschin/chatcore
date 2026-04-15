@@ -1,7 +1,6 @@
 #include "root_client.h"
 
 #include <chrono>
-#include <iostream>
 
 #include "../application/application_system.h"
 #include "test_client.h"
@@ -72,18 +71,18 @@ void RootClient::Evaluate() {
     std::ranges::copy(report.roundtrip_times, std::back_inserter(latencies));
   }
 
-  std::cout << "total sent: " << total_sent << std::endl;
-  std::cout << "total completed: " << latencies.size() << std::endl;
-  std::cout << "total failed: " << total_failed << std::endl;
+  ebroschin::logging::Log::Info() << "total sent: " << total_sent;
+  ebroschin::logging::Log::Info() << "total completed: " << latencies.size();
+  ebroschin::logging::Log::Info() << "total failed: " << total_failed;
 
   const auto to_us = [](steady_clock::duration d) {
     return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
   };
 
-  std::cout << "p50: " << to_us(CalculatePercentile(latencies, 0.5)) << "us" << std::endl;
-  std::cout << "p95: " << to_us(CalculatePercentile(latencies, 0.95)) << "us" << std::endl;
-  std::cout << "p99: " << to_us(CalculatePercentile(latencies, 0.99)) << "us" << std::endl;
-  std::cout << "max: " << to_us(CalculatePercentile(latencies, 1.0)) << "us" << std::endl;
+  ebroschin::logging::Log::Info() << "p50: " << to_us(CalculatePercentile(latencies, 0.5)) << "us";
+  ebroschin::logging::Log::Info() << "p95: " << to_us(CalculatePercentile(latencies, 0.95)) << "us";
+  ebroschin::logging::Log::Info() << "p99: " << to_us(CalculatePercentile(latencies, 0.99)) << "us";
+  ebroschin::logging::Log::Info() << "max: " << to_us(CalculatePercentile(latencies, 1.0)) << "us";
 }
 
 steady_clock::duration RootClient::CalculatePercentile(std::vector<steady_clock::duration> latencies, double normalized_percentage) {
@@ -101,10 +100,10 @@ void RootClient::SetClientReady(network::ConnectionId id) {
   connected_clients_.emplace(id);
 
   if (connected_clients_.size() != clients_.size()) return;
-  std::cout << "all clients prepared" << std::endl;
+  ebroschin::logging::Log::Info() << "Clients prepared, running load test";
 
   auto phase = 1000ms;
-  auto stagger_duration = phase / clients_.size();
+  const auto stagger_duration = phase / clients_.size();
   for (std::size_t i = 0; i < clients_.size(); i++) {
     scheduling_system_.ScheduleAfter(stagger_duration * i, [this, i, phase] {
       clients_[i]->Start(phase);

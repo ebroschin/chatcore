@@ -21,15 +21,6 @@ public:
   void operator=(Application&& other) = delete;
 
   /**
-   * @brief Starts the simulation life cycle of the program:
-   * - Calls Application::Initialize()
-   * - Calls ctx_->Initialize()
-   * - Starts the simulation loop (BeginFrame, Update, EndFrame)
-   * - Performs cleanup via ctx_->Deinitialize() when Quit() is called
-   */
-  void RunSimulation();
-
-  /**
  * @brief Starts the program in blocking mode:
  * - Calls Application::Initialize()
  * - Calls ctx_->Initialize()
@@ -38,6 +29,9 @@ public:
   void RunBlocking();
 
   void Quit() noexcept;
+
+  [[nodiscard]] bool IsRunning() const noexcept
+  { return running_.load(std::memory_order::relaxed); }
 
 protected:
   /**
@@ -56,6 +50,7 @@ protected:
 
 private:
   static void Terminate();
+
 };
 
 }

@@ -2,8 +2,6 @@
 
 #include <claw/core/system_context.h>
 
-#include <iostream>
-
 namespace claw::chat::tester {
 ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, LoadTesterApplication& app):
   System(ctx),
@@ -27,7 +25,17 @@ void ApplicationSystem::Initialize() {
 }
 
 void ApplicationSystem::Deinitialize() {
+  auto& processor = tcp_system_.GetMessageProcessor();
+  processor.Stop();
+
   application_thread_ = {};
+}
+
+void ApplicationSystem::Quit() const {
+  if (!app_.IsRunning()) return;
+  ebroschin::logging::Log::Info() << "Shutting down";
+  ebroschin::logging::Log::Shutdown();
+  app_.Quit();
 }
 
 }
