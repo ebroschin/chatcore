@@ -29,7 +29,9 @@ jobs:
           sudo apt-get install -y ninja-build cmake
 
       - name: Prepare vcpkg cache
-        run: echo "VCPKG_DOWNLOADS=${{ github.workspace }}/.vcpkg-downloads" >> $GITHUB_ENV
+        run: |
+          echo "VCPKG_DOWNLOADS=${{ github.workspace }}/.vcpkg-downloads" >> "$GITHUB_ENV"
+          mkdir -p "${{ github.workspace }}/.vcpkg-downloads"
 
       - name: Apply vcpkg cache
         uses: actions/cache@v4
@@ -39,7 +41,7 @@ jobs:
           restore-keys: |
             vcpkg-downloads-${{ runner.os }}-
 
-      - name: Build (Linux)
+      - name: Build
         env:
           CC: clang-20
           CXX: clang++-20
@@ -62,7 +64,9 @@ jobs:
 
       - name: Prepare vcpkg cache
         shell: pwsh
-        run: '"VCPKG_DOWNLOADS=${{ github.workspace }}\.vcpkg-downloads" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append'
+        run: |
+          "VCPKG_DOWNLOADS=${{ github.workspace }}\.vcpkg-downloads" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\.vcpkg-downloads" | Out-Null
 
       - name: Apply vcpkg cache
         uses: actions/cache@v4
@@ -72,7 +76,7 @@ jobs:
           restore-keys: |
             vcpkg-downloads-${{ runner.os }}-
 
-      - name: Configure (Windows)
+      - name: Configure
         run: cmake -S . -B build -G Ninja
 
       - name: Build
