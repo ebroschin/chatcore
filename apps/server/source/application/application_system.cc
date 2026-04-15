@@ -42,7 +42,7 @@ void ApplicationSystem::Shutdown() const noexcept {
   app_.Quit();
 }
 
-void ApplicationSystem::HandleRpcError(api::PersistenceId connection_id, network::RequestId request_id, const std::string& message) const {
+void ApplicationSystem::HandleRpcError(network::ConnectionId connection_id, network::RequestId request_id, const std::string& message) const {
   ebroschin::logging::Log::Debug("RPC Error: " + message);
   tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {request_id, message});
 }

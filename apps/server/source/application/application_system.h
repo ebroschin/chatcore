@@ -20,7 +20,7 @@ public:
   void Deinitialize() override;
 
   void Shutdown() const noexcept;
-  void HandleRpcError(api::PersistenceId connection_id, network::RequestId request_id, const std::string& message) const;
+  void HandleRpcError(network::ConnectionId connection_id, network::RequestId request_id, const std::string& message) const;
 
   template <typename TSystem, typename TMessage>
   void RegisterMessageHandler(TSystem* system, void(TSystem::*method)(network::ConnectionId, const TMessage&)) {

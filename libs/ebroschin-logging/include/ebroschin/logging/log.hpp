@@ -9,8 +9,7 @@
 
 namespace ebroschin::logging {
 
-class Log {
-public:
+struct Log {
   static void Verbose(const std::string&);
   static void Debug(const std::string&);
   static void Info(const std::string&);
