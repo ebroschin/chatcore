@@ -40,6 +40,7 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network-modules")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-scheduling")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-logging")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-logging-modules")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-commands")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/chat-server-api")
 
 if(BUILD_SERVER)

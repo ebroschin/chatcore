@@ -6,7 +6,6 @@ add_executable(chatcore-client
     source/application/application_system.h
     source/ui/ui_system.cc
     source/ui/ui_system.h
-    source/commands/commands_system.h
     source/commands/connect_command.cc
     source/commands/connect_command.h
     source/commands/add_user_command.cc
@@ -56,6 +55,7 @@ target_link_libraries(chatcore-client PRIVATE
     ebroschin::scheduling
     ebroschin::logging
     ebroschin::logging-modules
+    ebroschin::commands
     ftxui::screen
     ftxui::dom
     ftxui::component
