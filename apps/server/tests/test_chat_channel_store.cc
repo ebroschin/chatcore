@@ -3,7 +3,7 @@
 #include "mock_chat_persistence_adapter.hpp"
 #include "../source/chat/chat_channel_store.h"
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 TEST(ChatChannelStoreTests, ConnectionToChannelAssignment) {
   MockChatPersistenceAdapter adapter;

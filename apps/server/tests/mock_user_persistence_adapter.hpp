@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 struct MockUser {
   api::User user;

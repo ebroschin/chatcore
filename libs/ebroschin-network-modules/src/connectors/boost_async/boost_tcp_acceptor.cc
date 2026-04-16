@@ -1,7 +1,7 @@
-#include <claw/network-modules/connectors/boost_async/boost_tcp_acceptor.h>
+#include <ebroschin/network-modules/connectors/boost_async/boost_tcp_acceptor.h>
 #include <iostream>
 
-namespace claw::network::modules {
+namespace ebroschin::network::modules {
 
 BoostTcpAcceptor::~BoostTcpAcceptor() {
   if (acceptor_ && acceptor_->is_open()) {

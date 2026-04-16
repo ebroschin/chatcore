@@ -2,7 +2,7 @@
 
 #include "../source/application/chat_server_arguments.h"
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 static ChatServerArguments CreateMockArguments(std::initializer_list<std::string_view> arguments) {
   const std::size_t argc = arguments.size();

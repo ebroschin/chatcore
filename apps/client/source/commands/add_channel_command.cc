@@ -2,7 +2,7 @@
 
 #include "../session/session_system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 AddChannelCommand::AddChannelCommand(const core::SystemContext& ctx) noexcept:
   session_system_(ctx.Require<SessionSystem>())

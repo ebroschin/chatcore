@@ -1,11 +1,11 @@
 #pragma once
 
-#include <claw/core/system.h>
-#include <unordered_map>
+#include <ebroschin/core/system.h>
+#include <ebroschin/utility/variadic.h>
 #include <functional>
-#include <claw/utility/variadic.h>
+#include <unordered_map>
 
-namespace claw::commands {
+namespace ebroschin::commands {
 
 template <typename TCommand>
 concept Command = requires(TCommand command, std::span<std::string_view> arguments) {

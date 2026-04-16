@@ -1,17 +1,17 @@
 #include "load_tester_application.h"
 
-#include <claw/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.h>
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.h>
+#include <ebroschin/scheduling/scheduling_system.h>
 
-#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 #include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
+#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 #include <ebroschin/logging/log.hpp>
 
 #include "application_system.h"
 #include "client_rpc_system.h"
 #include "client_tcp_system.h"
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 LoadTesterApplication::LoadTesterApplication(LoadTesterArguments arguments) noexcept:
   arguments_{std::move(arguments)}

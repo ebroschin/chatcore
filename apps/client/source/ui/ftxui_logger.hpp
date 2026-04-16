@@ -4,7 +4,7 @@
 #include <shared_mutex>
 #include <sstream>
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class UiSystem;
 class ModelSystem;

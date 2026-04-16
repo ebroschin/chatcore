@@ -1,7 +1,7 @@
 #include "sqlite_chat_persistence_adapter.h"
-#include <claw/chat/api.h>
+#include <ebroschin/chat/api.h>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 void SqliteChatPersistenceAdapter::Initialize() {
   auto& db = store_.GetDatabase();

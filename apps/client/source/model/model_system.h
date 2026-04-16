@@ -1,13 +1,13 @@
 #pragma once
 
-#include <claw/core/system.h>
-#include <claw/utility/signal.h>
+#include <ebroschin/core/system.h>
+#include <ebroschin/utility/signal.h>
 
-#include <vector>
-#include <string>
 #include <span>
+#include <string>
+#include <vector>
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class SessionSystem;
 

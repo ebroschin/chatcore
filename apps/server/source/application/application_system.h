@@ -1,14 +1,14 @@
 #pragma once
 
 #include "chat_tcp_system.h"
-#include <claw/core/system.h>
+#include <ebroschin/core/system.h>
 #include <functional>
-#include <thread>
 #include <memory>
+#include <thread>
 
 #include "connection_event_handler.h"
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatServerApplication;
 

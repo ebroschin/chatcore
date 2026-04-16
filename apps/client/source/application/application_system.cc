@@ -1,7 +1,7 @@
 #include "application_system.h"
-#include "claw/core/system_context.h"
+#include "ebroschin/core/system_context.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, core::Application& app) noexcept:
   System(ctx),

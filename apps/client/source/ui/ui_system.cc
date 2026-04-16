@@ -2,7 +2,7 @@
 
 #include "ftxui_logger.hpp"
 
-#include <claw/core/application.h>
+#include <ebroschin/core/application.h>
 
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/event.hpp>
@@ -15,7 +15,7 @@
 
 using namespace std::chrono_literals;
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 UiSystem::UiSystem(const core::SystemContext& ctx, core::Application& app):
   System(ctx),

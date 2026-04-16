@@ -1,6 +1,6 @@
-#include <claw/utility/arguments.h>
+#include <ebroschin/utility/arguments.h>
 
-namespace claw::utility {
+namespace ebroschin::utility {
 
 Arguments::Arguments(int argc, char** argv) {
   const std::vector<std::string_view> arguments{argv, argv + argc};

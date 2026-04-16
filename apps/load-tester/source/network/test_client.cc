@@ -4,7 +4,7 @@
 
 using namespace std::chrono_literals;
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 TestClient::TestClient(ApplicationSystem& app_system,
   ClientTcpSystem& tcp_system,

@@ -47,12 +47,12 @@ find_package(SQLiteCpp CONFIG REQUIRED)
 target_link_libraries(chatcore-server PRIVATE
     SQLiteCpp
     Boost::${BOOST_STACKTRACE}
-    claw::core
-    claw::utility
-    claw::network
-    claw::network-modules
-    claw::chat-api
-    claw::scheduling
+    ebroschin::core
+    ebroschin::utility
+    ebroschin::network
+    ebroschin::network-modules
+    ebroschin::chatcore-api
+    ebroschin::scheduling
     ebroschin::logging
     ebroschin::logging-modules
 )
@@ -76,11 +76,11 @@ if(BUILD_TESTING)
     )
 
     target_link_libraries(chatcore_server_tests PRIVATE
-        claw::chat-api
-        claw::core
-        claw::utility
-        claw::network
-        claw::network-modules
+        ebroschin::chatcore-api
+        ebroschin::core
+        ebroschin::utility
+        ebroschin::network
+        ebroschin::network-modules
         ebroschin::logging
         GTest::gtest
         GTest::gtest_main

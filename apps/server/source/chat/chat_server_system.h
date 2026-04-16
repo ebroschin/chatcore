@@ -1,14 +1,14 @@
 #pragma once
 
-#include <claw/scheduling/scheduling_system.h>
-#include <claw/core/system.h>
+#include <ebroschin/core/system.h>
+#include <ebroschin/scheduling/scheduling_system.h>
 
 #include "../application/application_system.h"
 #include "../application/chat_tcp_system.h"
 #include "chat_channel_store.h"
 #include "chat_message_store.h"
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatServerApplication;
 class ChatPersistenceAdapter;

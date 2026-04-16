@@ -1,7 +1,7 @@
 #pragma once
 
-#include <claw/chat/api.h>
-#include <claw/core/system.h>
+#include <ebroschin/chat/api.h>
+#include <ebroschin/core/system.h>
 
 #include <optional>
 
@@ -11,7 +11,7 @@
 #include "connection_event_handler.h"
 #include "ebroschin/logging/log.hpp"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class SessionSystem final : public core::System {
 public:

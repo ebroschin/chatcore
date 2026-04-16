@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ChatMessageStore::ChatMessageStore(ChatPersistenceAdapter& adapter):
   adapter_(adapter)

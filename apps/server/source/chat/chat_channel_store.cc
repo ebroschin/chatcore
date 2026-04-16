@@ -2,7 +2,7 @@
 
 #include "adapters/chat_persistence_adapter.h"
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ChatChannelStore::ChatChannelStore(ChatPersistenceAdapter& adapter):
   adapter_(adapter)

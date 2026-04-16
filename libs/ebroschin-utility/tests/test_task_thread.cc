@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "claw/utility/task_thread.h"
 
-using namespace claw::utility;
+namespace ebroschin::utility::tests {
 
-
-TEST(TaskThreadTest, TODO) {
+TEST(SignalsTests, TODO) {
   // SystemContext ctx;
   // ctx.Register<TestSystem>("test", 32);
   // EXPECT_EQ(ctx.Get<TestSystem>()->CreateResult(), "test32");
+}
+
 }

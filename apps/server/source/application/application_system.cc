@@ -1,13 +1,13 @@
 #include "application_system.h"
 
-#include <claw/core/system_context.h>
+#include <ebroschin/core/system_context.h>
 
 #include "../users/user_server_system.h"
 #include "chat_server_application.h"
 #include "chat_tcp_system.h"
 #include <ebroschin/logging/log.hpp>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app):
   System{ctx},

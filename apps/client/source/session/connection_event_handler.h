@@ -2,7 +2,7 @@
 
 #include "../application/client_tcp_system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class SessionSystem;
 

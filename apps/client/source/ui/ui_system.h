@@ -1,6 +1,6 @@
 #pragma once
 
-#include <claw/core/system.h>
+#include <ebroschin/core/system.h>
 
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
@@ -9,11 +9,11 @@
 #include "../application/client_tcp_system.h"
 #include "../commands/client_commands_system.h"
 
-namespace claw::core {
+namespace ebroschin::core {
 class Application;
 }
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class ModelSystem;
 

@@ -1,12 +1,12 @@
-#include "../application/chat_persistence_system.h"
-#include <claw/network/tcp/tcp_system.h>
-#include "adapters/sqlite_user_persistence_adapter.h"
 #include "user_server_system.h"
+#include "../application/chat_persistence_system.h"
+#include "adapters/sqlite_user_persistence_adapter.h"
+#include <ebroschin/network/tcp/tcp_system.h>
 
 #include "../application/application_system.h"
-#include <claw/core/system_context.h>
+#include <ebroschin/core/system_context.h>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
   System(ctx),

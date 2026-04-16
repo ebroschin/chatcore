@@ -2,7 +2,7 @@
 
 #include "../application/application_system.h"
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 Client::Client(ApplicationSystem& app_system,
   ClientTcpSystem& tcp_system,

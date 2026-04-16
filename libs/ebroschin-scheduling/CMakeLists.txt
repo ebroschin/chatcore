@@ -1,15 +1,15 @@
-add_library(claw_scheduling
+add_library(ebroschin_scheduling
     src/scheduling_system.cc
-    include/claw/scheduling/commons.h
+    include/ebroschin/scheduling/commons.h
 )
 
-target_link_libraries(claw_scheduling PRIVATE
-    claw::core
+target_link_libraries(ebroschin_scheduling PRIVATE
+    ebroschin::core
 )
 
-add_library(claw::scheduling ALIAS claw_scheduling)
-set_target_properties(claw_scheduling PROPERTIES EXPORT_NAME scheduling)
-target_include_directories(claw_scheduling PUBLIC
+add_library(ebroschin::scheduling ALIAS ebroschin_scheduling)
+set_target_properties(ebroschin_scheduling PROPERTIES EXPORT_NAME scheduling)
+target_include_directories(ebroschin_scheduling PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
@@ -17,32 +17,32 @@ target_include_directories(claw_scheduling PUBLIC
 if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
-    add_executable(claw_scheduling_tests
-            tests/test_scheduling_system.cpp
+    add_executable(ebroschin_scheduling_tests
+        tests/test_scheduling_system.cpp
     )
 
-    target_link_libraries(claw_scheduling_tests PRIVATE
-            claw::core
-            claw_scheduling
-            GTest::gtest
-            GTest::gtest_main
+    target_link_libraries(ebroschin_scheduling_tests PRIVATE
+        ebroschin_scheduling
+        ebroschin::core
+        GTest::gtest
+        GTest::gtest_main
     )
 
     enable_testing()
 
     add_test(
-        NAME claw_scheduling_stable
-        COMMAND claw_scheduling_tests
+        NAME SchedulingTestsStable
+        COMMAND ebroschin_scheduling_tests
             --gtest_filter=-SchedulingSystemTest.PeriodicScheduling:SchedulingSystemTest.OneShotAndPeriodicScheduling
     )
 
     add_test(
-        NAME claw_scheduling_flaky
-        COMMAND claw_scheduling_tests
+        NAME SchedulingTestsFlaky
+        COMMAND ebroschin_scheduling_tests
             --gtest_filter=SchedulingSystemTest.PeriodicScheduling:SchedulingSystemTest.OneShotAndPeriodicScheduling
     )
 
-    set_tests_properties(claw_scheduling_flaky PROPERTIES LABELS flaky)
+    set_tests_properties(SchedulingTestsFlaky PROPERTIES LABELS flaky)
 endif()
 
-target_compile_features(claw_scheduling PUBLIC cxx_std_23)
+target_compile_features(ebroschin_scheduling PUBLIC cxx_std_23)

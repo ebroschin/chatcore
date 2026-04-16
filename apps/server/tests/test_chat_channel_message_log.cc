@@ -4,7 +4,7 @@
 #include "../source/chat/chat_channel_message_log.h"
 #include "../source/chat/chat_message_store.h"
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 TEST(ChatChannelMessageLogTests, AssignMessageIdsUniqueSorted) {
   MockChatPersistenceAdapter adapter;

@@ -1,9 +1,9 @@
-#include <claw/network-modules/connectors/boost_async/boost_tcp_connection.h>
+#include <ebroschin/network-modules/connectors/boost_async/boost_tcp_connection.h>
 
 #include <iostream>
 #include <span>
 
-namespace claw::network::modules {
+namespace ebroschin::network::modules {
 
 BoostTcpConnection::BoostTcpConnection(boost::asio::ip::tcp::socket socket):
   socket_{std::move(socket)}

@@ -2,7 +2,7 @@
 #include "ebroschin/logging/log.hpp"
 #include "session_system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 ConnectionEventHandler::ConnectionEventHandler(SessionSystem& session_system) noexcept:
   session_system_{session_system}

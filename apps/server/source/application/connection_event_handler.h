@@ -1,7 +1,7 @@
 #pragma once
 #include "chat_tcp_system.h"
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class UserServerSystem;
 

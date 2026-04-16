@@ -1,15 +1,15 @@
 #pragma once
 
-#include <claw/chat/api.h>
-#include <claw/network/commons.h>
+#include <ebroschin/chat/api.h>
+#include <ebroschin/network/commons.h>
 
+#include <boost/bimap.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index_container.hpp>
-#include <boost/bimap.hpp>
 #include <span>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 using namespace boost;
 

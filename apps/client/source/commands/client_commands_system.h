@@ -11,7 +11,7 @@
 #include "logout_command.h"
 #include "help_command.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 using ClientCommandsSystem = commands::CommandsSystem<
   ConnectCommand,

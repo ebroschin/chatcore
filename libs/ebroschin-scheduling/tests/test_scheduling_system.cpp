@@ -1,6 +1,6 @@
 #include <algorithm>
-#include <claw/core/system_context.h>
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/core/system_context.h>
+#include <ebroschin/scheduling/scheduling_system.h>
 #include <gtest/gtest.h>
 
 #include <deque>
@@ -8,7 +8,7 @@
 using namespace std::chrono_literals;
 using namespace std::string_literals;
 
-namespace claw::scheduling::tests {
+namespace ebroschin::scheduling::tests {
 
   class TimePointLog {
   public:

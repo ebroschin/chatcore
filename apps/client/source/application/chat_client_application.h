@@ -1,8 +1,8 @@
 #pragma once
 
-#include <claw/core/application.h>
+#include <ebroschin/core/application.h>
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class ChatClientApplication final : public core::Application {
 public:

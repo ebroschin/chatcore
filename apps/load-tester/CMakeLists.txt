@@ -27,12 +27,12 @@ find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 
 target_link_libraries(chatcore-load-tester PRIVATE
     Boost::${BOOST_STACKTRACE}
-    claw::core
-    claw::utility
-    claw::network
-    claw::network-modules
-    claw::chat-api
-    claw::scheduling
+    ebroschin::core
+    ebroschin::utility
+    ebroschin::network
+    ebroschin::network-modules
+    ebroschin::chatcore-api
+    ebroschin::scheduling
     ebroschin::logging
     ebroschin::logging-modules
 )
@@ -46,7 +46,7 @@ if(BUILD_TESTING)
     )
 
     target_link_libraries(chatcore_load_tester_tests PRIVATE
-        claw::utility
+        ebroschin::utility
         ebroschin::logging
         GTest::gtest
         GTest::gtest_main

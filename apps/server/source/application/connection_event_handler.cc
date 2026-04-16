@@ -3,7 +3,7 @@
 #include "../users/user_server_system.h"
 #include <ebroschin/logging/log.hpp>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ConnectionEventHandler::ConnectionEventHandler(UserServerSystem& user_system) noexcept:
   user_system_{user_system}

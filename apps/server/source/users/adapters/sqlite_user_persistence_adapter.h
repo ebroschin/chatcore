@@ -4,13 +4,13 @@
 #include "../../sqlite_persistence/sqlite_persistence_store.h"
 #include "user_persistence_adapter.h"
 
-using namespace claw::persistence::sqlite;
+using namespace ebroschin::persistence::modules::sqlite;
 
-namespace claw::chat::api {
+namespace ebroschin::chat::api {
 struct User;
 }
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class SqliteUserPersistenceAdapter final : public persistence::PersistenceAdapter<SqlitePersistenceStore, UserPersistenceAdapter> {
 public:

@@ -5,7 +5,7 @@
 #include <string>
 #include <SQLiteCpp/SQLiteCpp.h>
 
-namespace claw::persistence::sqlite {
+namespace ebroschin::persistence::modules::sqlite {
 
 class SqlitePersistenceStore final : public PersistenceStore {
 public:

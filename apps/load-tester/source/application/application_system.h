@@ -1,12 +1,12 @@
 #pragma once
 
-#include <claw/core/system.h>
+#include <ebroschin/core/system.h>
 
 #include "../network/root_client.h"
 #include "client_tcp_system.h"
 #include "load_tester_application.h"
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 class LoadTesterApplication;
 

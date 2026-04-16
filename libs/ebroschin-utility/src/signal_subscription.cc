@@ -1,8 +1,7 @@
-#include <claw/utility/signal_subscription.h>
+#include <ebroschin/utility/signal_subscription.h>
+#include <ebroschin/utility/signal.h>
 
-#include "claw/utility/signal.h"
-
-namespace claw::utility {
+namespace ebroschin::utility {
 
 SignalSubscription::SignalSubscription(int id, std::weak_ptr<SignalStateBase> signal_state):
   id_(id), signal_state_(std::move(signal_state))

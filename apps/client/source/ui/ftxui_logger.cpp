@@ -6,7 +6,7 @@
 #include <mutex>
 #include <sstream>
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 FtxuiLogger::FtxuiLogger(ModelSystem& model_system, UiSystem& ui_system) noexcept:
   model_system_{model_system},

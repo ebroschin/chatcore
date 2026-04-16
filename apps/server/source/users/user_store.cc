@@ -2,7 +2,7 @@
 
 #include "adapters/user_persistence_adapter.h"
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 UserStore::UserStore(UserPersistenceAdapter& adapter) noexcept:
   adapter_{adapter}

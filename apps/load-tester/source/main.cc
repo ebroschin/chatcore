@@ -2,8 +2,8 @@
 #include "application/load_tester_arguments.h"
 
 int main(int argc, char** argv) {
-  const claw::chat::tester::LoadTesterArguments arguments{argc, argv};
-  claw::chat::tester::LoadTesterApplication application{arguments};
+  const ebroschin::chatcore::tester::LoadTesterArguments arguments{argc, argv};
+  ebroschin::chatcore::tester::LoadTesterApplication application{std::move(arguments)};
   application.RunBlocking();
 
   return 0;

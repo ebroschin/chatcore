@@ -2,11 +2,11 @@
 
 #include <thread>
 
-#include "claw/core/application.h"
-#include "claw/core/system.h"
 #include "client_tcp_system.h"
+#include "ebroschin/core/application.h"
+#include "ebroschin/core/system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class ApplicationSystem final : public core::System {
 public:

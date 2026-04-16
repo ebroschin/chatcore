@@ -5,7 +5,7 @@
 
 #include <limits>
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 constexpr auto MaxMessageId = std::numeric_limits<api::PersistenceId>::max();
 

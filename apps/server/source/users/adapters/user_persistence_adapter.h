@@ -1,14 +1,14 @@
 #pragma once
 
-#include <claw/chat/api.h>
-#include <string>
+#include <ebroschin/chat/api.h>
 #include <optional>
+#include <string>
 
-namespace claw::chat::api {
+namespace ebroschin::chatcore::api {
 struct User;
 }
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class UserPersistenceAdapter {
 public:

@@ -1,7 +1,7 @@
 #include "join_channel_command.h"
 #include "../session/session_system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 JoinChannelCommand::JoinChannelCommand(const core::SystemContext& ctx) noexcept:
   session_system_(ctx.Require<SessionSystem>())

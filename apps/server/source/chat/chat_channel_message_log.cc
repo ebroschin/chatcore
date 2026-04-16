@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ChatChannelMessageLog::ChatChannelMessageLog(api::PersistenceId channel_id, ChatMessageStore& store, ChatPersistenceAdapter& adapter):
   channel_id_(channel_id),

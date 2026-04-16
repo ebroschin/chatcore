@@ -2,13 +2,13 @@
 
 #include "chat_channel_message_log.h"
 
-#include <claw/chat/api.h>
+#include <ebroschin/chat/api.h>
 #include <mutex>
 #include <optional>
 #include <queue>
 #include <unordered_map>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatPersistenceAdapter;
 

@@ -2,9 +2,9 @@
 
 #include "persistence_adapter.h"
 
-#include <claw/core/system.h>
-#include <memory>
 #include "persistence_store.h"
+#include <ebroschin/core/system.h>
+#include <memory>
 
 #include <algorithm>
 #include <ranges>
@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <iostream>
 
-namespace claw::persistence {
+namespace ebroschin::persistence {
 
 //this could have been implemented as static registry as the concrete adapter types are known at compile time
 //kept dynamic as it demonstrates the tradeoffs of dynamic registration vs. static registration (e.g. TcpSystem)

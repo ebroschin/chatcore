@@ -1,7 +1,7 @@
-#include <claw/network-modules/connectors/boost_async/boost_tcp_resolver.h>
+#include <ebroschin/network-modules/connectors/boost_async/boost_tcp_resolver.h>
 #include <iostream>
 
-namespace claw::network::modules {
+namespace ebroschin::network::modules {
 
 BoostTcpResolver::~BoostTcpResolver() {
   resolver_.cancel();

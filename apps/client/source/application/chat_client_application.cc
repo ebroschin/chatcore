@@ -11,7 +11,7 @@
 #include "client_tcp_system.h"
 #include "ebroschin/logging-modules/spdlog/spdlog-logger.hpp"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 void ChatClientApplication::Initialize() {
   ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
-#include <optional>
-#include <claw/utility/arguments.h>
 #include <ebroschin/logging/log_level.hpp>
+#include <ebroschin/utility/arguments.h>
+#include <optional>
+#include <string>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatServerArguments {
 public:

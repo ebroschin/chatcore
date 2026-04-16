@@ -7,7 +7,7 @@ namespace {
   std::shared_mutex mutex_{};
 
   //Function-local static instance.
-  //Prevents the global constructor/destructor problem and creates the instance on demand instead
+  //Prevents the global constructor/destructor compiler warning and creates the instance on demand instead
   std::shared_ptr<ebroschin::logging::Logger>& GlobalLogger()
   {
     static std::shared_ptr<ebroschin::logging::Logger> instance = std::make_shared<ebroschin::logging::NullLogger>();

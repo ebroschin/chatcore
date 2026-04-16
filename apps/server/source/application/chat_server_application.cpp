@@ -11,22 +11,22 @@
 #include "chat_tcp_system.h"
 #include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 
-#include <claw/scheduling/scheduling_system.h>
 #include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
 #include <ebroschin/logging/log.hpp>
+#include <ebroschin/scheduling/scheduling_system.h>
 
-using namespace claw::persistence::sqlite;
+using namespace ebroschin::persistence::modules::sqlite;
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ChatServerApplication::ChatServerApplication(ChatServerArguments arguments):
   arguments_(std::move(arguments))
 { }
 
 void ChatServerApplication::Initialize() {
-  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
-  ebroschin::logging::Log::SetLogLevel(arguments_.GetLogLevel());
-  ebroschin::logging::Log::Info("Starting initialization");
+  logging::Log::SetLogger<logging::modules::SpdlogLogger>();
+  logging::Log::SetLogLevel(arguments_.GetLogLevel());
+  logging::Log::Info("Starting initialization");
 
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ChatServerTcpSystem>();
@@ -41,8 +41,8 @@ void ChatServerApplication::Initialize() {
 }
 
 void ChatServerApplication::HandleTerminate() {
-  ebroschin::logging::modules::BoostStacktrace::PrintExceptionStacktrace();
-  ebroschin::logging::Log::Shutdown();
+  logging::modules::BoostStacktrace::PrintExceptionStacktrace();
+  logging::Log::Shutdown();
 }
 
 }

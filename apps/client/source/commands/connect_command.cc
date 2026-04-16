@@ -1,10 +1,10 @@
 #include "connect_command.h"
 
-#include <claw/core/system_context.h>
 #include "../model/model_system.h"
 #include "../session/session_system.h"
+#include <ebroschin/core/system_context.h>
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 ConnectCommand::ConnectCommand(const core::SystemContext& ctx) noexcept:
   session_system_(ctx.Require<SessionSystem>()),

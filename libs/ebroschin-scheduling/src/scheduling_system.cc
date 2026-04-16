@@ -1,11 +1,11 @@
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/scheduling/scheduling_system.h>
 
 #include <iostream>
 #include <ranges>
 
 using namespace std::chrono_literals;
 
-namespace claw::scheduling {
+namespace ebroschin::scheduling {
 
 SchedulingSystem::SchedulingSystem(const core::SystemContext& ctx):
   System(ctx)

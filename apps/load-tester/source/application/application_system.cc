@@ -1,8 +1,8 @@
 #include "application_system.h"
 
-#include <claw/core/system_context.h>
+#include <ebroschin/core/system_context.h>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, LoadTesterApplication& app):
   System(ctx),
   app_{app},

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <claw/chat/api.h>
+#include <ebroschin/chat/api.h>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatMessageStore;
 class ChatPersistenceAdapter;

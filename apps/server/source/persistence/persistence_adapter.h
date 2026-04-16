@@ -2,7 +2,7 @@
 #include "persistence_store.h"
 #include <concepts>
 
-namespace claw::persistence {
+namespace ebroschin::persistence {
 
 class PersistenceStore;
 

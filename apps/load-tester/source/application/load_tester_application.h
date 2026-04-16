@@ -1,10 +1,10 @@
 #pragma once
 
-#include <claw/core/application.h>
+#include <ebroschin/core/application.h>
 
 #include "load_tester_arguments.h"
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 class LoadTesterApplication final : public core::Application {
 public:

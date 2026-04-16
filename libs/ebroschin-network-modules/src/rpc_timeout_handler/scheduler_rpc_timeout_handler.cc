@@ -1,6 +1,6 @@
-#include <claw/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.h>
+#include <ebroschin/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.h>
 
-namespace claw::network::modules {
+namespace ebroschin::network::modules {
 
 SchedulerRpcTimeoutHandler::SchedulerRpcTimeoutHandler(scheduling::SchedulingSystem& scheduling_system) noexcept:
     scheduling_system_(scheduling_system)

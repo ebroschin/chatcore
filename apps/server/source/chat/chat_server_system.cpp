@@ -2,18 +2,18 @@
 
 #include "../application/application_system.h"
 
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/scheduling/scheduling_system.h>
 
 #include "../application/chat_persistence_system.h"
 #include "adapters/chat_persistence_adapter.h"
-#include <claw/network/tcp/tcp_system.h>
+#include <ebroschin/network/tcp/tcp_system.h>
 
 #include "../users/user_server_system.h"
-#include <claw/core/system_context.h>
+#include <ebroschin/core/system_context.h>
 
 using namespace std::chrono_literals;
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx):
   System(ctx),

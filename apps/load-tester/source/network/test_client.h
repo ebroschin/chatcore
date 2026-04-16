@@ -1,6 +1,6 @@
 #pragma once
 
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/scheduling/scheduling_system.h>
 
 #include <string>
 #include <unordered_map>
@@ -10,7 +10,7 @@
 #include "client_report.h"
 #include "tracked_message.h"
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 class ApplicationSystem;
 class RootClient;

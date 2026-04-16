@@ -3,7 +3,7 @@
 #include "mock_user_persistence_adapter.hpp"
 #include "../source/users/user_store.h"
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 TEST(UserStoreTests, Prewarm) {
   MockUserPersistenceAdapter adapter;

@@ -33,8 +33,8 @@ add_executable(chatcore-client
     source/commands/exit_command.cc
     source/commands/help_command.cc
     source/commands/help_command.h
-        source/ui/ftxui_logger.cpp
-        source/ui/ftxui_logger.hpp
+    source/ui/ftxui_logger.cpp
+    source/ui/ftxui_logger.hpp
 )
 
 if(WIN32)
@@ -48,12 +48,12 @@ find_package(ftxui CONFIG REQUIRED)
 
 target_link_libraries(chatcore-client PRIVATE
     Boost::${BOOST_STACKTRACE}
-    claw::core
-    claw::utility
-    claw::network
-    claw::network-modules
-    claw::chat-api
-    claw::scheduling
+    ebroschin::core
+    ebroschin::utility
+    ebroschin::network
+    ebroschin::network-modules
+    ebroschin::chatcore-api
+    ebroschin::scheduling
     ebroschin::logging
     ebroschin::logging-modules
     ftxui::screen

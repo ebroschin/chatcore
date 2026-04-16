@@ -1,9 +1,9 @@
 #pragma once
 
-#include <claw/core/application.h>
 #include "chat_server_arguments.h"
+#include <ebroschin/core/application.h>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatServerApplication final : public core::Application {
 public:

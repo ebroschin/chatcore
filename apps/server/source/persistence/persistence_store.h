@@ -1,6 +1,6 @@
 #pragma once
 
-namespace claw::persistence {
+namespace ebroschin::persistence {
 
 class PersistenceStore {
 public:

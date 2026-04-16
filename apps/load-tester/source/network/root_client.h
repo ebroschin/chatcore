@@ -2,11 +2,11 @@
 
 #include "client.h"
 
-#include <unordered_set>
 #include "test_client.h"
-#include <claw/scheduling/scheduling_system.h>
+#include <ebroschin/scheduling/scheduling_system.h>
+#include <unordered_set>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 class RootClient final : public Client {
 public:

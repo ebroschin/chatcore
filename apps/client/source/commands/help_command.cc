@@ -1,12 +1,12 @@
 #include "help_command.h"
 
-#include <claw/core/system_context.h>
-#include <claw/utility/variadic.h>
+#include <ebroschin/core/system_context.h>
+#include <ebroschin/utility/variadic.h>
 
 #include "../application/application_system.h"
 #include "client_commands_system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 HelpCommand::HelpCommand(const core::SystemContext& ctx) noexcept:
   model_system_(ctx.Require<ModelSystem>())

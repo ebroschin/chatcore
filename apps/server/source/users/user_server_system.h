@@ -2,15 +2,15 @@
 
 #include "../application/chat_tcp_system.h"
 
-#include <claw/chat/api.h>
-#include <claw/core/system.h>
+#include <ebroschin/chat/api.h>
+#include <ebroschin/core/system.h>
 #include <optional>
 #include <string>
 
 #include "../application/application_system.h"
 #include "user_store.h"
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class UserPersistenceAdapter;
 class ChatServerSystem;

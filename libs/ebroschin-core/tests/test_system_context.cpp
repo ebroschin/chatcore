@@ -1,8 +1,8 @@
+#include <ebroschin/core/system.h>
+#include <ebroschin/core/system_context.h>
 #include <gtest/gtest.h>
-#include <claw/core/system.h>
-#include <claw/core/system_context.h>
 
-using namespace claw::core;
+namespace ebroschin::core::tests {
 
 class TestSystem : public System {
 public:
@@ -85,4 +85,6 @@ TEST(SystemContextText, Deinitialization) {
 
   std::cout.rdbuf(old_cout);
   EXPECT_EQ(buffer.str(), "deinit(3)deinit(2)deinit(1)");
+}
+
 }

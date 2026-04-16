@@ -2,7 +2,7 @@
 
 #include <limits>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 LoadTesterArguments::LoadTesterArguments(int argc, char** argv) {
   const utility::Arguments arguments{argc, argv};

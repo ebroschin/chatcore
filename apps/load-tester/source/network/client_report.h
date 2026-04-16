@@ -4,7 +4,7 @@
 #include <vector>
 #include <chrono>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 struct ClientReport {
   std::vector<std::chrono::steady_clock::duration> roundtrip_times;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <claw/chat/api.h>
-#include <claw/network/commons.h>
+#include <ebroschin/chat/api.h>
+#include <ebroschin/network/commons.h>
 #include <optional>
 #include <ranges>
 
@@ -13,7 +13,7 @@
 #include <boost/bimap/unordered_multiset_of.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 using namespace boost;
 

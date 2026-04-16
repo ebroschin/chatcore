@@ -2,7 +2,7 @@
 
 #include "../source/application/load_tester_arguments.h"
 
-namespace claw::chat::tester::tests {
+namespace ebroschin::chatcore::tester::tests {
 
 static LoadTesterArguments CreateMockArguments(std::initializer_list<std::string_view> arguments) {
   const std::size_t argc = arguments.size();

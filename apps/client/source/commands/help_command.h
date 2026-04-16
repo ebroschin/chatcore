@@ -1,12 +1,12 @@
 #pragma once
 
-#include <claw/core/system_context.h>
+#include <ebroschin/core/system_context.h>
 
+#include "../model/model_system.h"
 #include <span>
 #include <string_view>
-#include "../model/model_system.h"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 class HelpCommand {
 public:

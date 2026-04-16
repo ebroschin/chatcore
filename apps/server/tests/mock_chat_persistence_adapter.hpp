@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace claw::chat::server::tests {
+namespace ebroschin::chatcore::server::tests {
 
 class MockChatPersistenceAdapter final : public ChatPersistenceAdapter {
 public:

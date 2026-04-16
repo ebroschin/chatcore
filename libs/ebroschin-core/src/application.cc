@@ -1,6 +1,6 @@
-#include <claw/core/application.h>
+#include <ebroschin/core/application.h>
 
-namespace claw::core {
+namespace ebroschin::core {
 
 namespace {
   Application* instance_ = nullptr;

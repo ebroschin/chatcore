@@ -5,13 +5,13 @@
 #include "chat_persistence_adapter.h"
 #include <vector>
 
-using namespace claw::persistence::sqlite;
+using namespace ebroschin::persistence::modules::sqlite;
 
-namespace claw::chat::api {
+namespace ebroschin::chatcore::api {
 struct ChatMessage;
 }
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class SqliteChatPersistenceAdapter final : public persistence::PersistenceAdapter<SqlitePersistenceStore, ChatPersistenceAdapter> {
 public:

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
-#include <optional>
-#include <claw/utility/arguments.h>
 #include <ebroschin/logging/log_level.hpp>
+#include <ebroschin/utility/arguments.h>
+#include <optional>
+#include <string>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 class LoadTesterArguments {
 public:

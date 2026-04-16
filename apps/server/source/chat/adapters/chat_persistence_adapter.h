@@ -1,12 +1,12 @@
 #pragma once
 
-#include <claw/chat/api.h>
-#include <string>
-#include <vector>
+#include <ebroschin/chat/api.h>
 #include <optional>
 #include <span>
+#include <string>
+#include <vector>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 class ChatPersistenceAdapter {
 public:

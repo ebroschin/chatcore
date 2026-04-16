@@ -1,6 +1,6 @@
 #pragma once
 
-#include <claw/network/commons.h>
+#include <ebroschin/network/commons.h>
 
 #include <chrono>
 #include <string>
@@ -9,7 +9,7 @@
 #include "../application/client_tcp_system.h"
 #include <ebroschin/logging/log.hpp>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 class ApplicationSystem;
 

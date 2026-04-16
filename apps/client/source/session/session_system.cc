@@ -1,12 +1,12 @@
+#include "session_system.h"
 #include "../application/application_system.h"
 #include "../model/model_system.h"
 #include "../ui/ui_system.h"
-#include "claw/core/system_context.h"
-#include "session_system.h"
+#include "ebroschin/core/system_context.h"
 
 #include "ebroschin/logging/log.hpp"
 
-namespace claw::chat::client {
+namespace ebroschin::chatcore::client {
 
 SessionSystem::SessionSystem(const core::SystemContext& ctx) noexcept:
   System(ctx),

@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-namespace claw::chat::tester {
+namespace ebroschin::chatcore::tester {
 
 struct TrackedMessage {
   steady_clock::time_point time_point{};

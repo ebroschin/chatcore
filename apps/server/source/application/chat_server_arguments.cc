@@ -2,7 +2,7 @@
 
 #include <limits>
 
-namespace claw::chat::server {
+namespace ebroschin::chatcore::server {
 
 ChatServerArguments::ChatServerArguments(int argc, char** argv) {
   const utility::Arguments arguments{argc, argv};
