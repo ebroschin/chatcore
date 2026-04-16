@@ -19,7 +19,7 @@ class UserStore {
   struct CachedUser {
     api::User user{};
 
-    [[nodiscard]] const api::PersistenceId& GetUserId() const { return user.id; }
+    [[nodiscard]] api::PersistenceId GetUserId() const { return user.id; }
     [[nodiscard]] const std::string& GetUserName() const { return user.name; }
   };
 
@@ -27,7 +27,7 @@ class UserStore {
     CachedUser,
     multi_index::indexed_by<
       multi_index::ordered_unique<
-        multi_index::const_mem_fun<CachedUser, const api::PersistenceId&, &CachedUser::GetUserId>
+        multi_index::const_mem_fun<CachedUser, api::PersistenceId, &CachedUser::GetUserId>
       >,
       multi_index::ordered_non_unique<
         multi_index::const_mem_fun<CachedUser, const std::string&, &CachedUser::GetUserName>
@@ -40,8 +40,8 @@ public:
 
   void Prewarm();
   const api::User& CacheUser(api::User user);
-  bool HasSession(network::ConnectionId connection_id) const;
-  bool HasSession(api::PersistenceId user_id) const;
+  [[nodiscard]] bool HasSession(network::ConnectionId connection_id) const;
+  [[nodiscard]] bool HasSession(api::PersistenceId user_id) const;
   void AssignSession(network::ConnectionId connection_id, api::PersistenceId user_id);
   std::optional<std::reference_wrapper<const api::User>> GetSessionUser(network::ConnectionId connection_id);
   void RemoveSession(network::ConnectionId connection_id);

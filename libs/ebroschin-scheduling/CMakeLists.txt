@@ -14,9 +14,7 @@ target_include_directories(claw_scheduling PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-option(BUILD_TESTING "Build tests" OFF)
 if(BUILD_TESTING)
-    enable_testing()
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(claw_scheduling_tests
@@ -30,8 +28,21 @@ if(BUILD_TESTING)
             GTest::gtest_main
     )
 
-    include(GoogleTest)
-    gtest_discover_tests(claw_scheduling_tests)
+    enable_testing()
+
+    add_test(
+        NAME claw_scheduling_stable
+        COMMAND claw_scheduling_tests
+            --gtest_filter=-SchedulingSystemTest.PeriodicScheduling:SchedulingSystemTest.OneShotAndPeriodicScheduling
+    )
+
+    add_test(
+        NAME claw_scheduling_flaky
+        COMMAND claw_scheduling_tests
+            --gtest_filter=SchedulingSystemTest.PeriodicScheduling:SchedulingSystemTest.OneShotAndPeriodicScheduling
+    )
+
+    set_tests_properties(claw_scheduling_flaky PROPERTIES LABELS flaky)
 endif()
 
 target_compile_features(claw_scheduling PUBLIC cxx_std_23)

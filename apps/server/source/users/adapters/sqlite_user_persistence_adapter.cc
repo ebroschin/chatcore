@@ -25,7 +25,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::CreateUser(const std::str
   return api::User{user_id, name};
 }
 
-std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const api::PersistenceId& id) {
+std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(api::PersistenceId id) {
   const auto& db = store_.GetDatabase();
   SQLite::Statement query(db,
       "SELECT id, name FROM chat_users "

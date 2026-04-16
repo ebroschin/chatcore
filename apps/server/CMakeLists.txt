@@ -56,3 +56,40 @@ target_link_libraries(chatcore-server PRIVATE
     ebroschin::logging
     ebroschin::logging-modules
 )
+
+if(BUILD_TESTING)
+    find_package(GTest CONFIG REQUIRED)
+
+    add_executable(chatcore_server_tests
+        tests/test_chat_channel_message_log.cc
+        tests/test_chat_channel_store.cc
+        tests/test_chat_message_store.cc
+        tests/test_chat_server_arguments.cc
+        tests/test_user_store.cc
+        tests/mock_chat_persistence_adapter.hpp
+        source/users/user_store.cc
+        source/chat/chat_channel_message_log.cc
+        source/chat/chat_channel_store.cc
+        source/chat/chat_message_store.cc
+        source/application/chat_server_arguments.cc
+        tests/mock_user_persistence_adapter.hpp
+    )
+
+    target_link_libraries(chatcore_server_tests PRIVATE
+        claw::chat-api
+        claw::core
+        claw::utility
+        claw::network
+        claw::network-modules
+        ebroschin::logging
+        GTest::gtest
+        GTest::gtest_main
+    )
+
+    target_include_directories(chatcore_server_tests PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/source
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(chatcore_server_tests)
+endif()
