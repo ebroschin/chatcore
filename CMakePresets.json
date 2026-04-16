@@ -108,6 +108,14 @@
       }
     },
     {
+      "name": "windows-test-server",
+      "inherits": "windows-release-server",
+      "cacheVariables": {
+        "BUILD_TESTS": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test"
+      }
+    },
+    {
       "name": "windows-release-load-tester",
       "inherits": "windows-release",
       "cacheVariables": {

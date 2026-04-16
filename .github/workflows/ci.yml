@@ -53,6 +53,12 @@ jobs:
           CXX: clang++-20
         run: bash scripts/linux/build-all.sh
 
+      - name: Test server
+        env:
+          CC: clang-20
+          CXX: clang++-20
+        run: bash scripts/linux/test-server.sh
+
   build-windows:
     runs-on: windows-latest
 
@@ -93,3 +99,9 @@ jobs:
         run: |
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
           .\scripts\windows\build-all.ps1
+
+      - name: Test server
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+          .\scripts\windows\test-server.ps1
