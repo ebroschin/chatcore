@@ -2,9 +2,6 @@ add_executable(chatcore-server
     source/main.cc
     source/application/chat_server_application.cpp
     source/application/chat_server_application.h
-    source/persistence/persistence_system.h
-    source/persistence/persistence_store.h
-    source/persistence/persistence_adapter.h
     source/chat/adapters/chat_persistence_adapter.h
     source/sqlite_persistence/sqlite_persistence_store.cpp
     source/sqlite_persistence/sqlite_persistence_store.h
@@ -55,6 +52,7 @@ target_link_libraries(chatcore-server PRIVATE
     ebroschin::scheduling
     ebroschin::logging
     ebroschin::logging-modules
+    ebroschin::persistence
 )
 
 if(BUILD_TESTING)

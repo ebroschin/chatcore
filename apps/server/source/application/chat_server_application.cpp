@@ -1,8 +1,8 @@
 #include "chat_server_application.h"
 
+#include <ebroschin/persistence/persistence_system.h>
 #include "../chat/adapters/sqlite_chat_persistence_adapter.h"
 #include "../chat/chat_server_system.h"
-#include "../persistence/persistence_system.h"
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "../users/adapters/sqlite_user_persistence_adapter.h"
 #include "../users/user_server_system.h"

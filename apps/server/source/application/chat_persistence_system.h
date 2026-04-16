@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../persistence/persistence_system.h"
+#include <ebroschin/persistence/persistence_system.h>
 #include "../sqlite_persistence/sqlite_persistence_store.h"
 
 namespace ebroschin::chatcore::server {

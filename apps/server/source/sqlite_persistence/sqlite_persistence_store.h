@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../persistence/persistence_store.h"
-
-#include <string>
+#include <ebroschin/persistence/persistence_store.h>
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <string>
 
 namespace ebroschin::persistence::modules::sqlite {
 
