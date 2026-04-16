@@ -58,7 +58,6 @@ target_link_libraries(chatcore-server PRIVATE
 )
 
 if(BUILD_TESTS)
-    enable_testing()
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(chatcore_server_tests

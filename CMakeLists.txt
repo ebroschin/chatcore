@@ -29,6 +29,10 @@ else()
     set(BOOST_STACKTRACE stacktrace_backtrace)
 endif()
 
+if(BUILD_TESTS)
+    enable_testing()
+endif()
+
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-utility")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-core")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-network")
