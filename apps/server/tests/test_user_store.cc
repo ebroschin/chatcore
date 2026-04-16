@@ -66,4 +66,20 @@ TEST(UserStoreTests, SessionLifecycle) {
   test_user(store, 100, user2, "vergil");
 }
 
+TEST(UserStoreTests, GetUsersSkipMissing) {
+  MockUserPersistenceAdapter adapter;
+  adapter.CreateUser("dante", "123");
+  adapter.CreateUser("vergil", "123");
+  adapter.CreateUser("nero", "777");
+
+  UserStore store{adapter};
+  store.Prewarm();
+
+  const std::vector<api::PersistenceId> ids{1, 999, 888, 1337, 2};
+  const auto users = store.GetUsers(ids);
+  ASSERT_EQ(users.size(), 2);
+  EXPECT_EQ(users[0].id, 1);
+  EXPECT_EQ(users[1].id, 2);
+}
+
 }
