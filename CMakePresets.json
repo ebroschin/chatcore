@@ -21,6 +21,8 @@
       "name": "linux-debug",
       "inherits": "base",
       "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-20",
+        "CMAKE_CXX_COMPILER": "clang++-20",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_FLAGS_DEBUG": "-g -O0 -fsanitize=address -fno-omit-frame-pointer",
         "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fsanitize=address -fno-omit-frame-pointer",
@@ -33,6 +35,8 @@
       "name": "linux-release",
       "inherits": "base",
       "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-20",
+        "CMAKE_CXX_COMPILER": "clang++-20",
         "CMAKE_BUILD_TYPE": "Release",
         "VCPKG_TARGET_TRIPLET": "x64-linux-clang"
       }
@@ -59,6 +63,45 @@
     {
       "name": "linux-debug-load-tester",
       "inherits": "linux-debug",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "ON"
+      }
+    },
+    {
+      "name": "windows-release",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+      }
+    },
+    {
+      "name": "windows-release-client",
+      "inherits": "windows-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "OFF",
+        "VCPKG_MANIFEST_FEATURES": "client"
+      }
+    },
+    {
+      "name": "windows-release-server",
+      "inherits": "windows-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "OFF"
+      }
+    },
+    {
+      "name": "windows-release-load-tester",
+      "inherits": "windows-release",
       "cacheVariables": {
         "BUILD_CLIENT": "OFF",
         "BUILD_SERVER": "OFF",

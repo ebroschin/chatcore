@@ -7,12 +7,12 @@ using namespace std::chrono_literals;
 
 namespace claw::scheduling {
 
-SchedulingSystem::SchedulingSystem(const core::SystemContext & ctx):
+SchedulingSystem::SchedulingSystem(const core::SystemContext& ctx):
   System(ctx)
 {}
 
 void SchedulingSystem::Initialize() {
-  scheduler_thread_ = std::jthread{&SchedulingSystem::ProcessTasks, this};
+    scheduler_thread_ = std::jthread{ [this](std::stop_token st) { ProcessTasks(st); } };
 }
 
 void SchedulingSystem::Deinitialize() {

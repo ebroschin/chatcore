@@ -1,0 +1,95 @@
+name: CI (Linux, Windows)
+
+on:
+  push:
+    branches: [ "ci/**" ]
+  pull_request:
+    branches: [ "ci/**" ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release
+
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20
+
+          sudo apt-get install -y ninja-build cmake
+
+      - name: Prepare vcpkg cache
+        run: |
+          echo "VCPKG_DOWNLOADS=${{ github.workspace }}/.vcpkg-downloads" >> "$GITHUB_ENV"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=${{ github.workspace }}/.vcpkg-cache" >> "$GITHUB_ENV"
+          echo "VCPKG_FEATURE_FLAGS=binarycaching" >> "$GITHUB_ENV"
+
+          mkdir -p "${{ github.workspace }}/.vcpkg-downloads"
+          mkdir -p "${{ github.workspace }}/.vcpkg-cache"
+
+      - name: Apply vcpkg cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.VCPKG_DOWNLOADS }}
+            ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
+      - name: Build
+        env:
+          CC: clang-20
+          CXX: clang++-20
+        run: bash scripts/linux/build-all.sh
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Ninja
+        run: choco install ninja cmake -y
+
+      - name: Prepare vcpkg cache
+        shell: pwsh
+        run: |
+          "VCPKG_DOWNLOADS=${{ github.workspace }}\.vcpkg-downloads" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "VCPKG_DEFAULT_BINARY_CACHE=${{ github.workspace }}\.vcpkg-cache" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "VCPKG_FEATURE_FLAGS=binarycaching" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\.vcpkg-downloads" | Out-Null
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\.vcpkg-cache" | Out-Null
+
+      - name: Apply vcpkg cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.VCPKG_DOWNLOADS }}
+            ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
+      - name: Build
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+          .\scripts\windows\build-all.ps1
