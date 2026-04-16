@@ -5,9 +5,8 @@ namespace ebroschin::network::modules {
 
 BoostTcpAcceptor::~BoostTcpAcceptor() {
   if (acceptor_ && acceptor_->is_open()) {
-    system::error_code error;
-    acceptor_->cancel(error);
-    acceptor_->close(error);
+    (void)acceptor_->cancel();
+    (void)acceptor_->close();
   }
 
   work_guard_.reset();

@@ -12,7 +12,7 @@ LoginCommand::LoginCommand(const core::SystemContext& ctx) noexcept:
 
 void LoginCommand::Execute(std::span<std::string_view> arguments) const {
   if (arguments.size() < 2) {
-    ebroschin::logging::Log::Error() << Token << " requires 2 arguments <user_name> <password>";
+    logging::Log::Error() << Token << " requires 2 arguments <user_name> <password>";
     return;
   }
 

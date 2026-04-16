@@ -13,7 +13,7 @@ void ConnectionEventHandler::OnConnected(network::ConnectionId connection_id) {
 }
 
 void ConnectionEventHandler::OnConnectionFailed(const network::modules::BoostTcpResolverParameters& parameters) {
-  session_system_.OnConnectionFailed(std::move(parameters));
+  session_system_.OnConnectionFailed(parameters);
 }
 
 void ConnectionEventHandler::OnDisconnected(network::ConnectionId connection_id) {

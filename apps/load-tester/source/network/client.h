@@ -32,7 +32,7 @@ protected:
   template <typename TRpcCall>
   void RegisterDefaultErrorHandler(TRpcCall& rpc_call) const {
     rpc_call.OnError([this](const api::ErrorResponseMessage& response) {
-      ebroschin::logging::Log::Error() << "[Server::Error][" << name_ << "] " << response.value;
+      logging::Log::Error() << "[Server::Error][" << name_ << "] " << response.value;
       Quit();
     });
   }
@@ -43,7 +43,7 @@ protected:
 
     rpc_call.SetTimeoutDuration(5s);
     rpc_call.OnTimeout([this, message] {
-      ebroschin::logging::Log::Error() << "[Client][" << name_ << "] " << message;
+      logging::Log::Error() << "[Client][" << name_ << "] " << message;
       Quit();
     });
   }

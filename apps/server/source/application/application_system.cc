@@ -17,7 +17,7 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerA
 {}
 
 void ApplicationSystem::Initialize() {
-  application_thread_ = std::jthread{[this](std::stop_token st) {
+  application_thread_ = std::jthread{[this](const std::stop_token& st) {
     auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
       processor.ProcessBlocking();
@@ -28,7 +28,7 @@ void ApplicationSystem::Initialize() {
   const auto& arguments = app_.GetArguments();
   tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, connection_event_handler_.get());
 
-  ebroschin::logging::Log::Info("ChatCore server started, accepting clients");
+  logging::Log::Info("ChatCore server started, accepting clients");
 }
 
 void ApplicationSystem::Deinitialize() {
@@ -43,7 +43,7 @@ void ApplicationSystem::Shutdown() const noexcept {
 }
 
 void ApplicationSystem::HandleRpcError(network::ConnectionId connection_id, network::RequestId request_id, const std::string& message) const {
-  ebroschin::logging::Log::Debug("RPC Error: " + message);
+  logging::Log::Debug("RPC Error: " + message);
   tcp_system_.Send<api::ErrorResponseMessage>(connection_id, {request_id, message});
 }
 

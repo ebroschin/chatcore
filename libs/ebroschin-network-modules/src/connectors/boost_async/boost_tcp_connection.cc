@@ -14,9 +14,8 @@ void BoostTcpConnection::Start() {
 }
 
 void BoostTcpConnection::Disconnect() {
-  boost::system::error_code error;
-  socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
-  socket_.close(error);
+  socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+  socket_.close();
 }
 
 void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {

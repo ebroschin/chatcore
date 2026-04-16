@@ -64,6 +64,7 @@
       "name": "linux-test-all",
       "inherits": "linux-debug",
       "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy-20",
         "BUILD_CLIENT": "ON",
         "BUILD_SERVER": "ON",
         "BUILD_LOAD_TESTER": "ON",
@@ -129,22 +130,6 @@
         "BUILD_SERVER": "OFF",
         "BUILD_LOAD_TESTER": "ON"
       }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "build-linux-debug",
-      "configurePreset": "linux-debug"
-    },
-    {
-      "name": "build-linux-release",
-      "configurePreset": "linux-release"
-    }
-  ],
-  "testPresets": [
-    {
-      "name": "test-linux-debug",
-      "configurePreset": "linux-debug"
     }
   ]
 }

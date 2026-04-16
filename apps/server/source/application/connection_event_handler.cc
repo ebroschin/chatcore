@@ -10,11 +10,11 @@ ConnectionEventHandler::ConnectionEventHandler(UserServerSystem& user_system) no
 {}
 
 void ConnectionEventHandler::OnConnected(network::ConnectionId connection_id) {
-  ebroschin::logging::Log::Verbose("Client with id " + std::to_string(connection_id) + " has connected");
+  logging::Log::Verbose("Client with id " + std::to_string(connection_id) + " has connected");
 }
 
 void ConnectionEventHandler::OnDisconnected(network::ConnectionId connection_id) {
-  ebroschin::logging::Log::Verbose("Client with id " + std::to_string(connection_id) + " has disconnected");
+  logging::Log::Verbose("Client with id " + std::to_string(connection_id) + " has disconnected");
   user_system_.RemoveSession(connection_id);
 }
 

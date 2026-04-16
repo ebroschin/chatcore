@@ -26,7 +26,7 @@ UiSystem::UiSystem(const core::SystemContext& ctx, core::Application& app):
 { }
 
 void UiSystem::Initialize() {
-  ebroschin::logging::Log::SetLogger<FtxuiLogger>(model_system_, *this);
+  logging::Log::SetLogger<FtxuiLogger>(model_system_, *this);
   WriteLine("Welcome to ChatCore | Developed by Elias Broschin");
   WriteLine("-------------------------------------------------");
   WriteLine("Enter /help for more details");
@@ -118,7 +118,7 @@ bool UiSystem::HandleEvent(const ftxui::Event& e) {
     }
 
     while (!buffer.empty()) {
-      WriteLine(std::move(buffer.front()));
+      WriteLine(buffer.front());
       buffer.pop();
     }
 
@@ -159,7 +159,7 @@ void UiSystem::HandleInput(std::string_view input) const {
   auto success = commands_system_.Execute(token, split | std::views::drop(1));
   if (success) return;
 
-  ebroschin::logging::Log::Error() << "unknown command: " << token;
+  logging::Log::Error() << "unknown command: " << token;
 }
 
 }

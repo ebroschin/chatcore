@@ -12,7 +12,7 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, LoadTesterA
 {}
 
 void ApplicationSystem::Initialize() {
-  application_thread_ = std::jthread{[this](std::stop_token st) {
+  application_thread_ = std::jthread{[this](const std::stop_token& st) {
     auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
       processor.ProcessBlocking();
@@ -33,8 +33,8 @@ void ApplicationSystem::Deinitialize() {
 
 void ApplicationSystem::Quit() const {
   if (!app_.IsRunning()) return;
-  ebroschin::logging::Log::Info() << "Shutting down";
-  ebroschin::logging::Log::Shutdown();
+  logging::Log::Info() << "Shutting down";
+  logging::Log::Shutdown();
   app_.Quit();
 }
 

@@ -7,10 +7,10 @@ namespace ebroschin::core::tests {
 class TestSystem : public System {
 public:
   explicit TestSystem(const SystemContext& ctx,
-    const std::string& parameter1,
+    std::string parameter1,
     const std::int64_t& parameter2):
     System(ctx),
-    parameter1_{parameter1},
+    parameter1_{std::move(parameter1)},
     parameter2_{parameter2}
   {}
 

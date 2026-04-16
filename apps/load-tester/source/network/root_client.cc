@@ -71,18 +71,18 @@ void RootClient::Evaluate() {
     std::ranges::copy(report.roundtrip_times, std::back_inserter(latencies));
   }
 
-  ebroschin::logging::Log::Info() << "total sent: " << total_sent;
-  ebroschin::logging::Log::Info() << "total completed: " << latencies.size();
-  ebroschin::logging::Log::Info() << "total failed: " << total_failed;
+  logging::Log::Info() << "total sent: " << total_sent;
+  logging::Log::Info() << "total completed: " << latencies.size();
+  logging::Log::Info() << "total failed: " << total_failed;
 
   const auto to_us = [](steady_clock::duration d) {
     return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
   };
 
-  ebroschin::logging::Log::Info() << "p50: " << to_us(CalculatePercentile(latencies, 0.5)) << "us";
-  ebroschin::logging::Log::Info() << "p95: " << to_us(CalculatePercentile(latencies, 0.95)) << "us";
-  ebroschin::logging::Log::Info() << "p99: " << to_us(CalculatePercentile(latencies, 0.99)) << "us";
-  ebroschin::logging::Log::Info() << "max: " << to_us(CalculatePercentile(latencies, 1.0)) << "us";
+  logging::Log::Info() << "p50: " << to_us(CalculatePercentile(latencies, 0.5)) << "us";
+  logging::Log::Info() << "p95: " << to_us(CalculatePercentile(latencies, 0.95)) << "us";
+  logging::Log::Info() << "p99: " << to_us(CalculatePercentile(latencies, 0.99)) << "us";
+  logging::Log::Info() << "max: " << to_us(CalculatePercentile(latencies, 1.0)) << "us";
 }
 
 steady_clock::duration RootClient::CalculatePercentile(std::vector<steady_clock::duration> latencies, double normalized_percentage) {
@@ -100,7 +100,7 @@ void RootClient::SetClientReady(network::ConnectionId id) {
   connected_clients_.emplace(id);
 
   if (connected_clients_.size() != clients_.size()) return;
-  ebroschin::logging::Log::Info() << "Clients prepared, running load test";
+  logging::Log::Info() << "Clients prepared, running load test";
 
   auto phase = 1000ms;
   const auto stagger_duration = phase / clients_.size();

@@ -11,7 +11,7 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, core::Appli
 {}
 
 void ApplicationSystem::Initialize() {
-  application_thread_ = std::jthread{[this](std::stop_token st) {
+  application_thread_ = std::jthread{[this](const std::stop_token& st) {
     auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
       processor.ProcessBlocking();

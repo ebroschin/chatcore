@@ -32,7 +32,7 @@ private:
   bool ValidateSession() const;
 
   void LoadLatestChatLog(api::PersistenceId channel_id);
-  void LoadUsers(std::vector<api::PersistenceId> user_ids, std::function<void()> callback);
+  void LoadUsers(std::span<const api::PersistenceId> user_ids, std::function<void()> callback);
   void LoadUser(api::PersistenceId user_id, std::function<void(std::optional<std::reference_wrapper<const api::User>> user)> callback);
   void LoadChannel(api::PersistenceId channel_id, std::function<void(std::optional<std::reference_wrapper<const api::ChatChannel>> channel)> callback);
 
@@ -63,7 +63,7 @@ private:
   template <typename RpcCall>
   void RegisterDefaultErrorHandler(RpcCall&& rpcCall) const {
     rpcCall.OnError([](const api::ErrorResponseMessage& response) {
-      ebroschin::logging::Log::Error() << response.value;
+      logging::Log::Error() << response.value;
     });
   }
 
@@ -73,7 +73,7 @@ private:
 
     rpcCall.SetTimeoutDuration(5s);
     rpcCall.OnTimeout([message] {
-      ebroschin::logging::Log::Error() << message;
+      logging::Log::Error() << message;
     });
   }
 

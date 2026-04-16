@@ -20,19 +20,19 @@ public:
   [[nodiscard]] unsigned int GetClientCount() const noexcept
   { return client_count_; }
 
-  [[nodiscard]] ebroschin::logging::LogLevel GetLogLevel() const noexcept
+  [[nodiscard]] logging::LogLevel GetLogLevel() const noexcept
   { return log_level_; }
 
 private:
   std::optional<std::string> ParseIp(const utility::Arguments& arguments);
   std::optional<std::string> ParsePort(const utility::Arguments& arguments);
   std::optional<unsigned int> ParseClientCount(const utility::Arguments& arguments);
-  std::optional<ebroschin::logging::LogLevel> ParseLogLevel(const utility::Arguments& arguments);
+  std::optional<logging::LogLevel> ParseLogLevel(const utility::Arguments& arguments);
 
   std::string ip_;
   std::string port_;
   unsigned int client_count_;
-  ebroschin::logging::LogLevel log_level_;
+  logging::LogLevel log_level_;
 
 };
 

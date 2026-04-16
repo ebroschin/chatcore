@@ -14,8 +14,8 @@
 namespace ebroschin::chatcore::client {
 
 void ChatClientApplication::Initialize() {
-  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
-  ebroschin::logging::Log::Info("Starting initialization");
+  logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  logging::Log::Info("Starting initialization");
 
   ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ClientTcpSystem>();
@@ -31,11 +31,11 @@ void ChatClientApplication::Initialize() {
 }
 
 void ChatClientApplication::HandleTerminate() {
-  ebroschin::logging::Log::Shutdown();
+  logging::Log::Shutdown();
 
-  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
   ebroschin::logging::modules::BoostStacktrace::PrintExceptionStacktrace();
-  ebroschin::logging::Log::Shutdown();
+  logging::Log::Shutdown();
 }
 
 }

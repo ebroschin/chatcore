@@ -26,7 +26,9 @@ jobs:
           chmod +x llvm.sh
           sudo ./llvm.sh 20
 
-          sudo apt-get install -y ninja-build cmake
+          sudo apt-get install -y ninja-build cmake clang-tidy-20
+          sudo ln -sf /usr/bin/clang-tidy-20 /usr/local/bin/clang-tidy
+          clang-tidy --version
 
       - name: Prepare vcpkg cache
         run: |

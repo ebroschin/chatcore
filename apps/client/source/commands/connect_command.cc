@@ -13,14 +13,14 @@ ConnectCommand::ConnectCommand(const core::SystemContext& ctx) noexcept:
 
 void ConnectCommand::Execute(std::span<std::string_view> arguments) const {
   if (arguments.size() < 2) {
-    ebroschin::logging::Log::Error() << Token << " requires 2 arguments <address> <port>";
+    logging::Log::Error() << Token << " requires 2 arguments <address> <port>";
     return;
   }
 
   const auto address = std::string(arguments[0]);
   const auto port = std::string(arguments[1]);
   session_system_.Connect(address, port);
-  ebroschin::logging::Log::Info() << "Connecting to " << address << ":" << port;
+  logging::Log::Info() << "Connecting to " << address << ":" << port;
 }
 
 }

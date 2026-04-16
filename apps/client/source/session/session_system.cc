@@ -159,7 +159,7 @@ void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
     std::ranges::sort(user_ids);
     user_ids.erase(std::ranges::unique(user_ids).begin(), user_ids.end());
 
-    LoadUsers(std::move(user_ids), [this, messages = response.messages]() {
+    LoadUsers(user_ids, [this, messages = response.messages]() {
       for (const auto& chat : messages) {
         const auto it = users_cache_.find(chat.user_id);
         if (it == users_cache_.end()) continue;
@@ -174,7 +174,7 @@ void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
   get_chats_rpc.Call();
 }
 
-void SessionSystem::LoadUsers(std::vector<api::PersistenceId> user_ids, std::function<void()> callback) {
+void SessionSystem::LoadUsers(std::span<const api::PersistenceId> user_ids, std::function<void()> callback) {
   std::vector<api::PersistenceId> uncached_ids;
   for (const auto& user_id : user_ids) {
     const auto it = users_cache_.find(user_id);
@@ -207,7 +207,7 @@ void SessionSystem::LoadUsers(std::vector<api::PersistenceId> user_ids, std::fun
 }
 
 void SessionSystem::LoadUser(api::PersistenceId user_id, std::function<void(std::optional<std::reference_wrapper<const api::User>> user)> callback) {
-  LoadUsers({user_id}, [this, user_id, callback = std::move(callback)]() {
+  LoadUsers(std::vector{user_id}, [this, user_id, callback = std::move(callback)]() {
     if (!callback) return;
 
     const auto it = users_cache_.find(user_id);
@@ -252,23 +252,23 @@ void SessionSystem::LoadChannel(api::PersistenceId channel_id, std::function<voi
 
 void SessionSystem::OnConnected(network::ConnectionId connection_id) {
   connection_id_.emplace(connection_id);
-  ebroschin::logging::Log::Info() << "Successfully connected to chat server.";
+  logging::Log::Info() << "Successfully connected to chat server.";
 }
 
 void SessionSystem::OnConnectionFailed(const network::modules::BoostTcpResolverParameters& parameters) const {
-  ebroschin::logging::Log::Error() << "Connection to chat server failed " << parameters.ip + ":" + parameters.port;
+  logging::Log::Error() << "Connection to chat server failed " << parameters.ip + ":" + parameters.port;
 }
 
 void SessionSystem::OnDisconnected(network::ConnectionId) {
   connection_id_.reset();
   user_.reset();
-  ebroschin::logging::Log::Info() << "Lost connection to chat server.";
+  logging::Log::Info() << "Lost connection to chat server.";
   model_system_.SetChannelName(std::nullopt);
 }
 
 void SessionSystem::HandleErrorEvent(const api::ErrorMessage& message) {
   if (!connection_id_) return;
-  ebroschin::logging::Log::Error() << message.value;
+  logging::Log::Error() << message.value;
 }
 
 void SessionSystem::HandlePrintEvent(const api::PrintMessage& message) {

@@ -12,7 +12,7 @@ SchedulingSystem::SchedulingSystem(const core::SystemContext& ctx):
 {}
 
 void SchedulingSystem::Initialize() {
-    scheduler_thread_ = std::jthread{ [this](std::stop_token st) { ProcessTasks(st); } };
+    scheduler_thread_ = std::jthread{ [this](std::stop_token st) { ProcessTasks(std::move(st)); } };
 }
 
 void SchedulingSystem::Deinitialize() {

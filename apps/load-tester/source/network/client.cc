@@ -37,12 +37,12 @@ void Client::OnConnected(network::ConnectionId connection_id) {
 }
 
 void Client::OnUserCreated(const api::CreateUserResponseMessage& message) {
-  ebroschin::logging::Log::Verbose() << "user successfully created: " << message.user.name << " / " << message.user.id;
+  logging::Log::Verbose() << "user successfully created: " << message.user.name << " / " << message.user.id;
   user_.emplace(message.user);
 
   auto authenticate_call = rpc_system_.Prepare<api::AuthenticateUserRequestMessage>(*connection_id_, message.user.name, "123");
   authenticate_call.OnSuccess([this](const api::AuthenticateUserResponseMessage& auth_message) {
-    ebroschin::logging::Log::Verbose() << "user successfully authenticated: " << auth_message.user.name;
+    logging::Log::Verbose() << "user successfully authenticated: " << auth_message.user.name;
     OnPrepared();
   });
 

@@ -10,7 +10,7 @@ AddChannelCommand::AddChannelCommand(const core::SystemContext& ctx) noexcept:
 
 void AddChannelCommand::Execute(std::span<std::string_view> arguments) const {
   if (arguments.empty()) {
-    ebroschin::logging::Log::Error() << Token << " requires argument <channel_name>";
+    logging::Log::Error() << Token << " requires argument <channel_name>";
     return;
   }
 

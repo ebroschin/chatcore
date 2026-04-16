@@ -18,9 +18,9 @@ LoadTesterApplication::LoadTesterApplication(LoadTesterArguments arguments) noex
 {}
 
 void LoadTesterApplication::Initialize() {
-  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
-  ebroschin::logging::Log::SetLogLevel(arguments_.GetLogLevel());
-  ebroschin::logging::Log::Info("Starting initialization");
+  logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
+  logging::Log::SetLogLevel(arguments_.GetLogLevel());
+  logging::Log::Info("Starting initialization");
 
   ctx_.Register<ClientTcpSystem>();
   auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
@@ -32,7 +32,7 @@ void LoadTesterApplication::Initialize() {
 
 void LoadTesterApplication::HandleTerminate() {
   ebroschin::logging::modules::BoostStacktrace::PrintExceptionStacktrace();
-  ebroschin::logging::Log::Shutdown();
+  logging::Log::Shutdown();
 }
 
 }
