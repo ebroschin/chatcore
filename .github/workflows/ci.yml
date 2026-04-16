@@ -2,9 +2,9 @@ name: CI (Linux, Windows)
 
 on:
   push:
-    branches: [ "ci" ]
+    branches: [ "ci/**" ]
   pull_request:
-    branches: [ "ci" ]
+    branches: [ "ci/**" ]
   workflow_dispatch:
 
 jobs:
