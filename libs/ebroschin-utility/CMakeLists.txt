@@ -22,9 +22,7 @@ target_include_directories(claw_utility PUBLIC
 
 target_compile_features(claw_utility PUBLIC cxx_std_23)
 
-option(BUILD_TESTING "Build tests" OFF)
 if(BUILD_TESTING)
-    enable_testing()
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(tests

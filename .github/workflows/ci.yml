@@ -47,11 +47,11 @@ jobs:
           restore-keys: |
             vcpkg-${{ runner.os }}-
 
-      - name: Build
+      - name: Build and run tests
         env:
           CC: clang-20
           CXX: clang++-20
-        run: bash scripts/linux/build-all.sh
+        run: bash scripts/linux/test-all.sh
 
   build-windows:
     runs-on: windows-latest
@@ -88,8 +88,8 @@ jobs:
           restore-keys: |
             vcpkg-${{ runner.os }}-
 
-      - name: Build
+      - name: Build and run tests
         shell: pwsh
         run: |
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-          .\scripts\windows\build-all.ps1
+          .\scripts\windows\test-all.ps1

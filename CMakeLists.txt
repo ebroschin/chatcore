@@ -16,7 +16,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         -Wno-c++98-compat-extra-semi
     )
 
-    if(NOT BUILD_TESTS)
+    if(NOT BUILD_TESTING)
         add_compile_options(
             -Wglobal-constructors
         )
@@ -27,6 +27,10 @@ if(WIN32)
     set(BOOST_STACKTRACE stacktrace_windbg)
 else()
     set(BOOST_STACKTRACE stacktrace_backtrace)
+endif()
+
+if(BUILD_TESTING)
+    enable_testing()
 endif()
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-utility")

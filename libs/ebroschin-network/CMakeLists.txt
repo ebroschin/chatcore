@@ -26,9 +26,7 @@ target_link_libraries(claw_network INTERFACE
     claw::core
 )
 
-option(BUILD_TESTING "Build tests" OFF)
 if(BUILD_TESTING)
-    enable_testing()
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(claw_network_tests
