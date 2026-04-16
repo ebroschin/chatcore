@@ -61,11 +61,14 @@
       }
     },
     {
-      "name": "linux-test-server",
-      "inherits": "linux-debug-server",
+      "name": "linux-test-all",
+      "inherits": "linux-debug",
       "cacheVariables": {
-        "BUILD_TESTS": "ON",
-        "VCPKG_MANIFEST_FEATURES": "test"
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "ON",
+        "BUILD_TESTING": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test;client"
       }
     },
     {
@@ -108,11 +111,14 @@
       }
     },
     {
-      "name": "windows-test-server",
-      "inherits": "windows-release-server",
+      "name": "windows-test-all",
+      "inherits": "windows-release",
       "cacheVariables": {
-        "BUILD_TESTS": "ON",
-        "VCPKG_MANIFEST_FEATURES": "test"
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "ON",
+        "BUILD_TESTING": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test;client"
       }
     },
     {

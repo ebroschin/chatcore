@@ -43,16 +43,16 @@ namespace claw::scheduling::tests {
 
     void Evaluate() const {
       const std::vector<steady_clock::time_point>& entries = log_.Entries();
-      auto entry_count = entries.size();
-      auto expected_entry_count = static_cast<decltype(entry_count)>(test_duration_ / rate_);
+      const auto entry_count = entries.size();
+      const auto expected_entry_count = static_cast<decltype(entry_count)>(test_duration_ / rate_);
       ASSERT_GE(entry_count, 2) << "test run requires at least 2 log entries for each scheduler";
 
-      auto rate_text = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(rate_).count()) + "ms";
-      auto count_text = (std::stringstream() << "(" << entry_count << "/" << expected_entry_count << ")").str();
+      const auto rate_text = std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(rate_).count()) + "ms";
+      const auto count_text = (std::stringstream() << "(" << entry_count << "/" << expected_entry_count << ")").str();
       EXPECT_GE(entry_count, expected_entry_count - 1) << "Not enough " << rate_text << " tasks were executed " << count_text;
       EXPECT_LE(entry_count, expected_entry_count + 1) << "Too many " << rate_text << " tasks were executed " << count_text;
 
-      for (int i = 1; i < entry_count; i++) {
+      for (std::size_t i = 1; i < entry_count; i++) {
         auto delta = entries[i] - entries[i - 1];
         auto error = delta > rate_? delta - rate_ : rate_ - delta;
         EXPECT_LE(error, 15ms) << "Incorrect timing for phase " << rate_text;
@@ -64,7 +64,7 @@ namespace claw::scheduling::tests {
     steady_clock::duration test_duration_;
     steady_clock::duration rate_;
     TimePointLog log_{};
-    int task_handle_{-1};
+    TaskId task_handle_{0};
   };
 
   TEST(SchedulingSystemTest, PeriodicScheduling) {
@@ -105,15 +105,15 @@ namespace claw::scheduling::tests {
 
     std::this_thread::sleep_for(test_duration);
 
-    std::vector<steady_clock::time_point> expected {
+    const std::vector expected {
       start_time_point + 200ms,
       start_time_point + 400ms,
       start_time_point + 500ms,
     };
 
-    auto entries = log.Entries();
+    const auto entries = log.Entries();
     EXPECT_EQ(entries.size(), expected.size());
-    for (int i = 0; i < expected.size(); i++) {
+    for (std::size_t i = 0; i < expected.size(); i++) {
       auto expected_time_point = expected[i];
       auto logged_time_point = entries[i];
 
@@ -130,7 +130,7 @@ namespace claw::scheduling::tests {
     ctx.Initialize();
 
     TimePointLog log;
-    auto test_duration = 2000ms;
+    constexpr auto test_duration = 2000ms;
 
     std::deque<TimePointTestContext> tests;
     tests.emplace_back(scheduling_system, test_duration, 800ms);
@@ -138,7 +138,7 @@ namespace claw::scheduling::tests {
     tests.emplace_back(scheduling_system, test_duration, 320ms);
     tests.emplace_back(scheduling_system, test_duration, 20ms);
 
-    auto start_time_point = steady_clock::now();
+    const auto start_time_point = steady_clock::now();
     scheduling_system->ScheduleAfter(400ms, [&] { log.AddEntry(); });
     scheduling_system->ScheduleAfter(200ms, [&] { log.AddEntry(); });
     scheduling_system->ScheduleAfter(500ms, [&] { log.AddEntry(); });
@@ -149,15 +149,15 @@ namespace claw::scheduling::tests {
     std::ranges::for_each(tests, &TimePointTestContext::Stop);
     std::this_thread::sleep_for(1000ms);
 
-    std::vector<steady_clock::time_point> expected {
+    const std::vector expected {
       start_time_point + 200ms,
       start_time_point + 400ms,
       start_time_point + 500ms,
     };
 
-    auto entries = log.Entries();
+    const auto entries = log.Entries();
     EXPECT_EQ(entries.size(), expected.size());
-    for (int i = 0; i < expected.size(); i++) {
+    for (std::size_t i = 0; i < expected.size(); i++) {
       auto expected_time_point = expected[i];
       auto logged_time_point = entries[i];
 

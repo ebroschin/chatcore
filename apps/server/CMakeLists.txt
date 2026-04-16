@@ -57,7 +57,7 @@ target_link_libraries(chatcore-server PRIVATE
     ebroschin::logging-modules
 )
 
-if(BUILD_TESTS)
+if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(chatcore_server_tests

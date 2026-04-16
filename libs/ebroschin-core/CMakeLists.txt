@@ -11,23 +11,21 @@ target_include_directories(claw_core PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-option(BUILD_TESTING "Build tests" OFF)
 if(BUILD_TESTING)
-    enable_testing()
     find_package(GTest CONFIG REQUIRED)
 
-    add_executable(tests
+    add_executable(core_tests
             tests/test_system_context.cpp
     )
 
-    target_link_libraries(tests PRIVATE
+    target_link_libraries(core_tests PRIVATE
             claw_core
             GTest::gtest
             GTest::gtest_main
     )
 
     include(GoogleTest)
-    gtest_discover_tests(tests)
+    gtest_discover_tests(core_tests)
 endif()
 
 target_compile_features(claw_core PUBLIC cxx_std_23)

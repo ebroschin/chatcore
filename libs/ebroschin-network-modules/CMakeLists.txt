@@ -30,16 +30,14 @@ target_link_libraries(claw_network_modules
         Boost::${BOOST_STACKTRACE}
 )
 
-option(BUILD_TESTING "Build tests" OFF)
 if(BUILD_TESTING)
-    enable_testing()
     find_package(GTest CONFIG REQUIRED)
 
-    add_executable(tests
+    add_executable(network_modules_tests
             tests/test_json_codec.cc
     )
 
-    target_link_libraries(tests PRIVATE
+    target_link_libraries(network_modules_tests PRIVATE
             claw_network_modules
             claw::network
             claw::utility
@@ -49,7 +47,7 @@ if(BUILD_TESTING)
     )
 
     include(GoogleTest)
-    gtest_discover_tests(tests)
+    gtest_discover_tests(network_modules_tests)
 endif()
 
 target_compile_features(claw_network_modules INTERFACE cxx_std_23)
