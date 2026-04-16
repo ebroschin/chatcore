@@ -1,10 +1,10 @@
-name: CI (Linux)
+name: CI (Linux, Windows)
 
 on:
   push:
-    branches: [ "ci/github-actions" ]
+    branches: [ "ci" ]
   pull_request:
-    branches: [ "ci/github-actions" ]
+    branches: [ "ci" ]
   workflow_dispatch:
 
 jobs:

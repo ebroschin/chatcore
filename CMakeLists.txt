@@ -1,11 +1,3 @@
-if(WIN32)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static")
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/third_party/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-else()
-    set(VCPKG_TARGET_TRIPLET "x64-linux-clang")
-endif()
-
 cmake_minimum_required(VERSION 3.28)
 project(chatcore)
 set(CMAKE_CXX_STANDARD 23)

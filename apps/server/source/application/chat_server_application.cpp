@@ -41,7 +41,6 @@ void ChatServerApplication::Initialize() {
 }
 
 void ChatServerApplication::HandleTerminate() {
-  ebroschin::logging::Log::SetLogger<ebroschin::logging::modules::SpdlogLogger>();
   ebroschin::logging::modules::BoostStacktrace::PrintExceptionStacktrace();
   ebroschin::logging::Log::Shutdown();
 }
