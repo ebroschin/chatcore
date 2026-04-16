@@ -11,11 +11,16 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         -Woverloaded-virtual -Wnull-dereference
         -Wdouble-promotion -Wformat=2
         -Wundef -Wextra-semi -Wimplicit-fallthrough
-        -Wglobal-constructors
         -fno-common -fstrict-aliasing -fno-omit-frame-pointer
 
         -Wno-c++98-compat-extra-semi
     )
+
+    if(NOT BUILD_TESTS)
+        add_compile_options(
+            -Wglobal-constructors
+        )
+    endif ()
 endif()
 
 if(WIN32)

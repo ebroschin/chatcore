@@ -61,6 +61,14 @@
       }
     },
     {
+      "name": "linux-test-server",
+      "inherits": "linux-debug-server",
+      "cacheVariables": {
+        "BUILD_TESTS": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test"
+      }
+    },
+    {
       "name": "linux-debug-load-tester",
       "inherits": "linux-debug",
       "cacheVariables": {

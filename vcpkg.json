@@ -11,6 +11,12 @@
     "spdlog"
   ],
   "features": {
+    "test": {
+      "description": "chatcore-client dependencies",
+      "dependencies": [
+        "gtest"
+      ]
+    },
     "client": {
       "description": "chatcore-client dependencies",
       "dependencies": [

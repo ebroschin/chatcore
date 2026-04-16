@@ -21,7 +21,7 @@ public:
   void Initialize() override;
 
   std::optional<api::User> CreateUser(const std::string& name, const std::string& password) override;
-  std::optional<api::User> GetUser(const api::PersistenceId& id) override;
+  std::optional<api::User> GetUser(api::PersistenceId id) override;
   std::optional<api::User> GetUser(const std::string& name) override;
   std::vector<api::User> GetUsers() override;
   std::optional<api::User> MatchUserCredentials(const std::string& name, const std::string& password) override;
