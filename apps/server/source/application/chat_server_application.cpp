@@ -1,19 +1,19 @@
 #include "chat_server_application.h"
 
+#include <ebroschin/persistence-modules/sqlite/sqlite_persistence_store.h>
+#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 #include <ebroschin/persistence/persistence_system.h>
+#include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
+#include <ebroschin/logging/log.hpp>
+#include <ebroschin/scheduling/scheduling_system.h>
+
 #include "../chat/adapters/sqlite_chat_persistence_adapter.h"
 #include "../chat/chat_server_system.h"
-#include "../sqlite_persistence/sqlite_persistence_store.h"
 #include "../users/adapters/sqlite_user_persistence_adapter.h"
 #include "../users/user_server_system.h"
 #include "application_system.h"
 #include "chat_persistence_system.h"
 #include "chat_tcp_system.h"
-#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
-
-#include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
-#include <ebroschin/logging/log.hpp>
-#include <ebroschin/scheduling/scheduling_system.h>
 
 using namespace ebroschin::persistence::modules::sqlite;
 

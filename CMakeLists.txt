@@ -42,6 +42,7 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-logging")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-logging-modules")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-commands")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-persistence")
+add_subdirectory("${CMAKE_SOURCE_DIR}/libs/ebroschin-persistence-modules")
 add_subdirectory("${CMAKE_SOURCE_DIR}/libs/chatcore-api")
 
 if(BUILD_SERVER)

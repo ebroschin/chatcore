@@ -1,4 +1,4 @@
-#include "sqlite_persistence_store.h"
+#include <ebroschin/persistence-modules/sqlite/sqlite_persistence_store.h>
 
 namespace ebroschin::persistence::modules::sqlite {
 

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../../../../../libs/ebroschin-persistence-modules/include/ebroschin/persistence-modules/sqlite/sqlite_persistence_store.h"
 #include "../../../../../libs/ebroschin-persistence/include/ebroschin/persistence/persistence_adapter.h"
-#include "../../sqlite_persistence/sqlite_persistence_store.h"
 #include "chat_persistence_adapter.h"
 #include <vector>
 
