@@ -61,9 +61,18 @@ if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(chatcore_server_tests
+        tests/test_chat_channel_message_log.cc
+        tests/test_chat_channel_store.cc
+        tests/test_chat_message_store.cc
+        tests/test_chat_server_arguments.cc
         tests/test_user_store.cc
+        tests/mock_chat_persistence_adapter.hpp
         source/users/user_store.cc
-            tests/mock_user_persistence_adapter.hpp
+        source/chat/chat_channel_message_log.cc
+        source/chat/chat_channel_store.cc
+        source/chat/chat_message_store.cc
+        source/application/chat_server_arguments.cc
+        tests/mock_user_persistence_adapter.hpp
     )
 
     target_link_libraries(chatcore_server_tests PRIVATE
@@ -72,6 +81,7 @@ if(BUILD_TESTING)
         claw::utility
         claw::network
         claw::network-modules
+        ebroschin::logging
         GTest::gtest
         GTest::gtest_main
     )
