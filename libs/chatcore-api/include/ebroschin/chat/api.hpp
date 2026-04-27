@@ -124,8 +124,22 @@ struct GetUsersResponseMessage {
   std::vector<User> users;
 };
 
-struct AuthenticateUserRequestMessage {
+struct GetUserRequestMessage {
   static constexpr std::uint64_t TypeId = 113;
+
+  network::RequestId request_id;
+  std::string name;
+};
+
+struct GetUserResponseMessage {
+  static constexpr std::uint64_t TypeId = 114;
+
+  network::RequestId request_id;
+  User user;
+};
+
+struct AuthenticateUserRequestMessage {
+  static constexpr std::uint64_t TypeId = 115;
 
   network::RequestId request_id;
   std::string name;
@@ -133,93 +147,93 @@ struct AuthenticateUserRequestMessage {
 };
 
 struct AuthenticateUserResponseMessage {
-  static constexpr std::uint64_t TypeId = 114;
+  static constexpr std::uint64_t TypeId = 116;
 
   network::RequestId request_id;
   User user;
 };
 
 struct JoinChatChannelRequestMessage {
-  static constexpr std::uint64_t TypeId = 115;
+  static constexpr std::uint64_t TypeId = 117;
 
   network::RequestId request_id;
   PersistenceId channel_id;
 };
 
 struct JoinChatChannelResponseMessage {
-  static constexpr std::uint64_t TypeId = 116;
+  static constexpr std::uint64_t TypeId = 118;
 
   network::RequestId request_id;
   PersistenceId channel_id;
 };
 
 struct GetChatChannelsRequestMessage {
-  static constexpr std::uint64_t TypeId = 117;
+  static constexpr std::uint64_t TypeId = 119;
 
   network::RequestId request_id;
 };
 
 struct GetChatChannelsResponseMessage {
-  static constexpr std::uint64_t TypeId = 118;
+  static constexpr std::uint64_t TypeId = 120;
 
   network::RequestId request_id;
   std::vector<ChatChannel> channels;
 };
 
 struct GetChatChannelRequestMessage {
-  static constexpr std::uint64_t TypeId = 119;
+  static constexpr std::uint64_t TypeId = 121;
 
   network::RequestId request_id;
   PersistenceId channel_id;
 };
 
 struct GetChatChannelResponseMessage {
-  static constexpr std::uint64_t TypeId = 120;
+  static constexpr std::uint64_t TypeId = 122;
 
   network::RequestId request_id;
   ChatChannel channel;
 };
 
 struct LogoutRequestMessage {
-  static constexpr std::uint64_t TypeId = 121;
+  static constexpr std::uint64_t TypeId = 123;
 
   network::RequestId request_id;
 };
 
 struct LogoutResponseMessage {
-  static constexpr std::uint64_t TypeId = 122;
+  static constexpr std::uint64_t TypeId = 124;
 
   network::RequestId request_id;
 };
 
 struct UserLogoutEventMessage {
-  static constexpr std::uint64_t TypeId = 123;
+  static constexpr std::uint64_t TypeId = 125;
 
   PersistenceId user_id;
 };
 
 struct UserLoginEventMessage {
-  static constexpr std::uint64_t TypeId = 124;
+  static constexpr std::uint64_t TypeId = 126;
 
   PersistenceId user_id;
 };
 
 struct ChannelLeaveEventMessage {
-  static constexpr std::uint64_t TypeId = 125;
+  static constexpr std::uint64_t TypeId = 127;
 
   PersistenceId channel_id;
   PersistenceId user_id;
 };
 
 struct ChannelJoinEventMessage {
-  static constexpr std::uint64_t TypeId = 126;
+  static constexpr std::uint64_t TypeId = 128;
 
   PersistenceId channel_id;
   PersistenceId user_id;
 };
 
 struct ChannelCreateEventMessage {
-  static constexpr std::uint64_t TypeId = 127;
+  static constexpr std::uint64_t TypeId = 129;
 
   ChatChannel channel;
   PersistenceId user_id;
@@ -240,6 +254,8 @@ using MessageTypes = std::tuple<
   CreateUserResponseMessage,
   GetUsersRequestMessage,
   GetUsersResponseMessage,
+  GetUserRequestMessage,
+  GetUserResponseMessage,
   AuthenticateUserRequestMessage,
   AuthenticateUserResponseMessage,
   JoinChatChannelRequestMessage,
@@ -304,6 +320,12 @@ struct ebroschin::network::rpc::RpcCall<ebroschin::chatcore::api::CreateChannelR
 template <>
 struct ebroschin::network::rpc::RpcCall<ebroschin::chatcore::api::GetUsersRequestMessage> {
   using Response = chatcore::api::GetUsersResponseMessage;
+  using Error = chatcore::api::ErrorResponseMessage;
+};
+
+template <>
+struct ebroschin::network::rpc::RpcCall<ebroschin::chatcore::api::GetUserRequestMessage> {
+  using Response = chatcore::api::GetUserResponseMessage;
   using Error = chatcore::api::ErrorResponseMessage;
 };
 

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <ebroschin/scheduling/scheduling_system.hpp>
-
-#include <string>
-#include <unordered_map>
-
 #include "../application/client_tcp_system.hpp"
 #include "client.hpp"
 #include "client_report.hpp"
 #include "tracked_message.hpp"
+
+#include <ebroschin/scheduling/scheduling_system.hpp>
+
+#include <string>
+#include <unordered_map>
 
 namespace ebroschin::chatcore::tester {
 
@@ -23,7 +23,7 @@ public:
     scheduling::SchedulingSystem& scheduling_system,
     RootClient& root_client,
     const std::string& name,
-    api::PersistenceId channel_id);
+    api::PersistenceId channel_id) noexcept;
 
   void Start(steady_clock::duration phase);
   void Stop() const;

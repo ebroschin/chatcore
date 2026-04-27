@@ -1,9 +1,9 @@
 #include "root_client.hpp"
 
-#include <chrono>
-
 #include "../application/application_system.hpp"
 #include "test_client.hpp"
+
+#include <chrono>
 
 using namespace std::chrono_literals;
 
@@ -13,14 +13,16 @@ RootClient::RootClient(ApplicationSystem& app_system,
   ClientTcpSystem& tcp_system,
   ClientRpcSystem& rpc_system,
   scheduling::SchedulingSystem& scheduling_system,
-  const std::string& name):
-  Client(app_system, tcp_system, rpc_system, name),
-  scheduling_system_(scheduling_system)
+  const std::string& name) noexcept:
+  Client{app_system, tcp_system, rpc_system, name},
+  scheduling_system_{scheduling_system}
 {}
 
 void RootClient::OnPrepared() {
   auto create_channel_call = rpc_system_.Prepare<api::CreateChannelRequestMessage>(*connection_id_, "test-channel");
-  create_channel_call.OnSuccess([this](const api::CreateChannelResponseMessage& message) {
+  create_channel_call.OnSuccess([this]
+  (const api::CreateChannelResponseMessage& message)
+  {
     test_channel_id_ = message.channel.id;
     HandleRootClientReady();
   });
@@ -50,15 +52,16 @@ void RootClient::HandleRootClientReady() {
 void RootClient::Evaluate() {
   std::ranges::for_each(clients_, &TestClient::Stop);
 
-  std::vector<ClientReport> reports;
+  std::vector<ClientReport> reports{};
   reports.reserve(clients_.size());
+
   for (const auto& client : clients_) {
     reports.emplace_back(client->Evaluate());
   }
 
-  std::vector<steady_clock::duration> latencies;
+  std::vector<steady_clock::duration> latencies{};
   latencies.reserve(std::accumulate(reports.begin(), reports.end(), std::size_t{0},
-    [](std::size_t result, const ClientReport& report)
+  [](std::size_t result, const ClientReport& report)
   {
     return result + report.roundtrip_times.size();
   }));
@@ -102,7 +105,7 @@ void RootClient::SetClientReady(network::ConnectionId id) {
   if (connected_clients_.size() != clients_.size()) return;
   logging::Log::Info() << "Clients prepared, running load test";
 
-  auto phase = 1000ms;
+  constexpr auto phase = 1000ms;
   const auto stagger_duration = phase / clients_.size();
   for (std::size_t i = 0; i < clients_.size(); i++) {
     scheduling_system_.ScheduleAfter(stagger_duration * i, [this, i, phase] {

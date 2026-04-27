@@ -1,9 +1,9 @@
 #pragma once
 
+#include "client_tcp_system.hpp"
+
 #include <ebroschin/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.hpp>
 #include <ebroschin/network/rpc/rpc_system.hpp>
-
-#include "client_tcp_system.hpp"
 
 namespace ebroschin::chatcore::tester {
 

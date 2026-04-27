@@ -3,8 +3,9 @@
 #include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::chatcore::tester {
+
 ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, LoadTesterApplication& app):
-  System(ctx),
+  System{ctx},
   app_{app},
   tcp_system_{ctx.Require<ClientTcpSystem>()},
   rpc_system_{ctx.Require<ClientRpcSystem>()},
@@ -12,7 +13,9 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, LoadTesterA
 {}
 
 void ApplicationSystem::Initialize() {
-  application_thread_ = std::jthread{[this](const std::stop_token& st) {
+  application_thread_ = std::jthread{[this]
+  (const std::stop_token& st)
+  {
     auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
       processor.ProcessBlocking();
@@ -27,12 +30,12 @@ void ApplicationSystem::Initialize() {
 void ApplicationSystem::Deinitialize() {
   auto& processor = tcp_system_.GetMessageProcessor();
   processor.Stop();
-
   application_thread_ = {};
 }
 
 void ApplicationSystem::Quit() const {
   if (!app_.IsRunning()) return;
+  
   logging::Log::Info() << "Shutting down";
   logging::Log::Shutdown();
   app_.Quit();

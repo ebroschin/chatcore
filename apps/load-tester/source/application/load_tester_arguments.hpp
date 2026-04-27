@@ -33,7 +33,6 @@ private:
   std::string port_;
   unsigned int client_count_;
   logging::LogLevel log_level_;
-
 };
 
 }

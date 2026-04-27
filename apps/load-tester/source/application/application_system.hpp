@@ -1,14 +1,12 @@
 #pragma once
 
-#include <ebroschin/core/system.hpp>
-
 #include "../testing/root_client.hpp"
 #include "client_tcp_system.hpp"
 #include "load_tester_application.hpp"
 
-namespace ebroschin::chatcore::tester {
+#include <ebroschin/core/system.hpp>
 
-class LoadTesterApplication;
+namespace ebroschin::chatcore::tester {
 
 class ApplicationSystem final : public core::System {
 public:
@@ -17,9 +15,8 @@ public:
   void Initialize() override;
   void Deinitialize() override;
 
-  [[nodiscard]] ClientTcpSystem::MessageHandler& GetMessageHandler() const noexcept {
-    return message_handler_;
-  }
+  [[nodiscard]] ClientTcpSystem::MessageHandler& GetMessageHandler() const noexcept
+  { return message_handler_; }
 
   [[nodiscard]] const LoadTesterArguments& GetArguments() const noexcept
   { return app_.GetArguments(); }

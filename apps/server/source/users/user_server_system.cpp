@@ -19,6 +19,7 @@ void UserServerSystem::Initialize() {
   app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleCreateUser);
   app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleAuthenticateUser);
   app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUsers);
+  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUser);
 
   user_store_.Prewarm();
 }
@@ -92,6 +93,17 @@ void UserServerSystem::HandleGetUsers(network::ConnectionId connection_id, const
 
   auto result = user_store_.GetUsers(message.user_ids);
   tcp_system_.Send<api::GetUsersResponseMessage>(connection_id, {message.request_id, std::move(result)});
+}
+
+void UserServerSystem::HandleGetUser(network::ConnectionId connection_id, const api::GetUserRequestMessage& message) {
+  if (!ValidateSession(message.request_id, connection_id)) return;
+
+  const auto result = user_store_.GetUser(message.name);
+  if (!result) {
+    app_system_.HandleRpcError(connection_id, message.request_id, "User with name " + message.name + " not found");
+    return;
+  }
+  tcp_system_.Send<api::GetUserResponseMessage>(connection_id, {message.request_id, result->get()});
 }
 
 }

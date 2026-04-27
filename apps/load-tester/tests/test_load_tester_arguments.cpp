@@ -5,8 +5,8 @@
 namespace ebroschin::chatcore::tester::tests {
 
 static LoadTesterArguments CreateMockArguments(std::initializer_list<std::string_view> arguments) {
-  const std::size_t argc = arguments.size();
-  std::vector<char*> argv;
+  const std::size_t argc{arguments.size()};
+  std::vector<char*> argv{};
   argv.reserve(argc);
 
   for (const auto& argument : arguments) {

@@ -42,6 +42,8 @@ private:
   void HandleChannelLeaveEvent(const api::ChannelLeaveEventMessage& message);
   void HandleReceiveChatEvent(const api::ReceiveChatMessage& message);
 
+  void ProcessChatMessage(const api::User& user, const std::string& content) const;
+
   template <typename TMessage>
   void RegisterEventMessageHandler(void(SessionSystem::*method)(const TMessage&)) {
     auto& signals = app_system_.GetMessageHandler();

@@ -12,18 +12,19 @@ TestClient::TestClient(ApplicationSystem& app_system,
   scheduling::SchedulingSystem& scheduling_system,
   RootClient& root_client,
   const std::string& name,
-  api::PersistenceId channel_id):
-  Client(app_system, tcp_system, rpc_system, name),
-  scheduling_system_(scheduling_system),
-  root_client_(root_client),
-  channel_id_(channel_id)
+  api::PersistenceId channel_id) noexcept:
+  Client{app_system, tcp_system, rpc_system, name},
+  scheduling_system_{scheduling_system},
+  root_client_{root_client},
+  channel_id_{channel_id}
 {}
 
 void TestClient::OnPrepared() {
   auto& message_handler = app_system_.GetMessageHandler();
 
-  receive_chat_signal_handle_ = message_handler.Subscribe<api::ReceiveChatMessage>(
-  [this](network::ConnectionId connection_id, const api::ReceiveChatMessage& message) {
+  receive_chat_signal_handle_ = message_handler.Subscribe<api::ReceiveChatMessage>([this]
+  (network::ConnectionId connection_id, const api::ReceiveChatMessage& message)
+  {
     if (connection_id_ != connection_id) return;
     if (message.channel_id != channel_id_) return;
     if (message.user_id != user_->id) return;
@@ -33,7 +34,9 @@ void TestClient::OnPrepared() {
   });
 
   auto join_channel_call = rpc_system_.Prepare<api::JoinChatChannelRequestMessage>(*connection_id_, channel_id_);
-  join_channel_call.OnSuccess([this](const api::JoinChatChannelResponseMessage&) {
+  join_channel_call.OnSuccess([this]
+  (const api::JoinChatChannelResponseMessage&)
+  {
     root_client_.SetClientReady(*connection_id_);
   });
 
@@ -53,13 +56,13 @@ void TestClient::Stop() const {
 }
 
 ClientReport TestClient::Evaluate() {
-  std::vector<steady_clock::duration> roundtrip_times;
+  std::vector<steady_clock::duration> roundtrip_times{};
 
   for(const auto& pair : outgoing_messages_) {
-    auto it = incoming_messages_.find(pair.first);
+    const auto it = incoming_messages_.find(pair.first);
     if (it == incoming_messages_.end()) continue;
 
-    auto roundtrip_time = it->second.time_point - pair.second.time_point;
+    const auto roundtrip_time = it->second.time_point - pair.second.time_point;
     roundtrip_times.emplace_back(roundtrip_time);
   }
 
@@ -67,10 +70,11 @@ ClientReport TestClient::Evaluate() {
 }
 
 void TestClient::Send() {
-  static std::uint64_t next_id{0};
+  static std::atomic<std::uint64_t> next_id{0};
+
   const auto message_id = next_id++;
-  tcp_system_.Send(*connection_id_, api::WriteChatMessage{ std::to_string(message_id) });
-  outgoing_messages_.try_emplace(message_id, TrackedMessage{ steady_clock::now(), message_id });
+  tcp_system_.Send<api::WriteChatMessage>(*connection_id_, {std::to_string(message_id)});
+  outgoing_messages_.try_emplace(message_id, TrackedMessage{steady_clock::now(), message_id});
   current_send_task_id_ = scheduling_system_.ScheduleAfter(phase_, [this] { Send(); });
 }
 

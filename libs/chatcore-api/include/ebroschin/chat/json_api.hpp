@@ -30,6 +30,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CreateUserRequestMessage, request_id, name, p
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(CreateUserResponseMessage, request_id, user);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetUsersRequestMessage, request_id, user_ids);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetUsersResponseMessage, request_id, users);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetUserRequestMessage, request_id, name);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetUserResponseMessage, request_id, user);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AuthenticateUserRequestMessage, request_id, name, password);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AuthenticateUserResponseMessage, request_id, user);
 

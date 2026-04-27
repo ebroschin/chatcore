@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ebroschin/core/application.hpp>
-
 #include "load_tester_arguments.hpp"
+
+#include <ebroschin/core/application.hpp>
 
 namespace ebroschin::chatcore::tester {
 

@@ -1,13 +1,13 @@
 #pragma once
 
+#include "../application/client_rpc_system.hpp"
+#include "../application/client_tcp_system.hpp"
+
 #include <ebroschin/network/commons.hpp>
+#include <ebroschin/logging/log.hpp>
 
 #include <chrono>
 #include <string>
-
-#include "../application/client_rpc_system.hpp"
-#include "../application/client_tcp_system.hpp"
-#include <ebroschin/logging/log.hpp>
 
 namespace ebroschin::chatcore::tester {
 
@@ -20,7 +20,12 @@ public:
   explicit Client(ApplicationSystem& app_system,
     ClientTcpSystem& tcp_system,
     ClientRpcSystem& rpc_system,
-    std::string name);
+    std::string name) noexcept;
+
+  Client(const Client&) = delete;
+  Client& operator=(const Client&) = delete;
+  Client(Client&&) = delete;
+  Client& operator=(Client&&) = delete;
 
   void Prepare();
 
@@ -57,11 +62,13 @@ protected:
   std::optional<api::User> user_{};
 
 private:
+  static constexpr std::string_view TestPassword = "123";
+
   void OnConnected(network::ConnectionId connection_id) override;
   void OnConnectionFailed(const network::modules::BoostTcpResolverParameters&) override {}
   void OnDisconnected(network::ConnectionId) override {}
 
-  void OnUserCreated(const api::CreateUserResponseMessage& message);
+  void OnUserEnsured();
 };
 
 }

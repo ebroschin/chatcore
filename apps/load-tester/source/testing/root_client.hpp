@@ -1,9 +1,10 @@
 #pragma once
 
 #include "client.hpp"
-
 #include "test_client.hpp"
+
 #include <ebroschin/scheduling/scheduling_system.hpp>
+
 #include <unordered_set>
 
 namespace ebroschin::chatcore::tester {
@@ -14,7 +15,7 @@ public:
     ClientTcpSystem& tcp_system,
     ClientRpcSystem& rpc_system,
     scheduling::SchedulingSystem& scheduling_system,
-    const std::string& name);
+    const std::string& name) noexcept;
 
   void SetClientReady(network::ConnectionId id);
 

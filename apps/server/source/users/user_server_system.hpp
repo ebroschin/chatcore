@@ -30,6 +30,7 @@ private:
   void HandleCreateUser(network::ConnectionId, const api::CreateUserRequestMessage&);
   void HandleAuthenticateUser(network::ConnectionId, const api::AuthenticateUserRequestMessage&);
   void HandleGetUsers(network::ConnectionId, const api::GetUsersRequestMessage&);
+  void HandleGetUser(network::ConnectionId, const api::GetUserRequestMessage&);
 
   ApplicationSystem& app_system_;
   UserPersistenceAdapter& adapter_;

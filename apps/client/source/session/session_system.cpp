@@ -156,6 +156,15 @@ void SessionSystem::JoinChannel(api::PersistenceId id) {
   join_channel_rpc.Call();
 }
 
+void SessionSystem::ProcessChatMessage(const api::User& user, const std::string& content) const {
+  if (user.id == user_->id) {
+    model_system_.AddLine("[You] " + content);
+    return;
+  }
+
+  model_system_.AddLine("[User::" + user.name + "] " + content);
+}
+
 void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
   if (!ValidateSession()) return;
 
@@ -182,7 +191,7 @@ void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
         const auto it = view.find(chat_message.user_id);
         if (it == view.end()) continue;
 
-        model_system_.AddLine("[User::" + it->second.name + "] " + chat_message.content);
+        ProcessChatMessage(it->second, chat_message.content);
       }
     });
   });
@@ -233,7 +242,7 @@ void SessionSystem::HandleReceiveChatEvent(const api::ReceiveChatMessage& messag
   (std::optional<std::reference_wrapper<const api::User>> user)
   {
     if (!user) return;
-    model_system_.AddLine("[User::" + user->get().name + "] " + content);
+    ProcessChatMessage(user->get(), content);
   });
 }
 
