@@ -1,16 +1,16 @@
 add_library(ebroschin_network INTERFACE
-    include/ebroschin/network/tcp/tcp_system.h
-    include/ebroschin/network/tcp/tcp_connection.h
-    include/ebroschin/network/commons.h
-    include/ebroschin/network/tcp/tcp_system_concepts.h
-    include/ebroschin/network/tcp/tcp_system_builder.h
-    include/ebroschin/network/tcp/tcp_message_processor.h
-    include/ebroschin/network/tcp/tcp_system_connection_facade.h
-    include/ebroschin/network/rpc/commons.h
-    include/ebroschin/network/rpc/rpc_call_builder.h
-    include/ebroschin/network/rpc/rpc_system.h
-    include/ebroschin/network/tcp/tcp_connection_event_handler.h
-    include/ebroschin/network/tcp/tcp_connector.h
+    include/ebroschin/network/tcp/tcp_system.hpp
+    include/ebroschin/network/tcp/tcp_connection.hpp
+    include/ebroschin/network/commons.hpp
+    include/ebroschin/network/tcp/tcp_system_concepts.hpp
+    include/ebroschin/network/tcp/tcp_system_builder.hpp
+    include/ebroschin/network/tcp/tcp_message_processor.hpp
+    include/ebroschin/network/tcp/tcp_system_connection_facade.hpp
+    include/ebroschin/network/rpc/commons.hpp
+    include/ebroschin/network/rpc/rpc_call_builder.hpp
+    include/ebroschin/network/rpc/rpc_system.hpp
+    include/ebroschin/network/tcp/tcp_connection_event_handler.hpp
+    include/ebroschin/network/tcp/tcp_connector.hpp
 )
 
 add_library(ebroschin::network ALIAS ebroschin_network)
@@ -30,7 +30,7 @@ if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(ebroschin_network_tests
-        tests/test_tcp_system.cc
+        tests/test_tcp_system.cpp
     )
 
     target_link_libraries(ebroschin_network_tests PRIVATE

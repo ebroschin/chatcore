@@ -1,10 +1,10 @@
 add_library(ebroschin_logging
     include/ebroschin/logging/logger.hpp
-        include/ebroschin/logging/log.hpp
-        include/ebroschin/logging/null_logger.hpp
-        src/log.cpp
-        include/ebroschin/logging/log_level.hpp
-        include/ebroschin/logging/log_stream.hpp
+    include/ebroschin/logging/log.hpp
+    include/ebroschin/logging/null_logger.hpp
+    src/log.cpp
+    include/ebroschin/logging/log_level.hpp
+    include/ebroschin/logging/log_stream.hpp
 )
 
 add_library(ebroschin::logging ALIAS ebroschin_logging)

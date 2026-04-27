@@ -1,6 +1,6 @@
 add_library(ebroschin_core
-    src/application.cc
-    src/system_context.cc
+    src/application.cpp
+    src/system_context.cpp
 )
 
 add_library(ebroschin::core ALIAS ebroschin_core)
@@ -15,13 +15,13 @@ if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(ebroschin_core_tests
-            tests/test_system_context.cpp
+        tests/test_system_context.cpp
     )
 
     target_link_libraries(ebroschin_core_tests PRIVATE
-            ebroschin_core
-            GTest::gtest
-            GTest::gtest_main
+        ebroschin_core
+        GTest::gtest
+        GTest::gtest_main
     )
 
     include(GoogleTest)

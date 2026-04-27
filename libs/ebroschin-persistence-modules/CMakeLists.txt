@@ -1,5 +1,5 @@
 add_library(ebroschin_persistence_modules
-    include/ebroschin/persistence-modules/sqlite/sqlite_persistence_store.h
+    include/ebroschin/persistence-modules/sqlite/sqlite_persistence_store.hpp
     src/sqlite/sqlite_persistence_store.cpp
 )
 

@@ -1,7 +1,7 @@
 #include "ftxui_logger.hpp"
 
-#include "../model/model_system.h"
-#include "ui_system.h"
+#include "../model/model_system.hpp"
+#include "ui_system.hpp"
 
 #include <mutex>
 #include <sstream>

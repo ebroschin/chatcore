@@ -1,5 +1,5 @@
-#include <ebroschin/core/system.h>
-#include <ebroschin/core/system_context.h>
+#include <ebroschin/core/system.hpp>
+#include <ebroschin/core/system_context.hpp>
 #include <gtest/gtest.h>
 
 namespace ebroschin::persistence::tests {

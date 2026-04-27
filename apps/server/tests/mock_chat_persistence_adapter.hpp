@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../source/chat/adapters/chat_persistence_adapter.h"
+#include "../source/chat/adapters/chat_persistence_adapter.hpp"
 
 #include <algorithm>
 #include <cstdint>

@@ -1,7 +1,7 @@
 add_library(ebroschin_logging_modules
     include/ebroschin/logging-modules/spdlog/spdlog-logger.hpp
     src/spdlog/spdlog-logger.cpp
-        include/ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp
+    include/ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp
 )
 
 add_library(ebroschin::logging-modules ALIAS ebroschin_logging_modules)

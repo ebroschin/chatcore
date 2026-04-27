@@ -1,15 +1,15 @@
-#include "chat_server_system.h"
+#include "chat_server_system.hpp"
 
-#include "../application/application_system.h"
+#include "../application/application_system.hpp"
 
-#include <ebroschin/scheduling/scheduling_system.h>
+#include <ebroschin/scheduling/scheduling_system.hpp>
 
-#include "../application/chat_persistence_system.h"
-#include "adapters/chat_persistence_adapter.h"
-#include <ebroschin/network/tcp/tcp_system.h>
+#include "../application/chat_persistence_system.hpp"
+#include "adapters/chat_persistence_adapter.hpp"
+#include <ebroschin/network/tcp/tcp_system.hpp>
 
-#include "../users/user_server_system.h"
-#include <ebroschin/core/system_context.h>
+#include "../users/user_server_system.hpp"
+#include <ebroschin/core/system_context.hpp>
 
 using namespace std::chrono_literals;
 
