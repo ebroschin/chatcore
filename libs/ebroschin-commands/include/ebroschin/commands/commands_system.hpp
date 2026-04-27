@@ -4,6 +4,7 @@
 #include <ebroschin/utility/variadic.h>
 #include <functional>
 #include <unordered_map>
+#include <span>
 
 namespace ebroschin::commands {
 

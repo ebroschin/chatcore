@@ -52,12 +52,49 @@
       }
     },
     {
+      "name": "linux-release-client",
+      "inherits": "linux-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "OFF",
+        "VCPKG_MANIFEST_FEATURES": "client"
+      }
+    },
+    {
       "name": "linux-debug-server",
       "inherits": "linux-debug",
       "cacheVariables": {
         "BUILD_CLIENT": "OFF",
         "BUILD_SERVER": "ON",
         "BUILD_LOAD_TESTER": "OFF"
+      }
+    },
+    {
+      "name": "linux-release-server",
+      "inherits": "linux-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "OFF"
+      }
+    },
+    {
+      "name": "linux-debug-load-tester",
+      "inherits": "linux-debug",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "ON"
+      }
+    },
+    {
+      "name": "linux-release-load-tester",
+      "inherits": "linux-release",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "ON"
       }
     },
     {
@@ -73,12 +110,13 @@
       }
     },
     {
-      "name": "linux-debug-load-tester",
-      "inherits": "linux-debug",
+      "name": "linux-release-all",
+      "inherits": "linux-release",
       "cacheVariables": {
-        "BUILD_CLIENT": "OFF",
-        "BUILD_SERVER": "OFF",
-        "BUILD_LOAD_TESTER": "ON"
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "ON",
+        "VCPKG_MANIFEST_FEATURES": "client"
       }
     },
     {

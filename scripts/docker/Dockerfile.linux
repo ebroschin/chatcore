@@ -1,0 +1,37 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y \
+    wget curl gnupg lsb-release ca-certificates git unzip zip \
+    build-essential pkg-config \
+    autoconf automake libtool m4 gawk gettext texinfo tmux \
+    software-properties-common \
+    && wget https://apt.llvm.org/llvm.sh \
+    && chmod +x llvm.sh \
+    && ./llvm.sh 20 \
+    && apt-get install -y clang-20 clang++-20 ninja-build cmake clang-tidy-20 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN clang-20 --version && clang++-20 --version && cmake --version && ninja --version
+RUN which clang-20 && which clang++-20 && which cmake && which ninja
+
+RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+ARG REPO_URL=git@github.com:PIXCLDEV/ChatCore.git
+ARG REPO_REF=2323d42fe178ccea1f96e75a2342cfab579a2107
+
+RUN --mount=type=ssh \
+git clone --recurse-submodules "$REPO_URL" /workspace/src \
+&& cd /workspace/src \
+&& git checkout "$REPO_REF"
+
+ENV VCPKG_DOWNLOADS=/workspace/.vcpkg-downloads
+ENV VCPKG_DEFAULT_BINARY_CACHE=/workspace/.vcpkg-cache
+ENV VCPKG_FEATURE_FLAGS=binarycaching
+
+RUN mkdir -p /workspace/.vcpkg-downloads /workspace/.vcpkg-cache
+RUN bash /workspace/src/scripts/linux/build-all.sh
+
+RUN chmod +x /workspace/src/scripts/docker/demo.sh

@@ -19,7 +19,7 @@ struct JsonNetworkCodec {
       {PayloadKey, message},
     };
 
-    std::string serialized_result = result.dump();
+    const auto serialized_result = result.dump();
     auto bytes_ptr = reinterpret_cast<const std::byte*>(serialized_result.data());
     return {bytes_ptr, bytes_ptr + serialized_result.size()};
   }
