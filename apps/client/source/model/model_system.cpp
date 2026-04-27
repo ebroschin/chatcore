@@ -1,10 +1,11 @@
 #include "model_system.hpp"
+
 #include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::chatcore::client {
 
 ModelSystem::ModelSystem(const core::SystemContext& ctx) noexcept:
-  System(ctx)
+  System{ctx}
 { }
 
 void ModelSystem::AddLine(const std::string& line) {

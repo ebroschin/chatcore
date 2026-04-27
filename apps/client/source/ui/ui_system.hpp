@@ -1,25 +1,22 @@
 #pragma once
 
-#include <ebroschin/core/system.hpp>
-
-#include <ftxui/component/screen_interactive.hpp>
-#include <ftxui/dom/elements.hpp>
-#include <thread>
-
 #include "../application/client_tcp_system.hpp"
 #include "../commands/client_commands_system.hpp"
 
-namespace ebroschin::core {
-class Application;
-}
+#include <ebroschin/core/system.hpp>
+#include <ftxui/component/screen_interactive.hpp>
+#include <ftxui/dom/elements.hpp>
+
+#include <thread>
 
 namespace ebroschin::chatcore::client {
 
 class ModelSystem;
+class SessionSystem;
 
 class UiSystem final : public core::System {
 public:
-  explicit UiSystem(const core::SystemContext& ctx, core::Application& app);
+  explicit UiSystem(const core::SystemContext& ctx) noexcept;
 
   void Initialize() override;
   void Deinitialize() override;
@@ -29,17 +26,16 @@ public:
 private:
   void ProcessThread();
   [[nodiscard]] ftxui::Element Render() const;
-  [[nodiscard]] ftxui::Element RenderInputFíeld() const;
+  [[nodiscard]] ftxui::Element RenderInputField() const;
   [[nodiscard]] ftxui::Element RenderLogDisplay() const;
-  bool HandleEvent(const ftxui::Event& e);
+  bool HandleEvent(const ftxui::Event& ftxui_event);
   void HandleInput(std::string_view input) const;
 
   void WriteLine(const std::string&);
 
-  core::Application& app_;
   ClientCommandsSystem& commands_system_;
   ModelSystem& model_system_;
-  SessionSystem& user_system_;
+  SessionSystem& session_system_;
 
   std::jthread ui_thread_{};
   std::mutex mutex_{};

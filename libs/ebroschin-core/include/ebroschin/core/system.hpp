@@ -6,13 +6,21 @@ class SystemContext;
 
 class System {
 public:
-  explicit System(const SystemContext& ctx) : ctx_{ctx} {}
+  explicit System(const SystemContext& ctx):
+    ctx_{ctx}
+  {}
+
   virtual ~System() = default;
+
+  System(const System&) = delete;
+  System& operator=(const System&) = delete;
+  System(System&&) = delete;
+  System& operator=(System&&) = delete;
 
   virtual void Initialize() {}
   virtual void Deinitialize() {}
 
- protected:
+protected:
   const SystemContext& ctx_;
 };
 

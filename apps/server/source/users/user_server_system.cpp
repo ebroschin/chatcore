@@ -57,13 +57,7 @@ std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSess
 void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, const api::CreateUserRequestMessage& message) {
   const auto result = adapter_.CreateUser(message.name, message.password);
   if (!result) {
-    const auto user = user_store_.GetUser(message.name);
-    if (!user) {
-      app_system_.HandleRpcError(connection_id, message.request_id, "Unexpected error");
-      return;
-    }
-
-    tcp_system_.Send<api::CreateUserResponseMessage>(connection_id, {message.request_id, user->get()});
+    app_system_.HandleRpcError(connection_id, message.request_id, "User already exists.");
     return;
   }
 

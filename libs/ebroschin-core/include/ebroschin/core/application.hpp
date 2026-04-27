@@ -1,7 +1,8 @@
 #pragma once
 
-#include <atomic>
 #include <ebroschin/core/system_context.hpp>
+
+#include <atomic>
 #include <memory>
 
 namespace ebroschin::core {
@@ -16,16 +17,16 @@ public:
   virtual ~Application() = default;
 
   Application(const Application& other) = delete;
-  void operator=(const Application& other) = delete;
+  Application& operator=(const Application& other) = delete;
   Application(Application&& other) = delete;
-  void operator=(Application&& other) = delete;
+  Application& operator=(Application&& other) = delete;
 
   /**
- * @brief Starts the program in blocking mode:
- * - Calls Application::Initialize()
- * - Calls ctx_->Initialize()
- * - Performs cleanup via ctx_->Deinitialize() when Quit() is called
- */
+   * @brief Starts the program in blocking mode:
+   * - Calls Application::Initialize()
+   * - Calls ctx_->Initialize()
+   * - Performs cleanup via ctx_->Deinitialize() when Quit() is called
+   */
   void RunBlocking();
 
   void Quit() noexcept;

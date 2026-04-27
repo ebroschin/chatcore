@@ -166,46 +166,60 @@ struct GetChatChannelsResponseMessage {
   std::vector<ChatChannel> channels;
 };
 
-struct LogoutRequestMessage {
+struct GetChatChannelRequestMessage {
   static constexpr std::uint64_t TypeId = 119;
+
+  network::RequestId request_id;
+  PersistenceId channel_id;
+};
+
+struct GetChatChannelResponseMessage {
+  static constexpr std::uint64_t TypeId = 120;
+
+  network::RequestId request_id;
+  ChatChannel channel;
+};
+
+struct LogoutRequestMessage {
+  static constexpr std::uint64_t TypeId = 121;
 
   network::RequestId request_id;
 };
 
 struct LogoutResponseMessage {
-  static constexpr std::uint64_t TypeId = 120;
+  static constexpr std::uint64_t TypeId = 122;
 
   network::RequestId request_id;
 };
 
 struct UserLogoutEventMessage {
-  static constexpr std::uint64_t TypeId = 121;
+  static constexpr std::uint64_t TypeId = 123;
 
   PersistenceId user_id;
 };
 
 struct UserLoginEventMessage {
-  static constexpr std::uint64_t TypeId = 122;
+  static constexpr std::uint64_t TypeId = 124;
 
   PersistenceId user_id;
 };
 
 struct ChannelLeaveEventMessage {
-  static constexpr std::uint64_t TypeId = 123;
+  static constexpr std::uint64_t TypeId = 125;
 
   PersistenceId channel_id;
   PersistenceId user_id;
 };
 
 struct ChannelJoinEventMessage {
-  static constexpr std::uint64_t TypeId = 124;
+  static constexpr std::uint64_t TypeId = 126;
 
   PersistenceId channel_id;
   PersistenceId user_id;
 };
 
 struct ChannelCreateEventMessage {
-  static constexpr std::uint64_t TypeId = 125;
+  static constexpr std::uint64_t TypeId = 127;
 
   ChatChannel channel;
   PersistenceId user_id;
@@ -232,6 +246,8 @@ using MessageTypes = std::tuple<
   JoinChatChannelResponseMessage,
   GetChatChannelsRequestMessage,
   GetChatChannelsResponseMessage,
+  GetChatChannelRequestMessage,
+  GetChatChannelResponseMessage,
   LogoutRequestMessage,
   LogoutResponseMessage,
   UserLogoutEventMessage,
@@ -264,6 +280,12 @@ struct ebroschin::network::rpc::RpcCall<ebroschin::chatcore::api::GetChatsReques
 template <>
 struct ebroschin::network::rpc::RpcCall<ebroschin::chatcore::api::GetChatChannelsRequestMessage> {
   using Response = chatcore::api::GetChatChannelsResponseMessage;
+  using Error = chatcore::api::ErrorResponseMessage;
+};
+
+template <>
+struct ebroschin::network::rpc::RpcCall<ebroschin::chatcore::api::GetChatChannelRequestMessage> {
+  using Response = chatcore::api::GetChatChannelResponseMessage;
   using Error = chatcore::api::ErrorResponseMessage;
 };
 

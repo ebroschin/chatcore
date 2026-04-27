@@ -37,6 +37,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JoinChatChannelRequestMessage, request_id, ch
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(JoinChatChannelResponseMessage, request_id, channel_id);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetChatChannelsRequestMessage, request_id);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetChatChannelsResponseMessage, request_id, channels);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetChatChannelRequestMessage, request_id, channel_id);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GetChatChannelResponseMessage, request_id, channel);
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LogoutRequestMessage, request_id);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LogoutResponseMessage, request_id);

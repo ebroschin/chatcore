@@ -1,47 +1,47 @@
 #include "ui_system.hpp"
 
 #include "ftxui_logger.hpp"
+#include "../model/model_system.hpp"
+#include "../session/session_system.hpp"
 
-#include <ebroschin/core/application.hpp>
-
+#include <ebroschin/logging/log.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/event.hpp>
+
 #include <mutex>
 #include <ranges>
 
-#include "../model/model_system.hpp"
-#include "../session/session_system.hpp"
-#include "ebroschin/logging/log.hpp"
-
-using namespace std::chrono_literals;
-
 namespace ebroschin::chatcore::client {
 
-UiSystem::UiSystem(const core::SystemContext& ctx, core::Application& app):
-  System(ctx),
-  app_(app),
-  commands_system_(ctx.Require<ClientCommandsSystem>()),
-  model_system_(ctx.Require<ModelSystem>()),
-  user_system_(ctx.Require<SessionSystem>())
+UiSystem::UiSystem(const core::SystemContext& ctx) noexcept:
+  System{ctx},
+  commands_system_{ctx.Require<ClientCommandsSystem>()},
+  model_system_{ctx.Require<ModelSystem>()},
+  session_system_{ctx.Require<SessionSystem>()}
 { }
 
 void UiSystem::Initialize() {
   logging::Log::SetLogger<FtxuiLogger>(model_system_, *this);
-  WriteLine("Welcome to ChatCore | Developed by Elias Broschin");
-  WriteLine("-------------------------------------------------");
-  WriteLine("Enter /help for more details");
+  WriteLine("╭─[ ebroschin::chatcore ]───────────────╮");
+  WriteLine("│ > multi-threaded chat system in c++23 │");
+  WriteLine("│ > Enter /help for more details        │");
+  WriteLine("╰───────────────────────────────────────╯");
 
   ui_thread_ = std::jthread{[this] { ProcessThread(); }};
-  line_added_subscription_ = model_system_.OnLineAdded([this](const std::string& line) {
+  line_added_subscription_ = model_system_.OnLineAdded([this]
+  (const std::string& line)
+  {
     {
-      std::unique_lock lock(mutex_);
+      std::scoped_lock lock(mutex_);
       message_queue_.emplace(line);
     }
 
     screen_.PostEvent(ftxui::Event::Custom);
   });
 
-  channel_name_changed_subscription_ = model_system_.OnChannelNameChanged([this](std::optional<std::string> channel_name) {
+  channel_name_changed_subscription_ = model_system_.OnChannelNameChanged([this]
+  (std::optional<std::string> channel_name)
+  {
     channel_name_ = std::move(channel_name);
     screen_.PostEvent(ftxui::Event::Custom);
   });
@@ -68,8 +68,8 @@ void UiSystem::ProcessThread() {
 
 void UiSystem::WriteLine(const std::string& line) {
   chat_log_view_model_.emplace_back(line);
-
   if (chat_log_view_model_.size() < 100) return;
+
   chat_log_view_model_.pop_front();
 }
 
@@ -77,7 +77,7 @@ ftxui::Element UiSystem::Render() const {
   return ftxui::vbox({
     RenderLogDisplay(),
     ftxui::separator(),
-    RenderInputFíeld()
+    RenderInputField()
   }) | ftxui::flex;
 }
 
@@ -97,7 +97,7 @@ ftxui::Element UiSystem::RenderLogDisplay() const {
       | ftxui::flex;
 }
 
-ftxui::Element UiSystem::RenderInputFíeld() const {
+ftxui::Element UiSystem::RenderInputField() const {
   const auto prompt = channel_name_.has_value()?
     "chat::" + *channel_name_ + "> ":
     "chat> ";
@@ -108,12 +108,13 @@ ftxui::Element UiSystem::RenderInputFíeld() const {
   });
 }
 
-bool UiSystem::HandleEvent(const ftxui::Event& e) {
-  if (e == ftxui::Event::Custom) {
-    std::queue<std::string> buffer;
+bool UiSystem::HandleEvent(const ftxui::Event& ftxui_event) {
+  if (ftxui_event == ftxui::Event::Custom) {
+    std::queue<std::string> buffer{};
     {
-      std::lock_guard lock(mutex_);
+      std::scoped_lock lock{mutex_};
       if (message_queue_.empty()) return true;
+
       buffer.swap(message_queue_);
     }
 
@@ -125,17 +126,12 @@ bool UiSystem::HandleEvent(const ftxui::Event& e) {
     return true;
   }
 
-  if (e == ftxui::Event::Return) {
+  if (ftxui_event == ftxui::Event::Return) {
     if (!input_buffer_.empty()) {
       HandleInput(input_buffer_);
       input_buffer_.clear();
     }
 
-    return true;
-  }
-
-  if (e == ftxui::Event::Escape) {
-    app_.Quit();
     return true;
   }
 
@@ -146,17 +142,17 @@ void UiSystem::HandleInput(std::string_view input) const {
   if (input.empty()) return;
 
   if (input[0] != '/') {
-    user_system_.Send(std::string(input));
+    session_system_.Send(std::string{input});
     return;
   }
 
-  std::vector<std::string_view> split;
+  std::vector<std::string_view> split{};
   for (const auto& argument : input | std::views::split(' ')) {
     split.emplace_back(argument);
   }
 
-  const auto token = std::string(split[0] | std::views::drop(1));
-  auto success = commands_system_.Execute(token, split | std::views::drop(1));
+  const auto token = std::string{split[0] | std::views::drop(1)};
+  const auto success = commands_system_.Execute(token, split | std::views::drop(1));
   if (success) return;
 
   logging::Log::Error() << "unknown command: " << token;

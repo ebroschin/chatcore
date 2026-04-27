@@ -7,7 +7,7 @@ namespace ebroschin::chatcore::client {
 class SessionSystem;
 
 class ConnectionEventHandler final : public ClientTcpSystem::ConnectionEventHandler {
- public:
+public:
   explicit ConnectionEventHandler(SessionSystem& session_system) noexcept;
 
   void OnConnected(network::ConnectionId connection_id) override;

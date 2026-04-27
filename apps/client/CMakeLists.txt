@@ -34,6 +34,8 @@ add_executable(chatcore-client
     source/commands/help_command.hpp
     source/ui/ftxui_logger.cpp
     source/ui/ftxui_logger.hpp
+    source/session/session_store.cpp
+    source/session/session_store.hpp
 )
 
 if(WIN32)

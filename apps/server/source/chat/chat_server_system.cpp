@@ -30,6 +30,7 @@ void ChatServerSystem::Initialize() {
   app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleJoinChatChannel);
   app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChats);
   app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannels);
+  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannel);
   app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleShutdown);
   app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleLogout);
 
@@ -137,6 +138,18 @@ void ChatServerSystem::HandleGetChatChannels(network::ConnectionId connection_id
 
   auto channels = channel_store_.GetChannels();
   tcp_system_.Send(connection_id, api::GetChatChannelsResponseMessage{message.request_id, std::move(channels)});
+}
+
+void ChatServerSystem::HandleGetChatChannel(network::ConnectionId connection_id, const api::GetChatChannelRequestMessage& message) {
+  if (!user_system_.ValidateSession(message.request_id, connection_id)) return;
+
+  const auto channel = channel_store_.GetChannel(message.channel_id);
+  if (!channel) {
+    app_system_.HandleRpcError(connection_id, message.request_id, "Channel not found.");
+    return;
+  }
+
+  tcp_system_.Send(connection_id, api::GetChatChannelResponseMessage{message.request_id, channel->get()});
 }
 
 void ChatServerSystem::HandleLogout(network::ConnectionId connection_id, const api::LogoutRequestMessage& message) {

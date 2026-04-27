@@ -98,7 +98,7 @@ The transport protocol and wire format are defined by the application-specific m
 - **Transport framing**: First 4 bytes represent the payload length (big-endian `uint32_t`, uses `htonl(), ntohl()`), while remaining bytes represent the payload
 - **Wire format**: JSON (`nlohmann-json`)
 
-`[apps/server] chat_tcp_system.h`
+`[apps/server] chat_tcp_system.hpp`
 ```cpp  
 using ChatServerTcpSystem = network::tcp::TcpSystemBuilder<    
   network::modules::BoostTcpAcceptor, //uses boost-asio and defines how incoming/outgoing bytes from sockets are interpreted  
@@ -111,7 +111,7 @@ using ChatServerTcpSystem = network::tcp::TcpSystemBuilder<
 
 The `TcpSystem` provides an abstraction for sending and receiving network messages as application-specific data transfer objects (DTO).
 
-`[libs/chatcore-api] api.h`
+`[libs/chatcore-api] api.hpp`
 ```cpp  
 struct ReceiveChatMessage {    
   static constexpr std::uint64_t TypeId = 103;    
@@ -195,7 +195,7 @@ The client therefore uses the `ObservableMessageHandler` from `ebroschin-network
 
 The server uses a 1:1 message handling model. Each incoming network message has exactly one outcome:
 - perform the necessary operations on the data
-- return a response back to sender
+- return a response to sender
 
 To facilitate higher throughput, the server therefore uses the much faster `DirectMessageHandler` from `ebroschin-network-modules` which offers only a single callback per network message type and avoids signals/subscriptions overhead.
 

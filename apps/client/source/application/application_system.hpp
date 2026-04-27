@@ -1,10 +1,11 @@
 #pragma once
 
-#include <thread>
-
 #include "client_tcp_system.hpp"
-#include "ebroschin/core/application.hpp"
-#include "ebroschin/core/system.hpp"
+
+#include <ebroschin/core/application.hpp>
+#include <ebroschin/core/system.hpp>
+
+#include <thread>
 
 namespace ebroschin::chatcore::client {
 

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../../../../../libs/ebroschin-persistence-modules/include/ebroschin/persistence-modules/sqlite/sqlite_persistence_store.hpp"
-#include "../../../../../libs/ebroschin-persistence/include/ebroschin/persistence/persistence_adapter.hpp"
 #include "user_persistence_adapter.hpp"
+
+#include <ebroschin/persistence/persistence_adapter.hpp>
+#include <ebroschin/persistence-modules/sqlite/sqlite_persistence_store.hpp>
 
 using namespace ebroschin::persistence::modules::sqlite;
 

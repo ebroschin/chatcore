@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ebroschin/core/system_context.hpp>
+
 #include <span>
 #include <string_view>
 

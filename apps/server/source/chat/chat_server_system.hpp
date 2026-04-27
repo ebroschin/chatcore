@@ -46,6 +46,7 @@ private:
   void HandleLogout(network::ConnectionId, const api::LogoutRequestMessage&);
   void HandleGetChats(network::ConnectionId connection_id, const api::GetChatsRequestMessage& message);
   void HandleGetChatChannels(network::ConnectionId connection_id, const api::GetChatChannelsRequestMessage& message);
+  void HandleGetChatChannel(network::ConnectionId connection_id, const api::GetChatChannelRequestMessage& message);
 
   ApplicationSystem& app_system_;
   ChatPersistenceAdapter& adapter_;

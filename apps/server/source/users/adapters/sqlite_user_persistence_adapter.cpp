@@ -1,4 +1,5 @@
 #include "sqlite_user_persistence_adapter.hpp"
+
 #include <ebroschin/chat/api.hpp>
 
 namespace ebroschin::chatcore::server {

@@ -9,6 +9,7 @@
 #include "join_channel_command.hpp"
 #include "login_command.hpp"
 #include "logout_command.hpp"
+
 #include <ebroschin/commands/commands_system.hpp>
 
 namespace ebroschin::chatcore::client {

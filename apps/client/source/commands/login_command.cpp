@@ -2,12 +2,13 @@
 
 #include "../application/application_system.hpp"
 #include "../session/session_system.hpp"
-#include "ebroschin/core/system_context.hpp"
+
+#include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::chatcore::client {
 
 LoginCommand::LoginCommand(const core::SystemContext& ctx) noexcept:
-  session_system_(ctx.Require<SessionSystem>())
+  session_system_{ctx.Require<SessionSystem>()}
 {}
 
 void LoginCommand::Execute(std::span<std::string_view> arguments) const {
@@ -16,9 +17,9 @@ void LoginCommand::Execute(std::span<std::string_view> arguments) const {
     return;
   }
 
-  const auto name = std::string(arguments[0]);
-  const auto password = std::string(arguments[1]);
-  session_system_.Login(name, password);
+  auto name = std::string{arguments[0]};
+  auto password = std::string{arguments[1]};
+  session_system_.Login(std::move(name), std::move(password));
 }
 
 }

@@ -8,7 +8,6 @@ class ChatClientApplication final : public core::Application {
 public:
   void Initialize() override;
   void HandleTerminate() override;
-
 };
 
 }

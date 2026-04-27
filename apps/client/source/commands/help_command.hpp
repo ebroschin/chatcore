@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../model/model_system.hpp"
+
 #include <ebroschin/core/system_context.hpp>
 
-#include "../model/model_system.hpp"
 #include <span>
 #include <string_view>
 
@@ -14,7 +15,7 @@ public:
   static constexpr std::string_view Description = "| Display usage information for each command";
 
   explicit HelpCommand(const core::SystemContext& ctx) noexcept;
-  void Execute(std::span<std::string_view> arguments);
+  void Execute(std::span<std::string_view> arguments) const;
 
 private:
   ModelSystem& model_system_;
