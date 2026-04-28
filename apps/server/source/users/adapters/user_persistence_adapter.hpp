@@ -1,12 +1,9 @@
 #pragma once
 
 #include <ebroschin/chat/api.hpp>
+
 #include <optional>
 #include <string>
-
-namespace ebroschin::chatcore::api {
-struct User;
-}
 
 namespace ebroschin::chatcore::server {
 

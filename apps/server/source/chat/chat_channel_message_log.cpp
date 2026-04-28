@@ -8,15 +8,17 @@
 
 namespace ebroschin::chatcore::server {
 
-ChatChannelMessageLog::ChatChannelMessageLog(api::PersistenceId channel_id, ChatMessageStore& store, ChatPersistenceAdapter& adapter):
-  channel_id_(channel_id),
-  store_(store),
-  adapter_(adapter)
+ChatChannelMessageLog::ChatChannelMessageLog(api::PersistenceId channel_id,
+  ChatMessageStore& store,
+  ChatPersistenceAdapter& adapter) noexcept:
+  channel_id_{channel_id},
+  store_{store},
+  adapter_{adapter}
 {}
 
 void ChatChannelMessageLog::Prewarm() const {
   constexpr auto max_message_id = std::numeric_limits<api::PersistenceId>::max();
-  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, PrewarmMessageCount);
+  auto messages = adapter_.GetChatMessagesBefore(channel_id_, max_message_id, PrewarmMessageCount);
   if (messages.empty()) return;
 
   store_.CacheMessages(channel_id_, std::move(messages));
@@ -67,7 +69,7 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
   const auto limit_diff_t = static_cast<decltype(cached_available_count)>(limit);
   const auto cached_take_count = std::min(cached_available_count, limit_diff_t);
 
-  std::vector<api::PersistenceId> cached_result;
+  std::vector<api::PersistenceId> cached_result{};
   cached_result.reserve(static_cast<size_t>(cached_take_count));
 
   auto start_iterator = end_iterator;
@@ -82,10 +84,10 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
   const auto limit_remaining = static_cast<std::uint32_t>(limit_diff_t - cached_take_count);
   const auto oldest_cached_message_id = *start_iterator;
 
-  std::vector<api::PersistenceId> persistence_result;
+  std::vector<api::PersistenceId> persistence_result{};
   persistence_result.reserve(limit_remaining + cached_result.size());
 
-  auto remaining_messages = QueryAndCacheMessages(oldest_cached_message_id, limit_remaining);
+  const auto remaining_messages = QueryAndCacheMessages(oldest_cached_message_id, limit_remaining);
   persistence_result.insert(persistence_result.end(), remaining_messages.begin(), remaining_messages.end());
   persistence_result.insert(persistence_result.end(), cached_result.begin(), cached_result.end());
 
@@ -93,8 +95,8 @@ std::vector<api::PersistenceId> ChatChannelMessageLog::GetChatMessagesBefore(api
 }
 
 std::vector<api::PersistenceId> ChatChannelMessageLog::QueryAndCacheMessages(api::PersistenceId message_id, std::uint32_t limit) {
-  std::vector<api::ChatMessage> messages = adapter_.GetChatMessagesBefore(channel_id_, message_id, limit);
-  std::vector<api::PersistenceId> result;
+  auto messages = adapter_.GetChatMessagesBefore(channel_id_, message_id, limit);
+  std::vector<api::PersistenceId> result{};
   result.reserve(messages.size());
 
   for (const auto& message : messages) {

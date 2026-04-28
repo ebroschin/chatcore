@@ -7,17 +7,11 @@
 
 using namespace ebroschin::persistence::modules::sqlite;
 
-namespace ebroschin::chat::api {
-struct User;
-}
-
 namespace ebroschin::chatcore::server {
 
 class SqliteUserPersistenceAdapter final : public persistence::PersistenceAdapter<SqlitePersistenceStore, UserPersistenceAdapter> {
 public:
-  explicit SqliteUserPersistenceAdapter(SqlitePersistenceStore& store)
-  : PersistenceAdapter(store)
-  {}
+  explicit SqliteUserPersistenceAdapter(SqlitePersistenceStore& store) noexcept;
 
   void Initialize() override;
 

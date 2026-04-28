@@ -1,12 +1,12 @@
 #pragma once
 
-#include <ebroschin/core/system.hpp>
-#include <ebroschin/scheduling/scheduling_system.hpp>
-
 #include "../application/application_system.hpp"
 #include "../application/chat_tcp_system.hpp"
 #include "chat_channel_store.hpp"
 #include "chat_message_store.hpp"
+
+#include <ebroschin/core/system.hpp>
+#include <ebroschin/scheduling/scheduling_system.hpp>
 
 namespace ebroschin::chatcore::server {
 
@@ -17,7 +17,7 @@ class ApplicationSystem;
 
 class ChatServerSystem final : public core::System {
 public:
-  explicit ChatServerSystem(const core::SystemContext& ctx);
+  explicit ChatServerSystem(const core::SystemContext& ctx) noexcept;
 
   void Initialize() override;
   void Deinitialize() override;
@@ -30,20 +30,12 @@ public:
     tcp_system_.Broadcast<TMessage>(*channel_connections, message);
   }
 
-  template <typename TMessage>
-  void ChannelBroadcast(network::ConnectionId connection_id, const TMessage& message) {
-    const auto potential_channel = channel_store_.GetAssignedChannel(connection_id);
-    if (!potential_channel) return;
-
-    ChannelBroadcast(potential_channel->get(), message);
-  }
-
 private:
-  void HandleJoinChatChannel(network::ConnectionId id, const api::JoinChatChannelRequestMessage& message);
+  void HandleJoinChatChannel(network::ConnectionId connection_id, const api::JoinChatChannelRequestMessage& message);
   void HandleWriteChatMessage(network::ConnectionId connection_id, const api::WriteChatMessage& message);
   void HandleCreateChatChannel(network::ConnectionId connection_id, const api::CreateChannelRequestMessage& message);
   void HandleShutdown(network::ConnectionId connection_id, const api::ShutdownMessage& message);
-  void HandleLogout(network::ConnectionId, const api::LogoutRequestMessage&);
+  void HandleLogout(network::ConnectionId connection_id, const api::LogoutRequestMessage& message);
   void HandleGetChats(network::ConnectionId connection_id, const api::GetChatsRequestMessage& message);
   void HandleGetChatChannels(network::ConnectionId connection_id, const api::GetChatChannelsRequestMessage& message);
   void HandleGetChatChannel(network::ConnectionId connection_id, const api::GetChatChannelRequestMessage& message);

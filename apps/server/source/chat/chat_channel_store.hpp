@@ -2,9 +2,6 @@
 
 #include <ebroschin/chat/api.hpp>
 #include <ebroschin/network/commons.hpp>
-#include <optional>
-#include <ranges>
-
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index_container.hpp>
@@ -13,16 +10,18 @@
 #include <boost/bimap/unordered_multiset_of.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 
+#include <optional>
+#include <ranges>
+
 namespace ebroschin::chatcore::server {
 
 using namespace boost;
 
 class ChatPersistenceAdapter;
-struct ConnectionsRange;
 
 class ChatChannelStore {
   struct CachedChannel {
-    api::ChatChannel channel{};
+    api::ChatChannel channel;
 
     [[nodiscard]] const api::PersistenceId& GetId() const { return channel.id; }
     [[nodiscard]] const std::string& GetName() const { return channel.name; }
@@ -64,18 +63,25 @@ class ChatChannelStore {
   };
 
 public:
-  explicit ChatChannelStore(ChatPersistenceAdapter& adapter);
+  explicit ChatChannelStore(ChatPersistenceAdapter& adapter) noexcept;
 
   void Prewarm();
   const api::ChatChannel& CacheChannel(api::ChatChannel channel);
 
   void AssignConnection(network::ConnectionId connection_id, api::PersistenceId channel_id);
   void UnassignConnection(network::ConnectionId connection_id);
-  std::optional<std::reference_wrapper<const api::ChatChannel>> GetAssignedChannel(network::ConnectionId connection_id);
 
-  [[nodiscard]] std::optional<ConnectionsRange> GetConnections(api::PersistenceId channel_id) const;
-  std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(api::PersistenceId channel_id);
-  std::optional<std::reference_wrapper<const api::ChatChannel>> GetChannel(const std::string& channel_name);
+  [[nodiscard]] std::optional<std::reference_wrapper<const api::ChatChannel>>
+  GetAssignedChannel(network::ConnectionId connection_id);
+
+  [[nodiscard]] std::optional<ConnectionsRange>
+  GetConnections(api::PersistenceId channel_id) const;
+
+  [[nodiscard]] std::optional<std::reference_wrapper<const api::ChatChannel>>
+  GetChannel(api::PersistenceId channel_id);
+
+  [[nodiscard]] std::optional<std::reference_wrapper<const api::ChatChannel>>
+  GetChannel(const std::string& channel_name);
 
   [[nodiscard]] std::vector<api::ChatChannel> GetChannels() const;
 

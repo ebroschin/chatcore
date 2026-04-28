@@ -21,14 +21,14 @@ public:
     return it->second.user;
   }
 
-  std::optional<api::User> GetUser(api::PersistenceId id) override {
+  [[nodiscard]] std::optional<api::User> GetUser(api::PersistenceId id) override {
     const auto it = mock_users_.find(id);
     if (it == mock_users_.end()) return std::nullopt;
 
     return it->second.user;
   }
 
-  std::optional<api::User> GetUser(const std::string& name) override {
+  [[nodiscard]] std::optional<api::User> GetUser(const std::string& name) override {
     for (const auto& mock_user : mock_users_ | std::ranges::views::values) {
       if (mock_user.user.name == name) return mock_user.user;
     }
@@ -36,7 +36,7 @@ public:
     return std::nullopt;
   }
 
-  std::vector<api::User> GetUsers() override {
+  [[nodiscard]] std::vector<api::User> GetUsers() override {
     auto view = mock_users_ | std::ranges::views::values | std::views::transform([](const auto& x) { return x.user; });
     return std::vector<api::User>{view.begin(), view.end()};
   }

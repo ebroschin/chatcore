@@ -18,8 +18,8 @@ public:
   using UsersView = const std::unordered_map<api::PersistenceId, api::User>&;
   explicit SessionStore(SessionSystem& session_system, ClientRpcSystem& rpc_system) noexcept;
 
-  api::ChatChannel& CacheChannel(const api::ChatChannel& channel);
-  api::User& CacheUser(const api::User& user);
+  const api::ChatChannel& CacheChannel(const api::ChatChannel& channel);
+  const api::User& CacheUser(const api::User& user);
 
   void LoadUsers(network::ConnectionId connection_id,
     std::span<const api::PersistenceId> user_ids,

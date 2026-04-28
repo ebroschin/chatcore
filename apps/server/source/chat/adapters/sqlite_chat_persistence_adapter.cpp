@@ -1,7 +1,12 @@
 #include "sqlite_chat_persistence_adapter.hpp"
+
 #include <ebroschin/chat/api.hpp>
 
 namespace ebroschin::chatcore::server {
+
+SqliteChatPersistenceAdapter::SqliteChatPersistenceAdapter(SqlitePersistenceStore& store) noexcept:
+  PersistenceAdapter{store}
+{}
 
 void SqliteChatPersistenceAdapter::Initialize() {
   auto& db = store_.GetDatabase();
@@ -20,7 +25,7 @@ void SqliteChatPersistenceAdapter::Initialize() {
 
 std::optional<api::ChatChannel> SqliteChatPersistenceAdapter::CreateChatChannel(const std::string &name) {
   const auto& db = store_.GetDatabase();
-  SQLite::Statement query(db, "INSERT INTO chat_channels (name) VALUES (?) ON CONFLICT(name) DO NOTHING;");
+  SQLite::Statement query{db, "INSERT INTO chat_channels (name) VALUES (?) ON CONFLICT(name) DO NOTHING;"};
   query.bind(1, name);
 
   if (query.exec() <= 0) return std::nullopt;
@@ -31,7 +36,7 @@ std::optional<api::ChatChannel> SqliteChatPersistenceAdapter::CreateChatChannel(
 
 std::optional<api::ChatMessage> SqliteChatPersistenceAdapter::CreateChatMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& content) {
   const auto& db = store_.GetDatabase();
-  SQLite::Statement query(db, "INSERT INTO chat_messages (channel_id, user_id, content) VALUES (?,?,?);");
+  SQLite::Statement query{db, "INSERT INTO chat_messages (channel_id, user_id, content) VALUES (?,?,?);"};
   query.bind(1, channel_id);
   query.bind(2, user_id);
   query.bind(3, content);
@@ -67,8 +72,7 @@ std::optional<api::PersistenceId> SqliteChatPersistenceAdapter::PersistChatMessa
   return last_persisted_id;
 }
 
-std::optional<api::PersistenceId>
-SqliteChatPersistenceAdapter::GetFirstChatMessageId(api::PersistenceId channel_id) {
+std::optional<api::PersistenceId> SqliteChatPersistenceAdapter::GetFirstChatMessageId(api::PersistenceId channel_id) {
   const auto& db = store_.GetDatabase();
   SQLite::Statement query{db,
     "SELECT MIN(id) FROM chat_messages "
@@ -82,8 +86,7 @@ SqliteChatPersistenceAdapter::GetFirstChatMessageId(api::PersistenceId channel_i
   return query.getColumn(0).getUInt();
 }
 
-std::optional<api::PersistenceId>
-SqliteChatPersistenceAdapter::GetLastChatMessageId() {
+std::optional<api::PersistenceId> SqliteChatPersistenceAdapter::GetLastChatMessageId() {
   const auto& db = store_.GetDatabase();
   SQLite::Statement query{db,
     "SELECT MAX(id) FROM chat_messages; "
@@ -95,9 +98,9 @@ SqliteChatPersistenceAdapter::GetLastChatMessageId() {
   return query.getColumn(0).getUInt();
 }
 
-std::vector<api::ChatMessage>
-SqliteChatPersistenceAdapter::GetChatMessagesBefore
-(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit) {
+std::vector<api::ChatMessage> SqliteChatPersistenceAdapter::GetChatMessagesBefore
+(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit)
+{
   std::vector<api::ChatMessage> result;
   const auto& db = store_.GetDatabase();
 
@@ -160,7 +163,7 @@ std::optional<api::ChatChannel> SqliteChatPersistenceAdapter::GetChatChannel(api
 }
 
 std::vector<api::ChatChannel> SqliteChatPersistenceAdapter::GetChatChannels() {
-  std::vector<api::ChatChannel> result;
+  std::vector<api::ChatChannel> result{};
   const auto& db = store_.GetDatabase();
   SQLite::Statement query{db,
     "SELECT id, name FROM chat_channels;"

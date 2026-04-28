@@ -14,7 +14,7 @@ class ChatPersistenceAdapter;
 
 class ChatMessageStore {
 public:
-  explicit ChatMessageStore(ChatPersistenceAdapter& adapter);
+  explicit ChatMessageStore(ChatPersistenceAdapter& adapter) noexcept;
 
   void Prewarm();
   void CreateMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& message);
@@ -33,7 +33,7 @@ private:
 
   ChatPersistenceAdapter& adapter_;
 
-  std::mutex mutex_;
+  std::mutex mutex_{};
   std::optional<api::PersistenceId> latest_persisted_id_{std::nullopt};
   api::PersistenceId next_id_{0};
 

@@ -1,15 +1,15 @@
 #include "application_system.hpp"
 
-#include <ebroschin/core/system_context.hpp>
-
 #include "../users/user_server_system.hpp"
 #include "chat_server_application.hpp"
 #include "chat_tcp_system.hpp"
+
+#include <ebroschin/core/system_context.hpp>
 #include <ebroschin/logging/log.hpp>
 
 namespace ebroschin::chatcore::server {
 
-ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app):
+ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app) noexcept:
   System{ctx},
   app_{app},
   tcp_system_{ctx.Require<ChatServerTcpSystem>()},
@@ -17,7 +17,9 @@ ApplicationSystem::ApplicationSystem(const core::SystemContext& ctx, ChatServerA
 {}
 
 void ApplicationSystem::Initialize() {
-  application_thread_ = std::jthread{[this](const std::stop_token& st) {
+  application_thread_ = std::jthread{[this]
+  (const std::stop_token& st)
+  {
     auto& processor = tcp_system_.GetMessageProcessor();
     while (!st.stop_requested()) {
       processor.ProcessBlocking();
@@ -27,14 +29,11 @@ void ApplicationSystem::Initialize() {
   connection_event_handler_ = std::make_unique<ConnectionEventHandler>(ctx_.Require<UserServerSystem>());
   const auto& arguments = app_.GetArguments();
   tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, connection_event_handler_.get());
-
-  logging::Log::Info("ChatCore server started, accepting clients");
 }
 
 void ApplicationSystem::Deinitialize() {
   auto& processor = tcp_system_.GetMessageProcessor();
   processor.Stop();
-
   application_thread_ = {};
 }
 

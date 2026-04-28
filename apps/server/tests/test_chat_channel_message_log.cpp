@@ -7,11 +7,11 @@
 namespace ebroschin::chatcore::server::tests {
 
 TEST(ChatChannelMessageLogTests, AssignMessageIdsUniqueSorted) {
-  MockChatPersistenceAdapter adapter;
-  ChatMessageStore store(adapter);
+  MockChatPersistenceAdapter adapter{};
+  ChatMessageStore store{adapter};
 
   constexpr api::PersistenceId channel_id = 1;
-  ChatChannelMessageLog log(channel_id, store, adapter);
+  ChatChannelMessageLog log{channel_id, store, adapter};
   log.AssignMessageIds({4, 5, 2, 3, 3, 1, 2, 4, 4, 4, 77, 123});
 
   const auto ids = log.GetLatestChatMessages(100);

@@ -1,18 +1,19 @@
 #include "user_server_system.hpp"
-#include "../application/chat_persistence_system.hpp"
-#include "adapters/sqlite_user_persistence_adapter.hpp"
-#include <ebroschin/network/tcp/tcp_system.hpp>
 
+#include "../application/chat_persistence_system.hpp"
 #include "../application/application_system.hpp"
+#include "adapters/sqlite_user_persistence_adapter.hpp"
+
+#include <ebroschin/network/tcp/tcp_system.hpp>
 #include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::chatcore::server {
 
-UserServerSystem::UserServerSystem(const core::SystemContext& ctx):
-  System(ctx),
-  app_system_(ctx_.Require<ApplicationSystem>()),
-  adapter_(ctx_.Require<ChatPersistenceSystem>().Require<UserPersistenceAdapter>()),
-  tcp_system_(ctx_.Require<ChatServerTcpSystem>())
+UserServerSystem::UserServerSystem(const core::SystemContext& ctx) noexcept:
+  System{ctx},
+  app_system_{ctx_.Require<ApplicationSystem>()},
+  adapter_{ctx_.Require<ChatPersistenceSystem>().Require<UserPersistenceAdapter>()},
+  tcp_system_{ctx_.Require<ChatServerTcpSystem>()}
 { }
 
 void UserServerSystem::Initialize() {
@@ -107,4 +108,3 @@ void UserServerSystem::HandleGetUser(network::ConnectionId connection_id, const 
 }
 
 }
-

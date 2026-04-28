@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ebroschin/chat/api.hpp>
+
 #include <optional>
 #include <span>
 #include <string>

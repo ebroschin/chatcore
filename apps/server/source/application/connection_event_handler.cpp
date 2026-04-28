@@ -1,6 +1,7 @@
 #include "connection_event_handler.hpp"
 
 #include "../users/user_server_system.hpp"
+
 #include <ebroschin/logging/log.hpp>
 
 namespace ebroschin::chatcore::server {
@@ -10,12 +11,16 @@ ConnectionEventHandler::ConnectionEventHandler(UserServerSystem& user_system) no
 {}
 
 void ConnectionEventHandler::OnConnected(network::ConnectionId connection_id) {
-  logging::Log::Verbose("Client with id " + std::to_string(connection_id) + " has connected");
+  logging::Log::Verbose() << "Client with id " << connection_id << " has connected";
 }
 
 void ConnectionEventHandler::OnDisconnected(network::ConnectionId connection_id) {
-  logging::Log::Verbose("Client with id " + std::to_string(connection_id) + " has disconnected");
+  logging::Log::Verbose() << "Client with id " << connection_id << " has disconnected";
   user_system_.RemoveSession(connection_id);
+}
+
+void ConnectionEventHandler::OnConnectionFailed(const network::modules::BoostTcpAcceptorParameters& parameters) {
+  logging::Log::Critical() << "Failed to bind to address " << parameters.ip << ":" << parameters.port;
 }
 
 }

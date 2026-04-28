@@ -6,7 +6,7 @@ class SystemContext;
 
 class System {
 public:
-  explicit System(const SystemContext& ctx):
+  explicit System(const SystemContext& ctx) noexcept:
     ctx_{ctx}
   {}
 

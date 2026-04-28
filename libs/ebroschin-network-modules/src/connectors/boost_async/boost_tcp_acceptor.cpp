@@ -21,10 +21,15 @@ void BoostTcpAcceptor::Start() {
 void BoostTcpAcceptor::Connect(BoostTcpAcceptorParameters parameters, ConnectionEventHandler* connection_event_handler) {
   if (acceptor_ != nullptr) return;
 
-  const auto address = asio::ip::make_address(parameters.ip);
-  acceptor_ = std::make_unique<asio::ip::tcp::acceptor>(io_context_, asio::ip::tcp::endpoint{address, parameters.port});
   connection_event_handler_ = connection_event_handler;
-  StartAccept();
+  const auto address = asio::ip::make_address(parameters.ip);
+  try {
+    acceptor_ = std::make_unique<asio::ip::tcp::acceptor>(io_context_, asio::ip::tcp::endpoint{address, parameters.port});
+    StartAccept();
+  } catch (...) {
+    if (!connection_event_handler_) return;
+    connection_event_handler_->OnConnectionFailed(parameters);
+  }
 }
 
 void BoostTcpAcceptor::StartAccept() {

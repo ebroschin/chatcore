@@ -4,6 +4,10 @@
 
 namespace ebroschin::chatcore::server {
 
+SqliteUserPersistenceAdapter::SqliteUserPersistenceAdapter(SqlitePersistenceStore& store) noexcept:
+  PersistenceAdapter{store}
+{}
+
 void SqliteUserPersistenceAdapter::Initialize() {
   auto& db = store_.GetDatabase();
   db.exec(R"(
@@ -17,7 +21,7 @@ void SqliteUserPersistenceAdapter::Initialize() {
 
 std::optional<api::User> SqliteUserPersistenceAdapter::CreateUser(const std::string& name, const std::string& password) {
   const auto& db = store_.GetDatabase();
-  SQLite::Statement query(db, "INSERT INTO chat_users (name, password) VALUES (?,?) ON CONFLICT(name) DO NOTHING;");
+  SQLite::Statement query{db, "INSERT INTO chat_users (name, password) VALUES (?,?) ON CONFLICT(name) DO NOTHING;"};
   query.bind(1, name);
   query.bind(2, password);
 
@@ -28,12 +32,12 @@ std::optional<api::User> SqliteUserPersistenceAdapter::CreateUser(const std::str
 
 std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(api::PersistenceId id) {
   const auto& db = store_.GetDatabase();
-  SQLite::Statement query(db,
+  SQLite::Statement query{db,
       "SELECT id, name FROM chat_users "
       "WHERE id = ? "
       "ORDER BY id ASC "
       "LIMIT 1;"
-  );
+  };
 
   query.bind(1, id);
   if (!query.executeStep()) return std::nullopt;
@@ -45,12 +49,12 @@ std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(api::PersistenceI
 
 std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const std::string& name) {
   const auto& db = store_.GetDatabase();
-  SQLite::Statement query(db,
+  SQLite::Statement query{db,
       "SELECT id FROM chat_users "
       "WHERE name = ? "
       "ORDER BY id ASC "
       "LIMIT 1;"
-  );
+  };
 
   query.bind(1, name);
   if (!query.executeStep()) return std::nullopt;
@@ -61,13 +65,13 @@ std::optional<api::User> SqliteUserPersistenceAdapter::GetUser(const std::string
 
 std::optional<api::User> SqliteUserPersistenceAdapter::MatchUserCredentials(const std::string& name, const std::string& password) {
   const auto& db = store_.GetDatabase();
-  SQLite::Statement query(db,
+  SQLite::Statement query{db,
       "SELECT id FROM chat_users "
       "WHERE name = ? "
       "AND password = ? "
       "ORDER BY id ASC "
       "LIMIT 1;"
-  );
+  };
 
   query.bind(1, name);
   query.bind(2, password);
@@ -80,7 +84,7 @@ std::optional<api::User> SqliteUserPersistenceAdapter::MatchUserCredentials(cons
 std::vector<api::User> SqliteUserPersistenceAdapter::GetUsers() {
   const auto& db = store_.GetDatabase();
 
-  std::vector<api::User> result;
+  std::vector<api::User> result{};
   SQLite::Statement query{db, "SELECT id, name FROM chat_users;"};
 
   while (query.executeStep()) {

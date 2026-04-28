@@ -1,4 +1,5 @@
 #pragma once
+
 #include "chat_tcp_system.hpp"
 
 namespace ebroschin::chatcore::server {
@@ -10,7 +11,7 @@ public:
   explicit ConnectionEventHandler(UserServerSystem& user_system) noexcept;
 
   void OnConnected(network::ConnectionId) override;
-  void OnConnectionFailed(const network::modules::BoostTcpAcceptorParameters&) override {}
+  void OnConnectionFailed(const network::modules::BoostTcpAcceptorParameters&) override;
   void OnDisconnected(network::ConnectionId connection_id) override;
 
 private:

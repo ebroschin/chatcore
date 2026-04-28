@@ -14,7 +14,7 @@ TEST(ChatMessageStoreTests, PrewarmAndPersist) {
   constexpr api::PersistenceId user_id = 1;
   const std::string channel_name = "ctest-channel";
 
-  MockChatPersistenceAdapter adapter;
+  MockChatPersistenceAdapter adapter{};
 
   //Mock persisted channels on application start
   adapter.CreateChatChannel(channel_name);
@@ -24,7 +24,7 @@ TEST(ChatMessageStoreTests, PrewarmAndPersist) {
   adapter.CreateChatMessage(channel_id, user_id, "b");
   adapter.CreateChatMessage(channel_id, user_id, "c");
 
-  ChatMessageStore store(adapter);
+  ChatMessageStore store{adapter};
   store.Prewarm();
 
   //The cache acts as the authoritative source of truth after prewarm
@@ -54,7 +54,7 @@ TEST(ChatMessageStoreTests, MultiChannelPrewarm) {
   constexpr std::size_t initial_channel2_message_count = 7;
   constexpr std::size_t initial_channel3_message_count = 11;
 
-  MockChatPersistenceAdapter adapter;
+  MockChatPersistenceAdapter adapter{};
   //Mock persisted channels on application start
   const auto channel1 = *adapter.CreateChatChannel("ctest-enjoyers1");
   const auto channel2 = *adapter.CreateChatChannel("ctest-enjoyers2");
@@ -73,7 +73,7 @@ TEST(ChatMessageStoreTests, MultiChannelPrewarm) {
     adapter.CreateChatMessage(channel3.id, user_id, "c" + std::to_string(i));
   }
 
-  ChatMessageStore store(adapter);
+  ChatMessageStore store{adapter};
 
   //Prior to Prewarm(), no messages exist within the cache
   auto messages = store.GetMessagesBefore(channel1.id, MaxMessageId, 20);
@@ -102,7 +102,7 @@ TEST(ChatMessageStoreTests, Paging) {
   constexpr api::PersistenceId user_id = 1;
   constexpr std::size_t initial_channel_message_count = 55;
 
-  MockChatPersistenceAdapter adapter;
+  MockChatPersistenceAdapter adapter{};
   //Mock persisted channels on application start
   const auto channel = *adapter.CreateChatChannel("ctest-enjoyers");
 
@@ -111,7 +111,7 @@ TEST(ChatMessageStoreTests, Paging) {
     adapter.CreateChatMessage(channel.id, user_id, "a" + std::to_string(i));
   }
 
-  ChatMessageStore store(adapter);
+  ChatMessageStore store{adapter};
   store.Prewarm();
 
   //Retrieve the latest 5 messages

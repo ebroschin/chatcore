@@ -1,23 +1,19 @@
 #pragma once
 
-#include "../../../../../libs/ebroschin-persistence-modules/include/ebroschin/persistence-modules/sqlite/sqlite_persistence_store.hpp"
-#include "../../../../../libs/ebroschin-persistence/include/ebroschin/persistence/persistence_adapter.hpp"
 #include "chat_persistence_adapter.hpp"
+
+#include <ebroschin/persistence-modules/sqlite/sqlite_persistence_store.hpp>
+#include <ebroschin/persistence/persistence_adapter.hpp>
+
 #include <vector>
 
 using namespace ebroschin::persistence::modules::sqlite;
-
-namespace ebroschin::chatcore::api {
-struct ChatMessage;
-}
 
 namespace ebroschin::chatcore::server {
 
 class SqliteChatPersistenceAdapter final : public persistence::PersistenceAdapter<SqlitePersistenceStore, ChatPersistenceAdapter> {
 public:
-  explicit SqliteChatPersistenceAdapter(SqlitePersistenceStore& store)
-  : PersistenceAdapter(store)
-  {}
+  explicit SqliteChatPersistenceAdapter(SqlitePersistenceStore& store) noexcept;
 
   void Initialize() override;
 
@@ -33,11 +29,8 @@ public:
   std::vector<api::ChatMessage>
   GetChatMessagesBefore(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit) override;
 
-  std::optional<api::PersistenceId>
-  GetFirstChatMessageId(api::PersistenceId channel_id) override;
-
-  std::optional<api::PersistenceId>
-  GetLastChatMessageId() override;
+  std::optional<api::PersistenceId> GetFirstChatMessageId(api::PersistenceId channel_id) override;
+  std::optional<api::PersistenceId> GetLastChatMessageId() override;
 };
 
 }

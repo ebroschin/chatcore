@@ -6,11 +6,11 @@
 namespace ebroschin::chatcore::server::tests {
 
 TEST(ChatChannelStoreTests, ConnectionToChannelAssignment) {
-  MockChatPersistenceAdapter adapter;
+  MockChatPersistenceAdapter adapter{};
   const auto channel1 = *adapter.CreateChatChannel("channel1");
   const auto channel2 = *adapter.CreateChatChannel("channel2");
 
-  ChatChannelStore store(adapter);
+  ChatChannelStore store{adapter};
   store.Prewarm();
 
   constexpr network::ConnectionId connection_id = 7;
@@ -27,11 +27,11 @@ TEST(ChatChannelStoreTests, ConnectionToChannelAssignment) {
 }
 
 TEST(ChatChannelStoreTests, GetConnectionsForChannel) {
-  MockChatPersistenceAdapter adapter;
+  MockChatPersistenceAdapter adapter{};
   const auto channel1 = *adapter.CreateChatChannel("channel1");
   const auto channel2 = *adapter.CreateChatChannel("channel2");
 
-  ChatChannelStore store(adapter);
+  ChatChannelStore store{adapter};
   store.Prewarm();
 
   constexpr network::ConnectionId connection_id1 = 7;

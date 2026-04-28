@@ -6,7 +6,7 @@ namespace ebroschin::chatcore::server::tests {
 
 static ChatServerArguments CreateMockArguments(std::initializer_list<std::string_view> arguments) {
   const std::size_t argc = arguments.size();
-  std::vector<char*> argv;
+  std::vector<char*> argv{};
   argv.reserve(argc);
 
   for (const auto& argument : arguments) {

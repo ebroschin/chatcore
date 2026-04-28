@@ -1,12 +1,12 @@
 #pragma once
 
 #include "chat_tcp_system.hpp"
+#include "connection_event_handler.hpp"
+
 #include <ebroschin/core/system.hpp>
-#include <functional>
+
 #include <memory>
 #include <thread>
-
-#include "connection_event_handler.hpp"
 
 namespace ebroschin::chatcore::server {
 
@@ -14,7 +14,7 @@ class ChatServerApplication;
 
 class ApplicationSystem final : public core::System {
 public:
-  explicit ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app);
+  explicit ApplicationSystem(const core::SystemContext& ctx, ChatServerApplication& app) noexcept;
 
   void Initialize() override;
   void Deinitialize() override;

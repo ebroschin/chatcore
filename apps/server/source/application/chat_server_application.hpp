@@ -1,6 +1,7 @@
 #pragma once
 
 #include "chat_server_arguments.hpp"
+
 #include <ebroschin/core/application.hpp>
 
 namespace ebroschin::chatcore::server {

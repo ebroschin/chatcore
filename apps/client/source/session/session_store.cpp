@@ -9,13 +9,13 @@ SessionStore::SessionStore(SessionSystem& session_system, ClientRpcSystem& rpc_s
   rpc_system_{rpc_system}
 {}
 
-api::User& SessionStore::CacheUser(const api::User& user) {
+const api::User& SessionStore::CacheUser(const api::User& user) {
   const auto key = user.id;
   const auto [it, _] = users_cache_.try_emplace(key, user);
   return it->second;
 }
 
-api::ChatChannel& SessionStore::CacheChannel(const api::ChatChannel& channel) {
+const api::ChatChannel& SessionStore::CacheChannel(const api::ChatChannel& channel) {
   const auto channel_id = channel.id;
   const auto [it, _] = channels_cache_.try_emplace(channel_id, channel);
   return it->second;

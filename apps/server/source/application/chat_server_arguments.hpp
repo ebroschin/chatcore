@@ -2,6 +2,7 @@
 
 #include <ebroschin/logging/log_level.hpp>
 #include <ebroschin/utility/arguments.hpp>
+
 #include <optional>
 #include <string>
 
@@ -33,7 +34,6 @@ private:
   unsigned short port_;
   std::string sqlite_filename_;
   logging::LogLevel log_level_;
-
 };
 
 }

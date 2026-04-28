@@ -6,11 +6,11 @@
 namespace ebroschin::chatcore::server::tests {
 
 TEST(UserStoreTests, Prewarm) {
-  MockUserPersistenceAdapter adapter;
+  MockUserPersistenceAdapter adapter{};
   adapter.CreateUser("dante", "123");
   adapter.CreateUser("vergil", "123");
 
-  UserStore store(adapter);
+  UserStore store{adapter};
   store.Prewarm();
 
   auto test_user = [](UserStore& store, api::PersistenceId id, const std::string& name) {
@@ -25,7 +25,7 @@ TEST(UserStoreTests, Prewarm) {
 }
 
 TEST(UserStoreTests, SessionLifecycle) {
-  MockUserPersistenceAdapter adapter;
+  MockUserPersistenceAdapter adapter{};
   adapter.CreateUser("dante", "123");
   adapter.CreateUser("vergil", "123");
 
@@ -67,7 +67,7 @@ TEST(UserStoreTests, SessionLifecycle) {
 }
 
 TEST(UserStoreTests, GetUsersSkipMissing) {
-  MockUserPersistenceAdapter adapter;
+  MockUserPersistenceAdapter adapter{};
   adapter.CreateUser("dante", "123");
   adapter.CreateUser("vergil", "123");
   adapter.CreateUser("nero", "777");

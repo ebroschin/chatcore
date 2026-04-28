@@ -9,7 +9,9 @@ class ChatPersistenceAdapter;
 
 class ChatChannelMessageLog {
 public:
-  explicit ChatChannelMessageLog(api::PersistenceId channel_id, ChatMessageStore& store, ChatPersistenceAdapter& adapter);
+  explicit ChatChannelMessageLog(api::PersistenceId channel_id,
+    ChatMessageStore& store,
+    ChatPersistenceAdapter& adapter) noexcept;
 
   void Prewarm() const;
   void AppendMessageId(api::PersistenceId message_id);

@@ -69,7 +69,7 @@ UserStore::GetUser(const std::string& name) {
 }
 
 std::vector<api::User> UserStore::GetUsers(std::span<const api::PersistenceId> user_ids) {
-  std::vector<api::User> result;
+  std::vector<api::User> result{};
   result.reserve(user_ids.size());
 
   for (const auto& user_id : user_ids) {
