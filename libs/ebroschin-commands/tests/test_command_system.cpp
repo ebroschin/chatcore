@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <ebroschin/commands/commands_system.hpp>
+#include "ebroschin/commands/commands_system.hpp"
+
 #include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::commands::tests {

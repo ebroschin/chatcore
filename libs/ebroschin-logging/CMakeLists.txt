@@ -16,3 +16,20 @@ target_include_directories(ebroschin_logging PUBLIC
 )
 
 target_compile_features(ebroschin_logging PUBLIC cxx_std_23)
+
+if(BUILD_TESTING)
+    find_package(GTest CONFIG REQUIRED)
+
+    add_executable(ebroschin_logging_tests
+        tests/test_log_system.cpp
+    )
+
+    target_link_libraries(ebroschin_logging_tests PRIVATE
+        ebroschin_logging
+        GTest::gtest
+        GTest::gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(ebroschin_logging_tests)
+endif()
