@@ -82,23 +82,12 @@ void RootClient::Evaluate() {
     return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
   };
 
-  logging::Log::Info() << "p50: " << to_us(CalculatePercentile(latencies, 0.5)) << "us";
-  logging::Log::Info() << "p95: " << to_us(CalculatePercentile(latencies, 0.95)) << "us";
-  logging::Log::Info() << "p99: " << to_us(CalculatePercentile(latencies, 0.99)) << "us";
-  logging::Log::Info() << "max: " << to_us(CalculatePercentile(latencies, 1.0)) << "us";
+  logging::Log::Info() << "p50: " << to_us(ClientReport::CalculatePercentile(latencies, 0.5)) << "us";
+  logging::Log::Info() << "p95: " << to_us(ClientReport::CalculatePercentile(latencies, 0.95)) << "us";
+  logging::Log::Info() << "p99: " << to_us(ClientReport::CalculatePercentile(latencies, 0.99)) << "us";
+  logging::Log::Info() << "max: " << to_us(ClientReport::CalculatePercentile(latencies, 1.0)) << "us";
 
   app_system_.Quit();
-}
-
-steady_clock::duration RootClient::CalculatePercentile(std::vector<steady_clock::duration> latencies, double normalized_percentage) {
-  if (latencies.empty()) return steady_clock::duration::zero();
-
-  const auto fractional_index = std::floor(normalized_percentage * static_cast<double>(latencies.size() - 1));
-  const auto index = static_cast<std::size_t>(fractional_index);
-  const auto n = latencies.begin() + static_cast<long>(fractional_index);
-  std::ranges::nth_element(latencies, n);
-
-  return latencies[index];
 }
 
 void RootClient::SetClientReady(network::ConnectionId id) {

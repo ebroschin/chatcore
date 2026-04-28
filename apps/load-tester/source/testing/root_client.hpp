@@ -6,6 +6,7 @@
 #include <ebroschin/scheduling/scheduling_system.hpp>
 
 #include <unordered_set>
+#include <vector>
 
 namespace ebroschin::chatcore::tester {
 
@@ -25,7 +26,6 @@ protected:
 private:
   void HandleRootClientReady();
   void Evaluate();
-  steady_clock::duration CalculatePercentile(std::vector<steady_clock::duration> latencies, double normalized_percentage);
 
   scheduling::SchedulingSystem& scheduling_system_;
   api::PersistenceId test_channel_id_{};

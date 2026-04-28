@@ -42,6 +42,7 @@ if(BUILD_TESTING)
 
     add_executable(chatcore_load_tester_tests
         tests/test_load_tester_arguments.cpp
+        tests/test_load_tester_reporting.cpp
         source/application/load_tester_arguments.cpp
     )
 
