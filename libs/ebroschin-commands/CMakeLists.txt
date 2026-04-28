@@ -19,6 +19,8 @@ if(BUILD_TESTING)
 
     target_link_libraries(ebroschin_commands_tests PRIVATE
         ebroschin_commands
+        ebroschin::core
+        ebroschin::utility
         GTest::gtest
         GTest::gtest_main
     )
