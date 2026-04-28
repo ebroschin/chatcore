@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ebroschin/chat/api.hpp>
+#include "api.hpp"
 
 #define NLOHMANN_DEFINE_EMPTY_TYPE_NON_INTRUSIVE(Type) \
   inline void from_json(const nlohmann::json&, Type&) {} \

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <memory>
 
 namespace ebroschin::utility {
@@ -13,8 +14,7 @@ public:
   ~SignalSubscription();
 
   SignalSubscription(const SignalSubscription&) = delete;
-  void operator=(const SignalSubscription&) = delete;
-
+  SignalSubscription& operator=(const SignalSubscription&) = delete;
   SignalSubscription(SignalSubscription&&) noexcept;
   SignalSubscription& operator=(SignalSubscription&&) noexcept;
 

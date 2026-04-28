@@ -13,7 +13,7 @@ public:
   explicit LogStream(std::shared_ptr<Logger> logger, LogLevel log_level) noexcept:
     logger_{std::move(logger)},
     log_level_{log_level}
-  { }
+  {}
 
   ~LogStream() {
     if (stream_.view().empty()) return;
@@ -34,7 +34,6 @@ private:
   std::shared_ptr<Logger> logger_;
   LogLevel log_level_;
   std::stringstream stream_{};
-
 };
 
 }

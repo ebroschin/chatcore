@@ -1,11 +1,11 @@
 #pragma once
 
 #include "persistence_adapter.hpp"
-
 #include "persistence_store.hpp"
-#include <ebroschin/core/system.hpp>
-#include <memory>
 
+#include <ebroschin/core/system.hpp>
+
+#include <memory>
 #include <algorithm>
 #include <ranges>
 #include <typeindex>
@@ -14,16 +14,14 @@
 
 namespace ebroschin::persistence {
 
-//this could have been implemented as static registry as the concrete adapter types are known at compile time
-//kept dynamic as it demonstrates the tradeoffs of dynamic registration vs. static registration (e.g. TcpSystem)
 template <typename TStore>
 requires std::derived_from<TStore, PersistenceStore>
 class PersistenceSystem final : public core::System {
 public:
   template <typename... TArgs>
-  explicit PersistenceSystem(const core::SystemContext& ctx, TArgs&&... args)
-    : System(ctx)
-    , store_(std::make_unique<TStore>(std::forward<TArgs>(args)...))
+  explicit PersistenceSystem(const core::SystemContext& ctx, TArgs&&... args):
+    System{ctx},
+    store_{std::make_unique<TStore>(std::forward<TArgs>(args)...)}
   {}
 
   void Initialize() override {
@@ -42,7 +40,7 @@ public:
   TAdapterInterface* Register(TArgs&&... args) {
     const std::type_index key = typeid(TAdapterInterface);
     auto ptr = std::make_unique<TAdapter>(*store_, std::forward<TArgs>(args)...);
-    auto [it, _] = adapters_.emplace(key, std::move(ptr));
+    const auto [it, _] = adapters_.try_emplace(key, std::move(ptr));
 
     return dynamic_cast<TAdapterInterface*>(it->second.get());
   }
@@ -56,7 +54,7 @@ public:
 
   template <typename TAdapterInterface>
   TAdapterInterface& Require() {
-    auto adapter = Get<TAdapterInterface>();
+    auto* adapter = Get<TAdapterInterface>();
     if (!adapter) {
       std::cerr << "Required PersistenceAdapter not registered" << std::endl;
       std::abort();

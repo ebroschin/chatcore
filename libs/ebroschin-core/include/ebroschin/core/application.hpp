@@ -1,32 +1,22 @@
 #pragma once
 
-#include <ebroschin/core/system_context.hpp>
+#include "system_context.hpp"
 
 #include <atomic>
 #include <memory>
 
 namespace ebroschin::core {
 
-/**
- * @brief Override with your specific implementation.
- * Call Application::Run() to start the life cycle of the program.
- */
 class Application {
 public:
   Application() noexcept;
   virtual ~Application() = default;
 
-  Application(const Application& other) = delete;
-  Application& operator=(const Application& other) = delete;
-  Application(Application&& other) = delete;
-  Application& operator=(Application&& other) = delete;
+  Application(const Application&) = delete;
+  Application& operator=(const Application&) = delete;
+  Application(Application&&) = delete;
+  Application& operator=(Application&&) = delete;
 
-  /**
-   * @brief Starts the program in blocking mode:
-   * - Calls Application::Initialize()
-   * - Calls ctx_->Initialize()
-   * - Performs cleanup via ctx_->Deinitialize() when Quit() is called
-   */
   void RunBlocking();
 
   void Quit() noexcept;
@@ -35,23 +25,14 @@ public:
   { return running_.load(std::memory_order::relaxed); }
 
 protected:
-  /**
-   * @brief Override to register application systems via `ctx_->Register()`.
-   * Runs immediately before SystemContext::Initialize().
-   */
   virtual void Initialize() = 0;
-
-  /**
-   * @brief Executes when the program is terminated.
-   */
   virtual void HandleTerminate() {}
 
-  SystemContext ctx_;
+  SystemContext ctx_{};
   std::atomic<bool> running_{false};
 
 private:
   static void Terminate();
-
 };
 
 }

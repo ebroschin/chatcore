@@ -1,6 +1,7 @@
-#include <ebroschin/core/system.hpp>
-#include <ebroschin/core/system_context.hpp>
 #include <gtest/gtest.h>
+
+#include "ebroschin/core/system.hpp"
+#include "ebroschin/core/system_context.hpp"
 
 namespace ebroschin::core::tests {
 
@@ -8,8 +9,8 @@ class TestSystem : public System {
 public:
   explicit TestSystem(const SystemContext& ctx,
     std::string parameter1,
-    const std::int64_t& parameter2):
-    System(ctx),
+    std::int64_t parameter2):
+    System{ctx},
     parameter1_{std::move(parameter1)},
     parameter2_{parameter2}
   {}
@@ -28,7 +29,8 @@ requires std::integral<TValue> || std::floating_point<TValue>
 class TestSystemComplex final: public TestSystem {
 public:
   explicit TestSystemComplex(const SystemContext& ctx, TValue value):
-    TestSystem(ctx, "inherited", 42), value_{value}
+    TestSystem{ctx, "inherited", 37},
+    value_{value}
   {}
 
   std::string CreateResult() override {
@@ -45,21 +47,21 @@ private:
 
 //Basic Register() and Get()
 TEST(SystemContextTest, RegisterConcrete) {
-  SystemContext ctx;
+  SystemContext ctx{};
   ctx.Register<TestSystem>("test", 32);
   EXPECT_EQ(ctx.Get<TestSystem>()->CreateResult(), "test32");
 }
 
 //When a system has been registered via interface, the interface type is returned in Get()
 TEST(SystemContextTest, RegisterInterface) {
-  SystemContext ctx;
+  SystemContext ctx{};
   ctx.Register<TestSystem, TestSystemComplex<long>>(133L);
-  EXPECT_EQ(ctx.Get<TestSystem>()->CreateResult(), "inherited42133");
+  EXPECT_EQ(ctx.Get<TestSystem>()->CreateResult(), "inherited37133");
 }
 
 //When a system has been registered via interface, the specific system type cannot be used in Get()
 TEST(SystemContextTest, RegisterInterface2) {
-  SystemContext ctx;
+  SystemContext ctx{};
   ctx.Register<TestSystem, TestSystemComplex<long>>(133L);
 
   auto* system_ptr = ctx.Get<TestSystemComplex<long>>();
@@ -71,11 +73,11 @@ TEST(SystemContextTest, RegisterInterface2) {
 
 //Assure reverse deinitialization order
 TEST(SystemContextText, Deinitialization) {
-  const std::ostringstream buffer;
-  std::streambuf* old_cout = std::cout.rdbuf();
+  const std::ostringstream buffer{};
+  auto* old_cout = std::cout.rdbuf();
   std::cout.rdbuf(buffer.rdbuf());
 
-  SystemContext ctx;
+  SystemContext ctx{};
   ctx.Register<TestSystemComplex<long>>(1);
   ctx.Register<TestSystemComplex<int>>(2);
   ctx.Register<TestSystemComplex<short>>(3);

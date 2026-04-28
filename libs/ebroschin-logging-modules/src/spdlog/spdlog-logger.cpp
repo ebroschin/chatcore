@@ -1,4 +1,4 @@
-#include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
+#include "ebroschin/logging-modules/spdlog/spdlog-logger.hpp"
 
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "tcp_system_concepts.hpp"
+
 #include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <queue>
-
-#include "tcp_system_concepts.hpp"
 
 namespace ebroschin::network::tcp {
 
@@ -20,11 +20,11 @@ public:
   using MessageHandler = TMessageHandler;
 
   void ProcessBlocking() {
-    std::queue<Task> buffer;
+    std::queue<Task> buffer{};
 
     {
-      std::unique_lock lock(mutex_);
-      cv_.wait(lock, [&]{ return stopped_ || !tasks_.empty(); });
+      std::unique_lock lock{mutex_};
+      cv_.wait(lock, [this]{ return stopped_ || !tasks_.empty(); });
       if (stopped_) return;
 
       buffer.swap(tasks_);
@@ -39,7 +39,7 @@ public:
 
   void Stop() {
     {
-      std::lock_guard lock(mutex_);
+      std::scoped_lock lock{mutex_};
       stopped_ = true;
     }
 
@@ -55,15 +55,17 @@ public:
     const auto it = message_handler_lookup.find(type_id);
     if (it == message_handler_lookup.end()) return;
 
-    const auto handler = it->second;
-    const auto payload = std::move(envelope->second);
-    const auto task = [this, handler, id, payload] { handler(this, id, payload); };
+    const auto handler_function = it->second;
+    auto payload = std::move(envelope->second);
+    auto task = [this, handler_function, id, payload = std::move(payload)] {
+      handler_function(this, id, payload);
+    };
 
     {
-      std::lock_guard lock(mutex_);
+      std::scoped_lock lock{mutex_};
       if (stopped_) return;
 
-      tasks_.emplace(task);
+      tasks_.emplace(std::move(task));
     }
 
     cv_.notify_one();
@@ -86,7 +88,7 @@ private:
 
   static auto CreateMessageHandlerLookup() {
     using FunctionType = void(*)(TcpMessageProcessor*, ConnectionId, const typename TCodec::PayloadType&);
-    std::unordered_map<typename TCodec::DiscriminatorType, FunctionType> result;
+    std::unordered_map<typename TCodec::DiscriminatorType, FunctionType> result{};
     ((result[TMessages::TypeId] = &TcpMessageProcessor::HandleMessage<TMessages>), ...);
     return result;
   }
@@ -95,7 +97,6 @@ private:
   std::queue<Task> tasks_{};
   std::condition_variable cv_{};
   std::atomic<bool> stopped_{};
-
   TMessageHandler message_handler_{};
 };
 

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <ebroschin/logging/logger.hpp>
-#include <string>
 #include <spdlog/spdlog.h>
+
+#include <string>
 
 namespace ebroschin::logging::modules {
 

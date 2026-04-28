@@ -1,8 +1,9 @@
-#include <algorithm>
-#include <ebroschin/core/system_context.hpp>
-#include <ebroschin/scheduling/scheduling_system.hpp>
 #include <gtest/gtest.h>
 
+#include <ebroschin/core/system_context.hpp>
+#include <ebroschin/scheduling/scheduling_system.hpp>
+
+#include <algorithm>
 #include <deque>
 
 using namespace std::chrono_literals;
@@ -15,7 +16,7 @@ public:
   using Log = std::vector<steady_clock::time_point>;
 
   void AddEntry() {
-    std::unique_lock lock(mutex_);
+    std::scoped_lock lock{mutex_};
     auto time_point = steady_clock::now();
     log_.emplace_back(time_point);
   }
@@ -29,12 +30,16 @@ private:
 
 class TimePointTestContext {
 public:
-  TimePointTestContext(SchedulingSystem* scheduling_system, steady_clock::duration test_duration, steady_clock::duration rate):
-    scheduling_system_(scheduling_system), test_duration_(test_duration), rate_(rate)
+  TimePointTestContext(SchedulingSystem* scheduling_system,
+    steady_clock::duration test_duration,
+    steady_clock::duration rate):
+    scheduling_system_{scheduling_system},
+    test_duration_{test_duration},
+    rate_{rate}
   {}
 
   void Start() {
-    task_handle_ = scheduling_system_->SchedulePeriodically(rate_, [&] { log_.AddEntry(); });
+    task_handle_ = scheduling_system_->SchedulePeriodically(rate_, [this] { log_.AddEntry(); });
   }
 
   void Stop() const {
@@ -53,8 +58,8 @@ public:
     EXPECT_LE(entry_count, expected_entry_count + 1) << "Too many " << rate_text << " tasks were executed " << count_text;
 
     for (std::size_t i = 1; i < entry_count; i++) {
-      auto delta = entries[i] - entries[i - 1];
-      auto error = delta > rate_? delta - rate_ : rate_ - delta;
+      const auto delta = entries[i] - entries[i - 1];
+      const auto error = delta > rate_? delta - rate_ : rate_ - delta;
       EXPECT_LE(error, 15ms) << "Incorrect timing for phase " << rate_text;
     }
   }
@@ -63,16 +68,17 @@ private:
   SchedulingSystem* scheduling_system_;
   steady_clock::duration test_duration_;
   steady_clock::duration rate_;
+
   TimePointLog log_{};
   TaskId task_handle_{0};
 };
 
 TEST(SchedulingSystemTest, PeriodicScheduling) {
-  core::SystemContext ctx;
+  core::SystemContext ctx{};
   auto* scheduling_system = ctx.Register<SchedulingSystem>();
   ctx.Initialize();
 
-  std::deque<TimePointTestContext> tests;
+  std::deque<TimePointTestContext> tests{};
 
   auto test_duration = 2000ms;
   tests.emplace_back(scheduling_system, test_duration, 800ms);
@@ -91,11 +97,11 @@ TEST(SchedulingSystemTest, PeriodicScheduling) {
 }
 
 TEST(SchedulingSystemTest, OneShotScheduling) {
-  core::SystemContext ctx;
+  core::SystemContext ctx{};
   auto* scheduling_system = ctx.Register<SchedulingSystem>();
   ctx.Initialize();
 
-  TimePointLog log;
+  TimePointLog log{};
   const auto test_duration = 2000ms;
 
   const auto start_time_point = steady_clock::now();
@@ -125,14 +131,14 @@ TEST(SchedulingSystemTest, OneShotScheduling) {
 }
 
 TEST(SchedulingSystemTest, OneShotAndPeriodicScheduling) {
-  core::SystemContext ctx;
+  core::SystemContext ctx{};
   auto* scheduling_system = ctx.Register<SchedulingSystem>();
   ctx.Initialize();
 
-  TimePointLog log;
+  TimePointLog log{};
   constexpr auto test_duration = 2000ms;
 
-  std::deque<TimePointTestContext> tests;
+  std::deque<TimePointTestContext> tests{};
   tests.emplace_back(scheduling_system, test_duration, 800ms);
   tests.emplace_back(scheduling_system, test_duration, 450ms);
   tests.emplace_back(scheduling_system, test_duration, 320ms);

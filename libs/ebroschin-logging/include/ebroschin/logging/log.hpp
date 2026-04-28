@@ -1,11 +1,10 @@
 #pragma once
 
 #include "log_stream.hpp"
+#include "logger.hpp"
 
 #include <memory>
 #include <string>
-
-#include "logger.hpp"
 
 namespace ebroschin::logging {
 
@@ -34,8 +33,7 @@ struct Log {
     SetLogger(std::make_shared<TLogger>(std::forward<TArguments>(arguments)...));
   }
 
-  static void SetLogger(std::shared_ptr<Logger>) noexcept;
-
+  static void SetLogger(std::shared_ptr<Logger>);
 };
 
 }

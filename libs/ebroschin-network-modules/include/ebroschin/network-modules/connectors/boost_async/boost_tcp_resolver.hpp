@@ -1,9 +1,11 @@
 #pragma once
 
+#include "boost_tcp_connection.hpp"
+
+#include <ebroschin/network/tcp/tcp_connector.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <ebroschin/network-modules/connectors/boost_async/boost_tcp_connection.hpp>
-#include <ebroschin/network/tcp/tcp_connector.hpp>
+
 #include <string>
 #include <thread>
 

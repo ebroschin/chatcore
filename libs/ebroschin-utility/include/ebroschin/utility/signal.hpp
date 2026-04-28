@@ -1,6 +1,7 @@
 #pragma once
 
 #include "signal_subscription.hpp"
+
 #include <algorithm>
 #include <functional>
 #include <memory>
@@ -22,7 +23,7 @@ public:
 
   int Subscribe(Slot slot) {
     static int id_counter_ = 0;
-    auto id = id_counter_++;
+    const auto id = id_counter_++;
     slots_[id] = std::move(slot);
     return id;
   }
@@ -60,7 +61,7 @@ public:
 
   [[nodiscard]] SignalSubscription Subscribe(Slot slot) {
     auto id = state_->Subscribe(std::move(slot));
-    return SignalSubscription(id, state_);
+    return SignalSubscription{id, state_};
   }
 
   void Emit(TArguments... arguments) {

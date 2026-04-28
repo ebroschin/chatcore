@@ -1,15 +1,15 @@
 #pragma once
 
+#include "../commons.hpp"
+
 #include <chrono>
 #include <concepts>
-#include <ebroschin/network/commons.hpp>
 #include <functional>
 
 namespace ebroschin::network::rpc {
 
 template <typename TTimeoutHandler>
 concept RpcTimeoutHandler =
-  std::move_constructible<TTimeoutHandler> &&
   requires(TTimeoutHandler handler,
     RequestId request_id,
     std::chrono::steady_clock::duration duration,

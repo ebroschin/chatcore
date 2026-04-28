@@ -1,5 +1,6 @@
 #pragma once
-#include <ebroschin/network/commons.hpp>
+
+#include "../commons.hpp"
 
 #include <memory>
 #include <vector>

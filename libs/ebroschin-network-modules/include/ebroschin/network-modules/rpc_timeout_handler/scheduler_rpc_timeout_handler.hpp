@@ -4,6 +4,8 @@
 #include <ebroschin/scheduling/commons.hpp>
 #include <ebroschin/scheduling/scheduling_system.hpp>
 
+#include <mutex>
+
 namespace ebroschin::network::modules {
 
 class SchedulerRpcTimeoutHandler {
@@ -15,6 +17,8 @@ public:
 
 private:
   scheduling::SchedulingSystem& scheduling_system_;
+
+  std::mutex mutex_{};
   std::unordered_map<RequestId, scheduling::TaskId> timeouts_{};
 };
 

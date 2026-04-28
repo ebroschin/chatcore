@@ -5,7 +5,9 @@
 #include "tcp_message_processor.hpp"
 #include "tcp_system_concepts.hpp"
 #include "tcp_system_connector_facade.hpp"
+
 #include <ebroschin/core/system.hpp>
+
 #include <ranges>
 #include <shared_mutex>
 #include <tuple>
@@ -28,7 +30,7 @@ public:
   using ConnectionEventHandler = TcpConnectionEventHandler<typename Connector::Parameters>;
 
   explicit TcpSystem(const core::SystemContext& ctx):
-    System(ctx)
+    System{ctx}
   {}
 
   void Initialize() override {
@@ -49,10 +51,9 @@ public:
   }
 
   void Disconnect(ConnectionId connection_id) {
-    std::shared_ptr<TcpConnection> connection;
-
+    std::shared_ptr<TcpConnection> connection{};
     {
-      std::unique_lock lock(connection_mutex_);
+      std::scoped_lock lock{connection_mutex_};
       const auto it = connections_.find(connection_id);
       if (it == connections_.end()) return;
 
@@ -66,10 +67,9 @@ public:
   requires IsValidMessage<TMessage, TMessages...>
   void Send(ConnectionId id, const TMessage& message) {
     const auto bytes = TCodec::template Encode<TMessage>(message);
-    std::shared_ptr<TcpConnection> connection;
-
+    std::shared_ptr<TcpConnection> connection{};
     {
-      std::shared_lock lock(connection_mutex_);
+      std::shared_lock lock{connection_mutex_};
       const auto it = connections_.find(id);
       if (it == connections_.end()) return;
 
@@ -101,10 +101,9 @@ public:
 private:
   template<typename TRange>
   std::vector<std::shared_ptr<TcpConnection>> GetConnections(TRange&& range) {
-    std::vector<std::shared_ptr<TcpConnection>> buffer;
-
+    std::vector<std::shared_ptr<TcpConnection>> buffer{};
     {
-      std::shared_lock lock(connection_mutex_);
+      std::shared_lock lock{connection_mutex_};
 
       //statically avoid filtering connections if no filter is applied
       if constexpr (std::is_same_v<std::remove_cvref_t<TRange>, std::nullptr_t>) {
@@ -132,9 +131,8 @@ private:
 
   void CreateConnection(std::shared_ptr<typename Connector::Connection> connection, ConnectionEventHandler* connection_event_handler) {
     const auto connection_id = next_connection_id_.fetch_add(1, std::memory_order_relaxed);
-
     {
-      std::unique_lock lock(connection_mutex_);
+      std::scoped_lock lock{connection_mutex_};
       connections_.emplace(connection_id, connection);
     }
 
@@ -146,7 +144,7 @@ private:
   }
 
   void RemoveConnection(ConnectionId id) {
-    std::unique_lock lock(connection_mutex_);
+    std::scoped_lock lock{connection_mutex_};
     connections_.erase(id);
   }
 

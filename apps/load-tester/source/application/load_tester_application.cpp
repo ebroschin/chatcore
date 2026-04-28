@@ -4,7 +4,6 @@
 #include "client_rpc_system.hpp"
 #include "client_tcp_system.hpp"
 
-#include <ebroschin/network-modules/rpc_timeout_handler/scheduler_rpc_timeout_handler.hpp>
 #include <ebroschin/scheduling/scheduling_system.hpp>
 #include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
 #include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
@@ -22,10 +21,10 @@ void LoadTesterApplication::Initialize() {
   logging::Log::Info("Starting initialization");
 
   ctx_.Register<ClientTcpSystem>();
-  auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
 
-  auto rpc_timeout_handler = network::modules::SchedulerRpcTimeoutHandler{*scheduling_system};
-  ctx_.Register<ClientRpcSystem>(std::move(rpc_timeout_handler));
+  auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
+  ctx_.Register<ClientRpcSystem>(*scheduling_system);
+
   ctx_.Register<ApplicationSystem>(*this);
 }
 

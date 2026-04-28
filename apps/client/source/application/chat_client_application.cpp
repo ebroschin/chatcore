@@ -17,13 +17,11 @@ void ChatClientApplication::Initialize() {
   logging::Log::SetLogger<logging::modules::SpdlogLogger>();
   logging::Log::Info("Starting initialization");
 
-  ctx_.Register<scheduling::SchedulingSystem>();
+  auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ClientTcpSystem>();
   ctx_.Register<ApplicationSystem>(*this);
 
-  auto rpc_timeout_handler = network::modules::SchedulerRpcTimeoutHandler{ctx_.Require<scheduling::SchedulingSystem>()};
-  ctx_.Register<ClientRpcSystem>(std::move(rpc_timeout_handler));
-
+  ctx_.Register<ClientRpcSystem>(*scheduling_system);
   ctx_.Register<ModelSystem>();
   ctx_.Register<SessionSystem>();
   ctx_.Register<ClientCommandsSystem>();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+
 #include <string>
 
 namespace ebroschin::network::modules {
@@ -28,20 +29,27 @@ struct JsonNetworkCodec {
   static std::optional<TMessage> Decode(const PayloadType& payload) {
     try {
       return payload.get<TMessage>();
-    } catch (const nlohmann::json::exception&) {
+    } catch (...) {
       return std::nullopt;
-    };
+    }
   }
 
   static std::optional<std::pair<DiscriminatorType, PayloadType>> DecodeEnvelope(std::span<const std::byte> bytes) {
     if (bytes.empty()) return std::nullopt;
 
-    nlohmann::json json = nlohmann::json::parse(bytes.begin(), bytes.end(), nullptr, false);
+    const auto json = nlohmann::json::parse(bytes.begin(), bytes.end(), nullptr, false);
     if (json.is_discarded()) return std::nullopt;
     if (!json.contains(TypeIdKey)) return std::nullopt;
     if (!json.contains(PayloadKey)) return std::nullopt;
 
-    return std::make_pair(json[TypeIdKey], json[PayloadKey]);
+    try {
+      const auto discriminator = json[TypeIdKey].get<DiscriminatorType>();
+      auto payload = json[PayloadKey];
+
+      return std::make_pair(discriminator, std::move(payload));
+    } catch (...) {
+      return std::nullopt;
+    }
   }
 };
 

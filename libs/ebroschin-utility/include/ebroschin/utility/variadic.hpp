@@ -5,7 +5,7 @@
 
 namespace ebroschin::utility {
 
-//compile time check. when this template is instantiated, the assertion fails
+//compile time check. when this template is instantiated, an unexpected case occurred
 template<typename T>
 static constexpr std::size_t IndexOf() {
   static_assert(!std::same_as<T, T>, "Unable to find index of given type");

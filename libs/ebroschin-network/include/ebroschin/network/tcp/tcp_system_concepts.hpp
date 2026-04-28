@@ -17,21 +17,6 @@ template<typename TDiscriminator, typename... TMessages>
 concept NetworkMessages =
   (NetworkMessage<TMessages, TDiscriminator> && ...);
 
-// template<typename TConnector>
-// concept NetworkConnector = requires(TConnector connector,
-//   const typename TConnector::ParameterType& parameters,
-//   std::unique_ptr<TcpSystemConnectorFacadeBase<typename TConnector::ConnectionType>> facade)
-// {
-//   typename TConnector::ConnectionType;
-//   typename TConnector::ParameterType;
-//
-//   { connector.Initialize() }
-//   -> std::same_as<void>;
-//
-//   { connector.Connect(parameters, facade) }
-//   -> std::same_as<void>;
-// };
-
 template <typename TConnector>
 concept NetworkConnector =
   std::derived_from<TConnector, TcpConnector<typename TConnector::Parameters, typename TConnector::Connection>>;
@@ -57,7 +42,7 @@ requires(std::span<const std::byte> input_bytes,
 
 template<typename TCodec, typename... TMessages>
 concept NetworkCodec =
-    (NetworkCodecFor<TCodec, TMessages> && ...);
+  (NetworkCodecFor<TCodec, TMessages> && ...);
 
 template<typename TMessageHandler, typename... TMessages>
 concept NetworkMessageHandler =

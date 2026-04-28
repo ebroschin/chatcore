@@ -1,6 +1,6 @@
-#include <ebroschin/core/system_context.hpp>
-#include <ebroschin/network/tcp/tcp_system.hpp>
 #include <gtest/gtest.h>
+
+#include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::network::modules::tests {
 

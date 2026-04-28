@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>
-
 #include "tcp_system_connector_facade.hpp"
+
+#include <memory>
 
 namespace ebroschin::network::tcp {
 

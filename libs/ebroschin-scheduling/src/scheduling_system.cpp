@@ -1,6 +1,6 @@
-#include <ebroschin/scheduling/scheduling_system.hpp>
+#include "ebroschin/scheduling/scheduling_system.hpp"
 
-#include <iostream>
+#include <mutex>
 #include <ranges>
 
 using namespace std::chrono_literals;
@@ -8,11 +8,11 @@ using namespace std::chrono_literals;
 namespace ebroschin::scheduling {
 
 SchedulingSystem::SchedulingSystem(const core::SystemContext& ctx):
-  System(ctx)
+  System{ctx}
 {}
 
 void SchedulingSystem::Initialize() {
-    scheduler_thread_ = std::jthread{ [this](std::stop_token st) { ProcessTasks(std::move(st)); } };
+    scheduler_thread_ = std::jthread{ [this](const std::stop_token& st) { ProcessTasks(st); } };
 }
 
 void SchedulingSystem::Deinitialize() {
@@ -23,7 +23,7 @@ void SchedulingSystem::Deinitialize() {
 
 void SchedulingSystem::RemoveTask(TaskId handle) {
   {
-    std::unique_lock lock(mutex_);
+    std::scoped_lock lock{mutex_};
     tasks_.erase(handle);
   }
 
@@ -47,9 +47,8 @@ TaskId SchedulingSystem::AddTask(ScheduleTask task) {
   }
 
   task.scheduled_time_point = steady_clock::now() + task.interval;
-
   {
-    std::unique_lock lock(mutex_);
+    std::scoped_lock lock{mutex_};
     tasks_.emplace(id, std::move(task));
   }
 
@@ -58,18 +57,18 @@ TaskId SchedulingSystem::AddTask(ScheduleTask task) {
   return id;
 }
 
-void SchedulingSystem::ProcessTasks(std::stop_token st) {
-  std::vector<std::function<void()>> callbacks;
-  std::vector<TaskId> deleted_tasks;
+void SchedulingSystem::ProcessTasks(const std::stop_token& st) {
+  std::vector<std::function<void()>> callbacks{};
+  std::vector<TaskId> deleted_tasks{};
 
   while (!st.stop_requested()) {
-    std::unique_lock lock(mutex_);
+    std::unique_lock lock{mutex_};
 
     while (!tasks_.empty()) {
       callbacks.clear();
       deleted_tasks.clear();
 
-      auto current_time_point = steady_clock::now();
+      const auto current_time_point = steady_clock::now();
       auto next_wake_time = steady_clock::time_point::max();
       for (auto& task : tasks_ | std::views::values) {
         if (current_time_point >= task.scheduled_time_point) {

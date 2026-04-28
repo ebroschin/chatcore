@@ -1,10 +1,10 @@
 #pragma once
 
-#include <ebroschin/network/commons.hpp>
-#include <functional>
-
+#include "../commons.hpp"
 #include "commons.hpp"
 #include "rpc_concepts.hpp"
+
+#include <functional>
 
 namespace ebroschin::network::rpc {
 
@@ -54,10 +54,11 @@ private:
   TRpcSystem& rpc_system_;
   ConnectionId connection_id_;
   TRequest request_;
-  std::function<void(const RpcResponseType<TRequest>&)> callback_;
-  std::function<void(const RpcErrorType<TRequest>&)> error_callback_;
-  std::function<void()> timeout_callback_;
-  std::optional<std::chrono::steady_clock::duration> timeout_duration_;
+
+  std::function<void(const RpcResponseType<TRequest>&)> callback_{};
+  std::function<void(const RpcErrorType<TRequest>&)> error_callback_{};
+  std::function<void()> timeout_callback_{};
+  std::optional<std::chrono::steady_clock::duration> timeout_duration_{};
 };
 
 }

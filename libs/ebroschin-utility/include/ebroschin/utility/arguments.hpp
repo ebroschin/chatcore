@@ -16,9 +16,9 @@ public:
   ~Arguments() = default;
 
   Arguments(const Arguments&) = delete;
+  Arguments& operator=(const Arguments&) = delete;
   Arguments(Arguments&&) = delete;
-  void operator=(const Arguments&) = delete;
-  void operator=(Arguments&&) = delete;
+  Arguments& operator=(Arguments&&) = delete;
 
   std::optional<std::span<const std::string>> GetValues(const std::string& flag) const noexcept;
 

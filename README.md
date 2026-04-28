@@ -52,9 +52,9 @@ Third party dependencies are managed via Microsoft's package manager tool **vcpk
 
 | Path                                             | Purpose                                                                                                                               |  
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |  
-| [`apps/server`](apps/server/README.md)           | TCP chat server, binds to an IP address, handles incoming network messages and manages connections, users, chat channels and messages |  
-| [`apps/client`](apps/client/README.md)           | FTXUI terminal client, allowing users to receive and send network messages to the chat server via commands                            |  
-| [`apps/load-tester`](apps/load-tester/README.md) | CLI tool, spawns test clients to simulate high traffic and creates a latency/error report (p50, p95, p99, max)                        |  
+| [`apps/server`](apps/server)           | TCP chat server, binds to an IP address, handles incoming network messages and manages connections, users, chat channels and messages |  
+| [`apps/client`](apps/client)           | FTXUI terminal client, allowing users to receive and send network messages to the chat server via commands                            |  
+| [`apps/load-tester`](apps/load-tester) | CLI tool, spawns test clients to simulate high traffic and creates a latency/error report (p50, p95, p99, max)                        |  
 
 ### Internal Libraries
 
@@ -249,8 +249,8 @@ Test Case:
 - Create a configurable number of clients
 - Each client joins the same test-channel
 - Each client sends one message per second
-  - since all clients joined the same channel, all of them receive the broadcast
-  - the sender receives the broadcast from server and marks the message as "Complete"
+  - the server broadcasts the message to all clients in the test-channel
+  - when the sender receives its own message from the server, it marks said message as "Complete"
 - Test runs for 10 seconds
 
 | Clients | Sent | Failed | p50 (μs) | p95 (μs) | p99 (μs) | max (μs) |

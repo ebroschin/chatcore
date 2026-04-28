@@ -1,11 +1,12 @@
 #pragma once
 
+#include "direct_message_handler.hpp"
+
 #include <ebroschin/network/commons.hpp>
 #include <ebroschin/utility/signal.hpp>
 #include <ebroschin/utility/variadic.hpp>
-#include <tuple>
 
-#include "direct_message_handler.hpp"
+#include <tuple>
 
 namespace ebroschin::network::modules {
 

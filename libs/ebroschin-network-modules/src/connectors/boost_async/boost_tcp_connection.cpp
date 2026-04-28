@@ -1,6 +1,5 @@
-#include <ebroschin/network-modules/connectors/boost_async/boost_tcp_connection.hpp>
+#include "ebroschin/network-modules/connectors/boost_async/boost_tcp_connection.hpp"
 
-#include <iostream>
 #include <span>
 
 namespace ebroschin::network::modules {
@@ -19,7 +18,7 @@ void BoostTcpConnection::Disconnect() {
 }
 
 void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
-  std::vector<std::byte> buffer;
+  std::vector<std::byte> buffer{};
   buffer.reserve(sizeof(uint32_t) + bytes.size());
 
   const uint32_t network_length = htonl(static_cast<std::uint32_t>(bytes.size()));
@@ -29,7 +28,7 @@ void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
   buffer.insert(buffer.end(), bytes.begin(), bytes.end());
 
   {
-    std::unique_lock lock(mutex_);
+    std::scoped_lock lock{mutex_};
     outgoing_bytes_.emplace(std::move(buffer));
     if (outgoing_bytes_.size() > 1) return;
   }
@@ -38,10 +37,9 @@ void BoostTcpConnection::SendBytes(std::span<const std::byte> bytes) {
 }
 
 void BoostTcpConnection::SendNext() {
-  std::shared_ptr<std::vector<std::byte>> bytes;
-
+  std::shared_ptr<std::vector<std::byte>> bytes{};
   {
-    std::unique_lock lock(mutex_);
+    std::scoped_lock lock{mutex_};
     if (outgoing_bytes_.empty()) return;
 
     bytes = std::make_shared<std::vector<std::byte>>(std::move(outgoing_bytes_.front()));
@@ -62,6 +60,11 @@ void BoostTcpConnection::ReadBytes() {
       if (HandleError(error)) return;
 
       const auto host_length = ntohl(incoming_bytes_length_buffer_);
+      if (host_length > MaxMessageBytes) {
+        OnDisconnect();
+        return;
+      }
+
       incoming_bytes_buffer_.resize(host_length);
 
       boost::asio::async_read(socket_, boost::asio::buffer(incoming_bytes_buffer_),
