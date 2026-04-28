@@ -1,6 +1,6 @@
 add_library(ebroschin_scheduling
-    src/scheduling_system.cc
-    include/ebroschin/scheduling/commons.h
+    src/scheduling_system.cpp
+    include/ebroschin/scheduling/commons.hpp
 )
 
 target_link_libraries(ebroschin_scheduling PRIVATE

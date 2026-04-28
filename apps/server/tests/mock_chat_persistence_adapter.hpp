@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../source/chat/adapters/chat_persistence_adapter.h"
+#include "../source/chat/adapters/chat_persistence_adapter.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -24,21 +24,21 @@ public:
     return channel;
   }
 
-  std::optional<api::ChatChannel> GetChatChannel(api::PersistenceId id) override {
+  [[nodiscard]] std::optional<api::ChatChannel> GetChatChannel(api::PersistenceId id) override {
     const auto it = channels_by_id_.find(id);
     if (it == channels_by_id_.end()) return std::nullopt;
 
     return it->second;
   }
 
-  std::optional<api::ChatChannel> GetChatChannel(const std::string& name) override {
+  [[nodiscard]] std::optional<api::ChatChannel> GetChatChannel(const std::string& name) override {
     const auto it = channels_by_name_.find(name);
     if (it == channels_by_name_.end()) return std::nullopt;
 
     return GetChatChannel(it->second);
   }
 
-  std::vector<api::ChatChannel> GetChatChannels() override {
+  [[nodiscard]] std::vector<api::ChatChannel> GetChatChannels() override {
     auto view = channels_by_id_ | std::views::values;
     return std::vector<api::ChatChannel>{view.begin(), view.end()};
   }
@@ -65,13 +65,13 @@ public:
     return message;
   }
 
-  std::vector<api::ChatMessage> GetChatMessagesBefore(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit) override {
+  [[nodiscard]] std::vector<api::ChatMessage> GetChatMessagesBefore(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit) override {
     if (limit == 0) return {};
 
     const auto it = messages_by_channel_.find(channel_id);
     if (it == messages_by_channel_.end()) return {};
 
-    std::vector<api::ChatMessage> result;
+    std::vector<api::ChatMessage> result{};
     result.reserve(it->second.size());
 
     for (const auto& message : it->second) {
@@ -86,7 +86,7 @@ public:
     return result;
   }
 
-  std::optional<api::PersistenceId> GetFirstChatMessageId(api::PersistenceId channel_id) override {
+  [[nodiscard]] std::optional<api::PersistenceId> GetFirstChatMessageId(api::PersistenceId channel_id) override {
     const auto it = messages_by_channel_.find(channel_id);
     if (it == messages_by_channel_.end()) return std::nullopt;
     if (it->second.empty()) return std::nullopt;

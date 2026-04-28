@@ -1,10 +1,11 @@
 #pragma once
 
-#include <ebroschin/core/system.h>
-#include <ebroschin/utility/variadic.h>
+#include <ebroschin/core/system.hpp>
+#include <ebroschin/utility/variadic.hpp>
+
 #include <functional>
-#include <unordered_map>
 #include <span>
+#include <unordered_map>
 
 namespace ebroschin::commands {
 

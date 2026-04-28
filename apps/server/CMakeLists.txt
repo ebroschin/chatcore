@@ -1,33 +1,33 @@
 add_executable(chatcore-server
-    source/main.cc
+    source/main.cpp
     source/application/chat_server_application.cpp
-    source/application/chat_server_application.h
-    source/chat/adapters/chat_persistence_adapter.h
+    source/application/chat_server_application.hpp
+    source/chat/adapters/chat_persistence_adapter.hpp
     source/chat/adapters/sqlite_chat_persistence_adapter.cpp
-    source/chat/adapters/sqlite_chat_persistence_adapter.h
+    source/chat/adapters/sqlite_chat_persistence_adapter.hpp
     source/chat/chat_server_system.cpp
-    source/chat/chat_server_system.h
-    source/application/chat_tcp_system.h
-    source/application/chat_persistence_system.h
-    source/users/user_server_system.cc
-    source/users/user_server_system.h
-    source/users/adapters/user_persistence_adapter.h
-    source/users/adapters/sqlite_user_persistence_adapter.cc
-    source/users/adapters/sqlite_user_persistence_adapter.h
-    source/chat/chat_channel_store.cc
-    source/chat/chat_channel_store.h
-    source/chat/chat_message_store.cc
-    source/chat/chat_message_store.h
-    source/chat/chat_channel_message_log.cc
-    source/chat/chat_channel_message_log.h
-    source/application/application_system.cc
-    source/application/application_system.h
-    source/application/chat_server_arguments.cc
-    source/application/chat_server_arguments.h
-    source/application/connection_event_handler.cc
-    source/application/connection_event_handler.h
-    source/users/user_store.cc
-    source/users/user_store.h
+    source/chat/chat_server_system.hpp
+    source/application/chat_tcp_system.hpp
+    source/application/chat_persistence_system.hpp
+    source/users/user_server_system.cpp
+    source/users/user_server_system.hpp
+    source/users/adapters/user_persistence_adapter.hpp
+    source/users/adapters/sqlite_user_persistence_adapter.cpp
+    source/users/adapters/sqlite_user_persistence_adapter.hpp
+    source/chat/chat_channel_store.cpp
+    source/chat/chat_channel_store.hpp
+    source/chat/chat_message_store.cpp
+    source/chat/chat_message_store.hpp
+    source/chat/chat_channel_message_log.cpp
+    source/chat/chat_channel_message_log.hpp
+    source/application/application_system.cpp
+    source/application/application_system.hpp
+    source/application/chat_server_arguments.cpp
+    source/application/chat_server_arguments.hpp
+    source/application/connection_event_handler.cpp
+    source/application/connection_event_handler.hpp
+    source/users/user_store.cpp
+    source/users/user_store.hpp
 )
 
 if(WIN32)
@@ -58,17 +58,17 @@ if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(chatcore_server_tests
-        tests/test_chat_channel_message_log.cc
-        tests/test_chat_channel_store.cc
-        tests/test_chat_message_store.cc
-        tests/test_chat_server_arguments.cc
-        tests/test_user_store.cc
+        tests/test_chat_channel_message_log.cpp
+        tests/test_chat_channel_store.cpp
+        tests/test_chat_message_store.cpp
+        tests/test_chat_server_arguments.cpp
+        tests/test_user_store.cpp
         tests/mock_chat_persistence_adapter.hpp
-        source/users/user_store.cc
-        source/chat/chat_channel_message_log.cc
-        source/chat/chat_channel_store.cc
-        source/chat/chat_message_store.cc
-        source/application/chat_server_arguments.cc
+        source/users/user_store.cpp
+        source/chat/chat_channel_message_log.cpp
+        source/chat/chat_channel_store.cpp
+        source/chat/chat_message_store.cpp
+        source/application/chat_server_arguments.cpp
         tests/mock_user_persistence_adapter.hpp
     )
 

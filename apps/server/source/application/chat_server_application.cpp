@@ -1,27 +1,24 @@
-#include "chat_server_application.h"
+#include "chat_server_application.hpp"
 
-#include <ebroschin/persistence-modules/sqlite/sqlite_persistence_store.h>
-#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
-#include <ebroschin/persistence/persistence_system.h>
+#include "../chat/adapters/sqlite_chat_persistence_adapter.hpp"
+#include "../chat/chat_server_system.hpp"
+#include "../users/adapters/sqlite_user_persistence_adapter.hpp"
+#include "../users/user_server_system.hpp"
+#include "application_system.hpp"
+#include "chat_persistence_system.hpp"
+#include "chat_tcp_system.hpp"
+
 #include <ebroschin/logging-modules/spdlog/spdlog-logger.hpp>
+#include <ebroschin/logging-modules/stacktrace/boost_stacktrace.hpp>
 #include <ebroschin/logging/log.hpp>
-#include <ebroschin/scheduling/scheduling_system.h>
-
-#include "../chat/adapters/sqlite_chat_persistence_adapter.h"
-#include "../chat/chat_server_system.h"
-#include "../users/adapters/sqlite_user_persistence_adapter.h"
-#include "../users/user_server_system.h"
-#include "application_system.h"
-#include "chat_persistence_system.h"
-#include "chat_tcp_system.h"
-
-using namespace ebroschin::persistence::modules::sqlite;
+#include <ebroschin/persistence/persistence_system.hpp>
+#include <ebroschin/scheduling/scheduling_system.hpp>
 
 namespace ebroschin::chatcore::server {
 
 ChatServerApplication::ChatServerApplication(ChatServerArguments arguments):
-  arguments_(std::move(arguments))
-{ }
+  arguments_{std::move(arguments)}
+{}
 
 void ChatServerApplication::Initialize() {
   logging::Log::SetLogger<logging::modules::SpdlogLogger>();

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <exception>
 #include <ebroschin/logging/log.hpp>
 #include <boost/stacktrace.hpp>
+
+#include <exception>
 
 namespace ebroschin::logging::modules {
 

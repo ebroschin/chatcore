@@ -1,5 +1,5 @@
 add_library(ebroschin_commands INTERFACE
-        include/ebroschin/commands/commands_system.hpp
+    include/ebroschin/commands/commands_system.hpp
 )
 
 add_library(ebroschin::commands ALIAS ebroschin_commands)
@@ -14,13 +14,13 @@ if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(ebroschin_commands_tests
-            tests/test_command_system.cpp
+        tests/test_command_system.cpp
     )
 
     target_link_libraries(ebroschin_commands_tests PRIVATE
-            ebroschin_commands
-            GTest::gtest
-            GTest::gtest_main
+        ebroschin_commands
+        GTest::gtest
+        GTest::gtest_main
     )
 
     include(GoogleTest)

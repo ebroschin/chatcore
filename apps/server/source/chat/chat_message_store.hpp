@@ -1,0 +1,46 @@
+#pragma once
+
+#include "chat_channel_message_log.hpp"
+
+#include <ebroschin/chat/api.hpp>
+#include <mutex>
+#include <optional>
+#include <queue>
+#include <unordered_map>
+
+namespace ebroschin::chatcore::server {
+
+class ChatPersistenceAdapter;
+
+class ChatMessageStore {
+public:
+  explicit ChatMessageStore(ChatPersistenceAdapter& adapter) noexcept;
+
+  void Prewarm();
+  void CreateMessage(api::PersistenceId channel_id, api::PersistenceId user_id, const std::string& message);
+  void CacheMessage(api::ChatMessage chat_message);
+  void CacheMessages(api::PersistenceId channel_id, std::vector<api::ChatMessage> chat_messages);
+  void Persist();
+
+  std::optional<std::reference_wrapper<const api::ChatMessage>>
+  GetMessage(api::PersistenceId message_id);
+
+  std::vector<api::ChatMessage>
+  GetMessagesBefore(api::PersistenceId channel_id, api::PersistenceId message_id, std::uint32_t limit);
+
+private:
+  void AssignMessage(api::ChatMessage chat_message);
+
+  ChatPersistenceAdapter& adapter_;
+
+  std::mutex mutex_{};
+  std::optional<api::PersistenceId> latest_persisted_id_{std::nullopt};
+  api::PersistenceId next_id_{0};
+
+  std::unordered_map<api::PersistenceId, api::ChatMessage> message_cache_{};
+  std::vector<api::ChatMessage> pending_messages_{};
+  std::unordered_map<api::PersistenceId, ChatChannelMessageLog> message_logs_{};
+};
+
+}
+

@@ -1,6 +1,6 @@
-#include <ebroschin/core/system.h>
-#include <ebroschin/core/system_context.h>
 #include <gtest/gtest.h>
+
+#include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::persistence::tests {
 

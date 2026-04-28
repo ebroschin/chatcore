@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include "log_level.hpp"
+
+#include <string>
 
 namespace ebroschin::logging {
 

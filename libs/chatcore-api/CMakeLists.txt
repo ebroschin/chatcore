@@ -1,5 +1,5 @@
 add_library(chatcore_api INTERFACE
-    include/ebroschin/chat/api.h
+    include/ebroschin/chat/api.hpp
 )
 
 add_library(ebroschin::chatcore-api ALIAS chatcore_api)
