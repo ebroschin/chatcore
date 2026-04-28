@@ -14,13 +14,18 @@ FtxuiLogger::FtxuiLogger(ModelSystem& model_system, UiSystem& ui_system) noexcep
 { }
 
 void FtxuiLogger::Print(logging::LogLevel log_level, const std::string& message) {
-  std::scoped_lock lock{mutex_};
-  if (log_level < log_level_) return;
+  std::string result{};
+  {
+    std::scoped_lock lock{mutex_};
+    if (log_level < log_level_) return;
 
-  stream_ << "[Log::" << ebroschin::logging::ToString(log_level) << "] " << message;
-  model_system_.AddLine(stream_.str());
-  stream_.str("");
-  stream_.clear();
+    stream_ << "[Log::" << ebroschin::logging::ToString(log_level) << "] " << message;
+    result = stream_.str();
+    stream_.str("");
+    stream_.clear();
+  }
+
+  model_system_.AddLine(result);
 }
 
 void FtxuiLogger::SetLogLevel(logging::LogLevel log_level) {

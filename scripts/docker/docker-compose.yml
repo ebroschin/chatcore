@@ -2,17 +2,9 @@ version: "3.9"
 
 services:
   build-linux:
-    profiles: ["linux"]
     build:
       context: ../..
       dockerfile: scripts/docker/Dockerfile.linux
       ssh:
         - default
     image: chat-server-build-linux
-
-  build-windows:
-    profiles: ["windows"]
-    build:
-      context: ../..
-      dockerfile: scripts/docker/Dockerfile.windows
-    image: chat-server-build-windows

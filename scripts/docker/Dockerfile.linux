@@ -20,7 +20,7 @@ RUN which clang-20 && which clang++-20 && which cmake && which ninja
 RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 ARG REPO_URL=git@github.com:PIXCLDEV/ChatCore.git
-ARG REPO_REF=2323d42fe178ccea1f96e75a2342cfab579a2107
+ARG REPO_REF=538d7b277d2e7920c30cf63020d707c9f1a5c5c8
 
 RUN --mount=type=ssh \
 git clone --recurse-submodules "$REPO_URL" /workspace/src \

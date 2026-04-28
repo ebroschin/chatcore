@@ -235,7 +235,7 @@ ctx_.Register<ChatServerSystem>(); //manages chat channels and chat messages
 
 The order of system registration matters. Low-level systems are registered/initialized first, high-level systems are registered/initialized last. This ensures a clean dependency graph between systems without circular dependencies.
 
-Each thread is managed by its own system (thread-affinity). It needs to ensure thread-safety and clearly document which public methods are safe to use in a concurrent context. The codebase uses modern STL tools for concurrency (`std::jthread std::scoped_lock ...`).
+Each thread is managed by its own system (thread-affinity). The codebase uses modern STL tools for concurrency (`std::jthread std::scoped_lock ...`).
 
 Each internal library implements an isolated system which can be reused in all kinds of applications using the `ebroschin-core` application pattern. An internal library is only allowed to have dependencies to other internal libraries and cannot depend on external third party code. An exception for this rule are "modules" libraries (for example `ebroschin-network-modules`) which offer concrete implementations that a developer can use or reference to implement their own classes.
 
@@ -274,7 +274,7 @@ The chat system should not be used in production as is. The following essential 
 - no backpressure strategy for message queues
 - no fairness strategy for incoming messages (payloads are processed sequentially in the order of arrival)
 - no cache eviction strategy
-- no payload size limit
+- no session heartbeat (crashed clients stay logged in until server shutdown)
 - the JSON wire format can be replaced with a binary format (for example protobuf) to improve performance and throughput of the chat server
 - on unexpected server shutdown, all messages that were sent 1 second before, are lost (the server flushes to the database in intervals of 1 second)
 - `std::pmr` data structures (preallocated memory) in hot paths would further improve chat server throughput

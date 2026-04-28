@@ -1,4 +1,3 @@
-
 #include <gtest/gtest.h>
 
 namespace ebroschin::commands::tests {
