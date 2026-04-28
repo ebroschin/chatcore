@@ -14,7 +14,7 @@ UserServerSystem::UserServerSystem(const core::SystemContext& ctx) noexcept:
   app_system_{ctx_.Require<ApplicationSystem>()},
   adapter_{ctx_.Require<ChatPersistenceSystem>().Require<UserPersistenceAdapter>()},
   tcp_system_{ctx_.Require<ChatServerTcpSystem>()}
-{ }
+{}
 
 void UserServerSystem::Initialize() {
   app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleCreateUser);
@@ -57,8 +57,7 @@ std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSess
 }
 
 void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, const api::CreateUserRequestMessage& message) {
-  const auto existing_user = user_store_.GetUser(message.name);
-  if (existing_user) {
+  if (user_store_.HasUser(message.name)) {
     app_system_.HandleRpcError(connection_id, message.request_id, "User already exists.");
     return;
   }

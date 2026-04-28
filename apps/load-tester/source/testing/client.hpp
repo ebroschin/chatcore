@@ -46,7 +46,7 @@ protected:
   void RegisterDefaultTimeoutHandler(TRpcCall& rpc_call, const std::string& message) const {
     using namespace std::chrono_literals;
 
-    rpc_call.SetTimeoutDuration(30s);
+    rpc_call.SetTimeoutDuration(10s);
     rpc_call.OnTimeout([this, message] {
       logging::Log::Error() << "[Client][" << name_ << "] " << message;
       Quit();

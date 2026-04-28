@@ -86,6 +86,8 @@ void RootClient::Evaluate() {
   logging::Log::Info() << "p95: " << to_us(CalculatePercentile(latencies, 0.95)) << "us";
   logging::Log::Info() << "p99: " << to_us(CalculatePercentile(latencies, 0.99)) << "us";
   logging::Log::Info() << "max: " << to_us(CalculatePercentile(latencies, 1.0)) << "us";
+
+  app_system_.Quit();
 }
 
 steady_clock::duration RootClient::CalculatePercentile(std::vector<steady_clock::duration> latencies, double normalized_percentage) {

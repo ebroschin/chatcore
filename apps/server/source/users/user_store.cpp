@@ -19,6 +19,14 @@ const api::User& UserStore::CacheUser(api::User user) {
   return result->user;
 }
 
+bool UserStore::HasUser(const std::string& name) const {
+  return users_.get<1>().contains(name);
+}
+
+bool UserStore::HasUser(api::PersistenceId user_id) const {
+  return users_.get<0>().contains(user_id);
+}
+
 bool UserStore::HasSession(network::ConnectionId connection_id) const {
   return user_sessions_.left.find(connection_id) != user_sessions_.left.end();
 }

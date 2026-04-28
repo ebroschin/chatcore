@@ -29,7 +29,7 @@ class UserStore {
       multi_index::ordered_unique<
         multi_index::const_mem_fun<CachedUser, api::PersistenceId, &CachedUser::GetUserId>
       >,
-      multi_index::ordered_non_unique<
+      multi_index::ordered_unique<
         multi_index::const_mem_fun<CachedUser, const std::string&, &CachedUser::GetUserName>
       >
     >
@@ -43,6 +43,8 @@ public:
   void AssignSession(network::ConnectionId connection_id, api::PersistenceId user_id);
   void RemoveSession(network::ConnectionId connection_id);
 
+  [[nodiscard]] bool HasUser(api::PersistenceId user_id) const;
+  [[nodiscard]] bool HasUser(const std::string& name) const;
   [[nodiscard]] bool HasSession(network::ConnectionId connection_id) const;
   [[nodiscard]] bool HasSession(api::PersistenceId user_id) const;
   [[nodiscard]] std::optional<std::reference_wrapper<const api::User>> GetSessionUser(network::ConnectionId connection_id);
