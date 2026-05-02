@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include/ebroschin/network/rpc/commons.hpp"
+#include "ebroschin/network/rpc/commons.hpp"
 
 #include <cstdint>
 

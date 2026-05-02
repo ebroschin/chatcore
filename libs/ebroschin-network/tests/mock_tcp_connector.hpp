@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include/ebroschin/network/tcp/tcp_connector.hpp"
+#include "ebroschin/network/tcp/tcp_connector.hpp"
 #include "mock_tcp_connection.hpp"
 
 namespace ebroschin::network::tests {

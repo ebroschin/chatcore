@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../include/ebroschin/network/commons.hpp"
-#include "../include/ebroschin/network/tcp/tcp_connection_event_handler.hpp"
+#include "ebroschin/network/commons.hpp"
+#include "ebroschin/network/tcp/tcp_connection_event_handler.hpp"
 #include "mock_tcp_connector.hpp"
 
 #include <optional>

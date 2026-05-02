@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../include/ebroschin/network/tcp/tcp_system.hpp"
-#include "../include/ebroschin/network/tcp/tcp_system_builder.hpp"
+#include "ebroschin/network/tcp/tcp_system.hpp"
+#include "ebroschin/network/tcp/tcp_system_builder.hpp"
 #include "mock_network_codec.hpp"
 #include "mock_tcp_connector.hpp"
 
