@@ -22,6 +22,8 @@ if(BUILD_TESTING)
 
     add_executable(ebroschin_persistence_tests
         tests/test_persistence_system.cpp
+        tests/mock_persistence_store.hpp
+        tests/commons.hpp
     )
 
     target_link_libraries(ebroschin_persistence_tests PRIVATE
