@@ -2,15 +2,17 @@
 
 #include "../source/application/chat_server_arguments.hpp"
 
+#include <string_view>
+
 namespace ebroschin::chatcore::server::tests {
 
-static ChatServerArguments CreateMockArguments(std::initializer_list<std::string_view> arguments) {
-  const std::size_t argc = arguments.size();
+static ChatServerArguments CreateMockArguments(std::initializer_list<std::string> arguments) {
+  const auto argc = arguments.size();
   std::vector<char*> argv{};
   argv.reserve(argc);
 
   for (const auto& argument : arguments) {
-    argv.emplace_back(const_cast<char*>(argument.begin()));
+    argv.emplace_back(const_cast<char*>(argument.data()));
   }
 
   return ChatServerArguments(static_cast<int>(argc), argv.data());

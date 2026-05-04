@@ -2,28 +2,21 @@
 
 [![CI Builds and Tests (Linux, Windows)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml/badge.svg)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml)
 
-`chatcore` is an educational networking/multi-threading project built in C++23. The codebase provides the core architecture for a TCP Server with a custom protocol, a Client Application which implements said protocol, and a Load Tester to evaluate the performance and correctness of the server under load.
+`chatcore` is an educational networking/multi-threading project built in C++23. The codebase provides the core architecture for:
+- a TCP server with a custom protocol
+- a client application which implements said protocol
+- and a load tester to evaluate the performance and correctness of the server under load.
 
-- **Cross-Platform**: Compiles and runs on Linux and Windows (clang-20, msvc)
-- **Modular architecture**: Generic, reusable code is maintained in isolated, internal library modules
-- **Warning-free code**: Compiled in CI with `-Wall -Wextra -Wpedantic`
-- **Stability**: Runs unit tests in CI via `gtest`
+The project is built and tested on Linux and Windows in CI, compiles with strict warning flags, and includes unit tests (gtest).
 
 ## Demo
 ![Demo screenshot](docs/images/demo.png)
 The source code can be built and run using docker, including a `demo.sh` script to start two clients, the server and the load tester in a tmux session.
 ### Linux
-```bash
-eval "$(ssh-agent -s)" && 
-ssh-add ~/.ssh/id_ed25519 && 
-sudo -E docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "git@github.com:PIXCLDEV/ChatCore.git#docs/readme2" 
-&& sudo docker run --rm -it -p 1338:1338 chatcore-demo bash -lc '/workspace/src/scripts/docker/demo.sh'
-```
+TBD docker command once published
+
 ### Windows
-```cmd
-docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux . 
-&& docker run --rm -it -p 1338:1338 chatcore-demo bash -lc '/workspace/src/scripts/docker/demo.sh'
-```
+TBD docker command once published
 
 ## Features
 
@@ -264,6 +257,7 @@ Test Case:
 
 Failed messages are those that could not complete a roundtrip before the end of the test duration.
 The server handles a moderate load well. However, since the server does not implement a backpressure strategy, latency starts to rise as soon as the message queues begin to fill faster than the server can drain them.
+
 ## Limitations
 
 The chat system should not be used in production as is. The following essential features were intentionally left out due to project scope:
@@ -276,5 +270,6 @@ The chat system should not be used in production as is. The following essential 
 - no cache eviction strategy
 - no session heartbeat (crashed clients stay logged in until server shutdown)
 - the JSON wire format can be replaced with a binary format (for example protobuf) to improve performance and throughput of the chat server
-- on unexpected server shutdown, all messages that were sent 1 second before, are lost (the server flushes to the database in intervals of 1 second)
+- all chat messages that were sent 1 second before an unexpected server shutdown are lost (the server flushes to the database in intervals of 1 second)
 - `std::pmr` data structures (preallocated memory) in hot paths would further improve chat server throughput
+- running a load test with a high number of clients (e.g. 1000) will likely cause some authentication calls to time out (all clients attempt to log in at once, server message queues fill faster than they drain)

@@ -4,6 +4,8 @@
 
 #include <ebroschin/core/system_context.hpp>
 
+#include <array>
+
 namespace ebroschin::commands::tests {
 
 class TestReportSystem final : public core::System {
