@@ -22,7 +22,7 @@ if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED)
 
     add_executable(ebroschin_utility_tests
-        tests/test_task_thread.cpp
+        tests/test_signal_subscription.cpp
     )
 
     target_link_libraries(ebroschin_utility_tests PRIVATE
