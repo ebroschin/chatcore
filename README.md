@@ -11,11 +11,17 @@ The project is built and tested on Linux and Windows in CI, compiles with strict
 
 ## Demo
 ![Demo screenshot](docs/images/demo.png)
-The source code can be built and run using docker, including a `demo.sh` script to start two clients, the server and the load tester in a tmux session.
-### Linux
-TBD docker instruction
 
-### Windows
+### Docker Quick-Start
+The source code can be built and run using docker, including a `demo.sh` script to start two clients, the server and the load tester in a tmux session.
+#### Linux
+
+```bash
+sudo -E docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "git@github.com:ebroschin/chatcore.git#master" \
+&& sudo docker run --rm -it -p 1338:1338 chatcore-demo bash -lc '/workspace/src/scripts/docker/demo.sh' 
+```
+
+#### Windows
 TBD docker instruction
 
 ### Manual Build (Linux)
@@ -47,7 +53,7 @@ cd chatcore
 
 #### Run Demo (tmux session)
 ```bash
-./scripts/docker/demo.sh
+./scripts/docker/demo.sh .
 ```
 
 #### Run individual applications

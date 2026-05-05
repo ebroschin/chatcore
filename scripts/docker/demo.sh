@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WORKSPACE="/workspace/src/"
+WORKSPACE="${1:-"/workspace/src/"}"
 SESSION=chatcore-demo
 PORT="${CHAT_PORT:-1338}"
 
