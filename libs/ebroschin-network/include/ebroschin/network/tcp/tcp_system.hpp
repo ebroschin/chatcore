@@ -16,9 +16,9 @@
 namespace ebroschin::network::tcp {
 
 template<NetworkConnector TConnector,
-typename TCodec,
-typename TMessageHandler,
-typename... TMessages>
+  typename TCodec,
+  typename TMessageHandler,
+  NetworkMessages... TMessages>
 requires NetworkCodec<TCodec, TMessages...>
   && NetworkMessageHandler<TMessageHandler, TMessages...>
 class TcpSystem final : public core::System {
