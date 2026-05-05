@@ -1,11 +1,11 @@
 # chatcore | Multi-Threaded Chat System in C++23
 
-[![CI Builds and Tests (Linux, Windows)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml/badge.svg)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml)
+[![CI Builds and Tests (Linux, Windows)](https://github.com/ebroschin/chatcore/actions/workflows/ci.yml/badge.svg)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml)
 
 `chatcore` is an educational networking/multi-threading project built in C++23. The codebase provides the core architecture for:
 - a TCP server with a custom protocol
-- a client application which implements said protocol
-- and a load tester to evaluate the performance and correctness of the server under load.
+- a client application which implements the custom protocol
+- a load tester to evaluate the performance and correctness of the server under load
 
 The project is built and tested on Linux and Windows in CI, compiles with strict warning flags, and includes unit tests (gtest).
 
@@ -13,10 +13,50 @@ The project is built and tested on Linux and Windows in CI, compiles with strict
 ![Demo screenshot](docs/images/demo.png)
 The source code can be built and run using docker, including a `demo.sh` script to start two clients, the server and the load tester in a tmux session.
 ### Linux
-TBD docker command once published
+TBD docker instruction
 
 ### Windows
-TBD docker command once published
+TBD docker instruction
+
+### Manual Build (Linux)
+Manual build instructions are currently provided for Linux only.
+Windows compatibility is validated in CI and via Visual Studio builds with MSVC.
+
+#### Install required dependencies
+
+```bash
+apt-get update
+apt-get install -y \
+  wget curl gnupg lsb-release ca-certificates git unzip zip \
+  build-essential pkg-config \
+  autoconf automake libtool m4 gawk gettext texinfo tmux \
+  software-properties-common
+wget https://apt.llvm.org/llvm.sh
+chmod +x llvm.sh
+./llvm.sh 20
+apt-get install -y clang-20 clang++-20 ninja-build cmake clang-tidy-20
+```
+
+#### Clone and Build
+
+```bash
+git clone --recurse-submodules https://github.com/ebroschin/chatcore.git
+cd chatcore
+./scripts/linux/build-all.sh
+```
+
+#### Run Demo (tmux session)
+```bash
+./scripts/docker/demo.sh
+```
+
+#### Run individual applications
+
+```bash
+./build/linux-release-server/apps/server/chatcore-server --ip 0.0.0.0 --port 1338 --db sqlite.db --log info
+./build/linux-release-client/apps/client/chatcore-client --ip localhost --port 1338 --log info
+./build/linux-release-load-tester/apps/load-tester/chatcore-load-tester --ip localhost --port 1338 --clients 100 --log info
+```
 
 ## Features
 

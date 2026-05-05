@@ -14,12 +14,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y clang-20 clang++-20 ninja-build cmake clang-tidy-20 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN clang-20 --version && clang++-20 --version && cmake --version && ninja --version
-RUN which clang-20 && which clang++-20 && which cmake && which ninja
-
 RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-ARG REPO_URL=git@github.com:PIXCLDEV/ChatCore.git
+ARG REPO_URL=git@github.com:ebroschin/chatcore.git
 ARG REPO_REF=master
 
 RUN --mount=type=ssh \
