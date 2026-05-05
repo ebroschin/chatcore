@@ -14,8 +14,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y clang-20 clang++-20 ninja-build cmake clang-tidy-20 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
-
 ARG REPO_URL=https://github.com/ebroschin/chatcore.git
 ARG REPO_REF=master
 

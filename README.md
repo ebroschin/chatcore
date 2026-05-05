@@ -22,7 +22,10 @@ sudo -E docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "git@gi
 ```
 
 #### Windows
-TBD docker instruction
+
+```pwsh
+docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "https://github.com/ebroschin/chatcore.git#master" ; if ($?) { docker run --rm -it -p 1338:1338 chatcore-demo bash -lc "/workspace/src/scripts/docker/demo.sh" }
+```
 
 ### Manual Build (Linux)
 Manual build instructions are currently provided for Linux only.
