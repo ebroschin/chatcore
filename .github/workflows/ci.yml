@@ -1,10 +1,10 @@
-name: CI (Linux, Windows)
+name: CI (Linux, Windows, Unit Tests)
 
 on:
   push:
-    branches: [ "ci/**" ]
+    branches: [ "master", "ci/**" ]
   pull_request:
-    branches: [ "ci/**" ]
+    branches: [ "master", "ci/**" ]
   workflow_dispatch:
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Ninja
+      - name: Install dependencies
         run: choco install ninja cmake -y
 
       - name: Prepare vcpkg cache
