@@ -16,11 +16,10 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p -m 0700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-ARG REPO_URL=git@github.com:ebroschin/chatcore.git
+ARG REPO_URL=https://github.com/ebroschin/chatcore.git
 ARG REPO_REF=master
 
-RUN --mount=type=ssh \
-git clone --recurse-submodules "$REPO_URL" /workspace/src \
+RUN git clone --recurse-submodules "$REPO_URL" /workspace/src \
 && cd /workspace/src \
 && git checkout "$REPO_REF"
 
