@@ -7,5 +7,5 @@ REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 bash -x "${SCRIPT_DIR}/bootstrap_vcpkg.sh" -disableMetrics
 
 cd ${REPO_ROOT}
-cmake --preset linux-clang-debug-load-tester
-cmake --build "${REPO_ROOT}/build/linux-clang-debug-load-tester"
+cmake --preset linux-gcc-debug-load-tester
+cmake --build "${REPO_ROOT}/build/linux-gcc-debug-load-tester"

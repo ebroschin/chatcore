@@ -36,14 +36,10 @@ Windows compatibility is validated in CI and via Visual Studio builds with MSVC.
 ```bash
 apt-get update
 apt-get install -y \
-  wget curl gnupg lsb-release ca-certificates git unzip zip \
+  git curl ca-certificates zip unzip \
   build-essential pkg-config \
-  autoconf automake libtool m4 gawk gettext texinfo tmux \
-  software-properties-common
-wget https://apt.llvm.org/llvm.sh
-chmod +x llvm.sh
-./llvm.sh 20
-apt-get install -y clang-20 clang++-20 ninja-build cmake clang-tidy-20
+  cmake ninja-build \
+  tmux
 ```
 
 #### Clone and Build
@@ -62,9 +58,9 @@ cd chatcore
 #### Run individual applications
 
 ```bash
-./build/linux-clang-release-server/apps/server/chatcore-server --ip 0.0.0.0 --port 1338 --db sqlite.db --log info
-./build/linux-clang-release-client/apps/client/chatcore-client --ip localhost --port 1338 --log info
-./build/linux-clang-release-load-tester/apps/load-tester/chatcore-load-tester --ip localhost --port 1338 --clients 100 --log info
+./build/linux-gcc-release-server/apps/server/chatcore-server --ip 0.0.0.0 --port 1338 --db sqlite.db --log info
+./build/linux-gcc-release-client/apps/client/chatcore-client --ip localhost --port 1338 --log info
+./build/linux-gcc-release-load-tester/apps/load-tester/chatcore-load-tester --ip localhost --port 1338 --clients 100 --log info
 ```
 
 ## Features

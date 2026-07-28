@@ -5,9 +5,9 @@ WORKSPACE="${1:-"/workspace/src/"}"
 SESSION=chatcore-demo
 PORT="${CHAT_PORT:-1338}"
 
-SERVER_BIN="${WORKSPACE}/build/linux-clang-release-server/apps/server/chatcore-server"
-CLIENT_BIN="${WORKSPACE}/build/linux-clang-release-client/apps/client/chatcore-client"
-LOAD_BIN="${WORKSPACE}/build/linux-clang-release-load-tester/apps/load-tester/chatcore-load-tester"
+SERVER_BIN="${WORKSPACE}/build/linux-gcc-release-server/apps/server/chatcore-server"
+CLIENT_BIN="${WORKSPACE}/build/linux-gcc-release-client/apps/client/chatcore-client"
+LOAD_BIN="${WORKSPACE}/build/linux-gcc-release-load-tester/apps/load-tester/chatcore-load-tester"
 
 tmux has-session -t "$SESSION" 2>/dev/null && tmux kill-session -t "$SESSION"
 tmux new-session -d -s "$SESSION" -n "Navigate between windows by pressing Ctrl+B + Arrow Keys | Quit session: Ctrl+B + D"

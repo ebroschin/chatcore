@@ -11,12 +11,7 @@ RUN apt-get update && apt-get install -y \
     tmux \
     && rm -rf /var/lib/apt/lists/*
 
-ARG REPO_URL=https://github.com/ebroschin/chatcore.git
-ARG REPO_REF=master
-
-RUN git clone --recurse-submodules "$REPO_URL" /workspace/src \
-&& cd /workspace/src \
-&& git checkout "$REPO_REF"
+COPY . /workspace/src
 
 ENV VCPKG_DOWNLOADS=/workspace/.vcpkg-downloads
 ENV VCPKG_DEFAULT_BINARY_CACHE=/workspace/.vcpkg-cache
