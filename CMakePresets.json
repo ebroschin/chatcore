@@ -19,15 +19,31 @@
     },
     {
       "name": "linux-debug",
+      "hidden": true,
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-20",
         "CMAKE_CXX_COMPILER": "clang++-20",
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_FLAGS_DEBUG": "-g -O0 -fsanitize=address -fno-omit-frame-pointer",
-        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fsanitize=address -fno-omit-frame-pointer",
-        "CMAKE_EXE_LINKER_FLAGS_DEBUG": "-fsanitize=address",
-        "CMAKE_SHARED_LINKER_FLAGS_DEBUG": "-fsanitize=address",
+        "CMAKE_C_FLAGS_DEBUG": "-g -O0 -fsanitize=address,undefined -fno-sanitize-recover -fno-omit-frame-pointer",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fsanitize=address,undefined -fno-sanitize-recover -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS_DEBUG": "-fsanitize=address,undefined",
+        "CMAKE_SHARED_LINKER_FLAGS_DEBUG": "-fsanitize=address,undefined",
+        "VCPKG_TARGET_TRIPLET": "x64-linux-clang"
+      }
+    },
+    {
+      "name": "linux-debug-thread",
+      "hidden": true,
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-20",
+        "CMAKE_CXX_COMPILER": "clang++-20",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS_DEBUG": "-g -O0 -fsanitize=undefined,thread -fno-sanitize-recover -fno-omit-frame-pointer",
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fsanitize=undefined,thread -fno-sanitize-recover -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS_DEBUG": "-fsanitize=undefined,thread",
+        "CMAKE_SHARED_LINKER_FLAGS_DEBUG": "-fsanitize=undefined,thread",
         "VCPKG_TARGET_TRIPLET": "x64-linux-clang"
       }
     },
@@ -71,6 +87,15 @@
       }
     },
     {
+      "name": "linux-debug-server-thread",
+      "inherits": "linux-debug-thread",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "OFF"
+      }
+    },
+    {
       "name": "linux-release-server",
       "inherits": "linux-release",
       "cacheVariables": {
@@ -82,6 +107,15 @@
     {
       "name": "linux-debug-load-tester",
       "inherits": "linux-debug",
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "ON"
+      }
+    },
+    {
+      "name": "linux-debug-load-tester-thread",
+      "inherits": "linux-debug-thread",
       "cacheVariables": {
         "BUILD_CLIENT": "OFF",
         "BUILD_SERVER": "OFF",
