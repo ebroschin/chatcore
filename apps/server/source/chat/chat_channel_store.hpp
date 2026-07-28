@@ -47,7 +47,7 @@ class ChatChannelStore {
   struct ConnectionsRange {
     using PairIterator = ConnectionChannelMap::right_map::const_iterator;
     using Pair = ConnectionChannelMap::right_map::value_type;
-    using ValueType = Pair::second_type;
+    using ValueType = std::remove_cvref_t<Pair::second_type>;
 
     static ValueType Transform(const Pair& value) {
       return value.second;

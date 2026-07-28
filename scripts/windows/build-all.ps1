@@ -7,11 +7,11 @@ $REPO_ROOT = Resolve-Path (Join-Path $SCRIPT_DIR "..\..") | Select-Object -Expan
 
 Set-Location $REPO_ROOT
 
-cmake --preset windows-release-client
-cmake --build "$REPO_ROOT\build\windows-release-client"
+cmake --preset windows-msvc-release-client
+cmake --build "$REPO_ROOT\build\windows-msvc-release-client"
 
-cmake --preset windows-release-load-tester
-cmake --build "$REPO_ROOT\build\windows-release-load-tester"
+cmake --preset windows-msvc-release-load-tester
+cmake --build "$REPO_ROOT\build\windows-msvc-release-load-tester"
 
-cmake --preset windows-release-server
-cmake --build "$REPO_ROOT\build\windows-release-server"
+cmake --preset windows-msvc-release-server
+cmake --build "$REPO_ROOT\build\windows-msvc-release-server"

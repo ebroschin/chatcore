@@ -1,0 +1,45 @@
+{
+  "version": 6,
+  "include": [
+    "base.json",
+    "gcc.json",
+    "clang.json",
+    "msvc.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "test-all",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "ON",
+        "BUILD_TESTING": "ON",
+        "VCPKG_MANIFEST_FEATURES": "test;client"
+      }
+    },
+    {
+      "name": "linux-clang-test-all",
+      "inherits": ["linux-debug", "clang", "test-all"],
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    },
+    {
+      "name": "linux-gcc-test-all",
+      "inherits": ["linux-debug", "gcc", "test-all"]
+    },
+    {
+      "name": "windows-msvc-test-all",
+      "inherits": ["windows-release", "msvc", "test-all"]
+    },
+    {
+      "name": "windows-clang-test-all",
+      "inherits": ["windows-release", "windows-clang", "test-all"]
+    },
+    {
+      "name": "windows-mingw-test-all",
+      "inherits": ["windows-release", "mingw", "test-all"]
+    }
+  ]
+}

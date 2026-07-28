@@ -1,0 +1,68 @@
+{
+  "version": 6,
+  "include": [
+    "base.json",
+    "gcc.json",
+    "clang.json",
+    "msvc.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "app-load-tester",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "ON"
+      }
+    },
+    {
+      "name": "linux-clang-debug-load-tester",
+      "inherits": ["linux-debug", "clang", "app-load-tester"]
+    },
+    {
+      "name": "linux-clang-debug-thread-load-tester",
+      "inherits": ["linux-debug-thread", "clang", "app-load-tester"]
+    },
+    {
+      "name": "linux-clang-release-load-tester",
+      "inherits": ["linux-release", "clang", "app-load-tester"]
+    },
+    {
+      "name": "linux-gcc-debug-load-tester",
+      "inherits": ["linux-debug", "gcc", "app-load-tester"]
+    },
+    {
+      "name": "linux-gcc-debug-thread-load-tester",
+      "inherits": ["linux-debug-thread", "gcc", "app-load-tester"]
+    },
+    {
+      "name": "linux-gcc-release-load-tester",
+      "inherits": ["linux-release", "gcc", "app-load-tester"]
+    },
+    {
+      "name": "windows-msvc-debug-load-tester",
+      "inherits": ["windows-debug", "msvc", "app-load-tester"]
+    },
+    {
+      "name": "windows-msvc-release-load-tester",
+      "inherits": ["windows-release", "msvc", "app-load-tester"]
+    },
+    {
+      "name": "windows-clang-debug-load-tester",
+      "inherits": ["windows-debug", "windows-clang", "app-load-tester"]
+    },
+    {
+      "name": "windows-clang-release-load-tester",
+      "inherits": ["windows-release", "windows-clang", "app-load-tester"]
+    },
+    {
+      "name": "windows-mingw-debug-load-tester",
+      "inherits": ["windows-debug", "mingw", "app-load-tester"]
+    },
+    {
+      "name": "windows-mingw-release-load-tester",
+      "inherits": ["windows-release", "mingw", "app-load-tester"]
+    }
+  ]
+}

@@ -5,6 +5,6 @@ $REPO_ROOT = Resolve-Path (Join-Path $SCRIPT_DIR "..\..") | Select-Object -Expan
 
 Set-Location $REPO_ROOT
 
-cmake --preset windows-test-all
-cmake --build "$REPO_ROOT\build\windows-test-all"
-ctest --test-dir "$REPO_ROOT\build\windows-test-all" -LE flaky --output-on-failure
+cmake --preset windows-msvc-test-all
+cmake --build "$REPO_ROOT\build\windows-msvc-test-all"
+ctest --test-dir "$REPO_ROOT\build\windows-msvc-test-all" -LE flaky --output-on-failure

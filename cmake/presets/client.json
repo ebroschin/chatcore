@@ -1,0 +1,69 @@
+{
+  "version": 6,
+  "include": [
+    "base.json",
+    "gcc.json",
+    "clang.json",
+    "msvc.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "app-client",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_CLIENT": "ON",
+        "BUILD_SERVER": "OFF",
+        "BUILD_LOAD_TESTER": "OFF",
+        "VCPKG_MANIFEST_FEATURES": "client"
+      }
+    },
+    {
+      "name": "linux-clang-debug-client",
+      "inherits": ["linux-debug", "clang", "app-client"]
+    },
+    {
+      "name": "linux-clang-debug-thread-client",
+      "inherits": ["linux-debug-thread", "clang", "app-client"]
+    },
+    {
+      "name": "linux-clang-release-client",
+      "inherits": ["linux-release", "clang", "app-client"]
+    },
+    {
+      "name": "linux-gcc-debug-client",
+      "inherits": ["linux-debug", "gcc", "app-client"]
+    },
+    {
+      "name": "linux-gcc-debug-thread-client",
+      "inherits": ["linux-debug-thread", "gcc", "app-client"]
+    },
+    {
+      "name": "linux-gcc-release-client",
+      "inherits": ["linux-release", "gcc", "app-client"]
+    },
+    {
+      "name": "windows-msvc-debug-client",
+      "inherits": ["windows-debug", "msvc", "app-client"]
+    },
+    {
+      "name": "windows-msvc-release-client",
+      "inherits": ["windows-release", "msvc", "app-client"]
+    },
+    {
+      "name": "windows-clang-debug-client",
+      "inherits": ["windows-debug", "windows-clang", "app-client"]
+    },
+    {
+      "name": "windows-clang-release-client",
+      "inherits": ["windows-release", "windows-clang", "app-client"]
+    },
+    {
+      "name": "windows-mingw-debug-client",
+      "inherits": ["windows-debug", "mingw", "app-client"]
+    },
+    {
+      "name": "windows-mingw-release-client",
+      "inherits": ["windows-release", "mingw", "app-client"]
+    }
+  ]
+}

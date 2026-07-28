@@ -62,9 +62,9 @@ cd chatcore
 #### Run individual applications
 
 ```bash
-./build/linux-release-server/apps/server/chatcore-server --ip 0.0.0.0 --port 1338 --db sqlite.db --log info
-./build/linux-release-client/apps/client/chatcore-client --ip localhost --port 1338 --log info
-./build/linux-release-load-tester/apps/load-tester/chatcore-load-tester --ip localhost --port 1338 --clients 100 --log info
+./build/linux-clang-release-server/apps/server/chatcore-server --ip 0.0.0.0 --port 1338 --db sqlite.db --log info
+./build/linux-clang-release-client/apps/client/chatcore-client --ip localhost --port 1338 --log info
+./build/linux-clang-release-load-tester/apps/load-tester/chatcore-load-tester --ip localhost --port 1338 --clients 100 --log info
 ```
 
 ## Features

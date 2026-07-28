@@ -1,0 +1,68 @@
+{
+  "version": 6,
+  "include": [
+    "base.json",
+    "gcc.json",
+    "clang.json",
+    "msvc.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "app-server",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_CLIENT": "OFF",
+        "BUILD_SERVER": "ON",
+        "BUILD_LOAD_TESTER": "OFF"
+      }
+    },
+    {
+      "name": "linux-clang-debug-server",
+      "inherits": ["linux-debug", "clang", "app-server"]
+    },
+    {
+      "name": "linux-clang-debug-thread-server",
+      "inherits": ["linux-debug-thread", "clang", "app-server"]
+    },
+    {
+      "name": "linux-clang-release-server",
+      "inherits": ["linux-release", "clang", "app-server"]
+    },
+    {
+      "name": "linux-gcc-debug-server",
+      "inherits": ["linux-debug", "gcc", "app-server"]
+    },
+    {
+      "name": "linux-gcc-debug-thread-server",
+      "inherits": ["linux-debug-thread", "gcc", "app-server"]
+    },
+    {
+      "name": "linux-gcc-release-server",
+      "inherits": ["linux-release", "gcc", "app-server"]
+    },
+    {
+      "name": "windows-msvc-debug-server",
+      "inherits": ["windows-debug", "msvc", "app-server"]
+    },
+    {
+      "name": "windows-msvc-release-server",
+      "inherits": ["windows-release", "msvc", "app-server"]
+    },
+    {
+      "name": "windows-clang-debug-server",
+      "inherits": ["windows-debug", "windows-clang", "app-server"]
+    },
+    {
+      "name": "windows-clang-release-server",
+      "inherits": ["windows-release", "windows-clang", "app-server"]
+    },
+    {
+      "name": "windows-mingw-debug-server",
+      "inherits": ["windows-debug", "mingw", "app-server"]
+    },
+    {
+      "name": "windows-mingw-release-server",
+      "inherits": ["windows-release", "mingw", "app-server"]
+    }
+  ]
+}
