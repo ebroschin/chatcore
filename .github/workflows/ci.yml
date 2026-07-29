@@ -1,4 +1,4 @@
-name: CI (Linux, Windows, Unit Tests)
+name: CI
 
 on:
   push:
@@ -8,8 +8,30 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64-gcc
+            runner: ubuntu-24.04
+            os: linux
+            compiler: gcc
+            preset: linux-gcc-test-all
+
+          - name: linux-x64-clang
+            runner: ubuntu-24.04
+            os: linux
+            compiler: clang
+            preset: linux-clang-test-all
+
+          - name: windows-x64-msvc
+            runner: windows-latest
+            os: windows
+            compiler: msvc
+            preset: windows-msvc-test-all
 
     steps:
       - name: Checkout
@@ -17,66 +39,51 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install dependencies
+      - name: Install Linux dependencies (gcc)
+        if: matrix.os == 'linux' && matrix.compiler == 'gcc'
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget gnupg lsb-release
+          sudo apt-get install -y \
+            ninja-build cmake \
+            build-essential pkg-config \
+            autoconf autoconf-archive automake libtool \
+            zip unzip curl ca-certificates git
 
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 20
+      - name: Install Linux dependencies (clang)
+        if: matrix.os == 'linux' && matrix.compiler == 'clang'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build cmake \
+            clang clang-tidy \
+            build-essential pkg-config \
+            autoconf autoconf-archive automake libtool \
+            zip unzip curl ca-certificates git
 
-          sudo apt-get install -y ninja-build cmake clang-tidy-20
-          sudo ln -sf /usr/bin/clang-tidy-20 /usr/local/bin/clang-tidy
-          clang-tidy --version
+      - name: Setup MSVC
+        if: matrix.compiler == 'msvc'
+        uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Prepare vcpkg cache
+      - name: Install Windows dependencies
+        if: matrix.os == 'windows'
+        run: choco install ninja cmake -y
+
+      - name: Prepare vcpkg cache (Linux)
+        if: matrix.os == 'linux'
         run: |
           echo "VCPKG_DOWNLOADS=${{ github.workspace }}/.vcpkg-downloads" >> "$GITHUB_ENV"
           echo "VCPKG_DEFAULT_BINARY_CACHE=${{ github.workspace }}/.vcpkg-cache" >> "$GITHUB_ENV"
           echo "VCPKG_FEATURE_FLAGS=binarycaching" >> "$GITHUB_ENV"
-
           mkdir -p "${{ github.workspace }}/.vcpkg-downloads"
           mkdir -p "${{ github.workspace }}/.vcpkg-cache"
 
-      - name: Apply vcpkg cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.VCPKG_DOWNLOADS }}
-            ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-          restore-keys: |
-            vcpkg-${{ runner.os }}-
-
-      - name: Build and run tests
-        env:
-          CC: clang-20
-          CXX: clang++-20
-        run: bash scripts/linux/test-all.sh
-
-  build-windows:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Install dependencies
-        run: choco install ninja cmake -y
-
-      - name: Prepare vcpkg cache
+      - name: Prepare vcpkg cache (Windows)
+        if: matrix.os == 'windows'
         shell: pwsh
         run: |
           "VCPKG_DOWNLOADS=${{ github.workspace }}\.vcpkg-downloads" | Out-File -FilePath $env:GITHUB_ENV -Append
           "VCPKG_DEFAULT_BINARY_CACHE=${{ github.workspace }}\.vcpkg-cache" | Out-File -FilePath $env:GITHUB_ENV -Append
           "VCPKG_FEATURE_FLAGS=binarycaching" | Out-File -FilePath $env:GITHUB_ENV -Append
-
           New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\.vcpkg-downloads" | Out-Null
           New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\.vcpkg-cache" | Out-Null
 
@@ -86,12 +93,17 @@ jobs:
           path: |
             ${{ env.VCPKG_DOWNLOADS }}
             ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          key: vcpkg-${{ matrix.name }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
           restore-keys: |
-            vcpkg-${{ runner.os }}-
+            vcpkg-${{ matrix.name }}-
 
-      - name: Build and run tests
+      - name: Build and run tests (Linux)
+        if: matrix.os == 'linux'
+        run: bash scripts/linux/test-all.sh ${{ matrix.preset }}
+
+      - name: Build and run tests (Windows)
+        if: matrix.os == 'windows'
         shell: pwsh
         run: |
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-          .\scripts\windows\test-all.ps1
+          .\scripts\windows\test-all.ps1 -Preset ${{ matrix.preset }}

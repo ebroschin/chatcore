@@ -13,8 +13,8 @@ TEST(UserStoreTests, Prewarm) {
   UserStore store{adapter};
   store.Prewarm();
 
-  auto test_user = [](UserStore& store, api::PersistenceId id, const std::string& name) {
-    const auto user = store.GetUser(name);
+  auto test_user = [](UserStore& st, api::PersistenceId id, const std::string& name) {
+    const auto user = st.GetUser(name);
     ASSERT_TRUE(user.has_value());
     EXPECT_EQ(user->get().id, id);
     EXPECT_EQ(user->get().name, name);
@@ -44,22 +44,22 @@ TEST(UserStoreTests, SessionLifecycle) {
   EXPECT_EQ(user2.id, 2);
   EXPECT_EQ(user2.name, "vergil");
 
-  auto test_user = [](UserStore& store,
+  auto test_user = [](UserStore& st,
     network::ConnectionId connection_id,
     const api::User& user,
     const std::string& expected_name)
   {
-    store.AssignSession(connection_id, user.id);
-    EXPECT_TRUE(store.HasSession(connection_id));
-    EXPECT_TRUE(store.HasSession(user.id));
+    st.AssignSession(connection_id, user.id);
+    EXPECT_TRUE(st.HasSession(connection_id));
+    EXPECT_TRUE(st.HasSession(user.id));
 
-    const auto session_user = store.GetSessionUser(connection_id);
+    const auto session_user = st.GetSessionUser(connection_id);
     ASSERT_TRUE(session_user.has_value());
     EXPECT_EQ(session_user->get().name, expected_name);
 
-    store.RemoveSession(connection_id);
-    EXPECT_FALSE(store.HasSession(connection_id));
-    EXPECT_FALSE(store.GetSessionUser(connection_id).has_value());
+    st.RemoveSession(connection_id);
+    EXPECT_FALSE(st.HasSession(connection_id));
+    EXPECT_FALSE(st.GetSessionUser(connection_id).has_value());
   };
 
   test_user(store, 99, user1, "dante");
