@@ -33,6 +33,12 @@ jobs:
             compiler: msvc
             preset: windows-msvc-test-all
 
+          - name: windows-x64-clang-cl
+            runner: windows-latest
+            os: windows
+            compiler: clang-cl
+            preset: windows-clang-test-all
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,12 +67,16 @@ jobs:
             zip unzip curl ca-certificates git
 
       - name: Setup MSVC
-        if: matrix.compiler == 'msvc'
+        if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Windows dependencies
-        if: matrix.os == 'windows'
+      - name: Install Windows dependencies (msvc)
+        if: matrix.compiler == 'msvc'
         run: choco install ninja cmake -y
+
+      - name: Install Windows dependencies (clang-cl)
+        if: matrix.compiler == 'clang-cl'
+        run: choco install llvm ninja cmake -y
 
       - name: Prepare vcpkg cache (Linux)
         if: matrix.os == 'linux'
