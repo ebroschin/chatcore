@@ -10,4 +10,5 @@ add_compile_options(
     -Wno-error=null-dereference
     -Wno-error=tsan
     -Wno-error=ignored-qualifiers
+    -Wno-error=extra-semi
 )

@@ -39,6 +39,12 @@ jobs:
             compiler: clang-cl
             preset: windows-clang-test-all
 
+          - name: windows-x64-mingw
+            runner: windows-latest
+            os: windows
+            compiler: mingw
+            preset: windows-mingw-test-all
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,6 +83,10 @@ jobs:
       - name: Install Windows dependencies (clang-cl)
         if: matrix.compiler == 'clang-cl'
         run: choco install llvm ninja cmake -y
+
+      - name: Install Windows dependencies (mingw)
+        if: matrix.compiler == 'mingw'
+        run: choco install mingw ninja cmake -y
 
       - name: Prepare vcpkg cache (Linux)
         if: matrix.os == 'linux'

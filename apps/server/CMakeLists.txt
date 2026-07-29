@@ -30,18 +30,10 @@ add_executable(chatcore-server
     source/users/user_store.hpp
 )
 
-if(WIN32)
-    set(BOOST_STACKTRACE stacktrace_windbg)
-else()
-    set(BOOST_STACKTRACE stacktrace_backtrace)
-endif()
-
-find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(SQLiteCpp CONFIG REQUIRED)
 
 target_link_libraries(chatcore-server PRIVATE
     SQLiteCpp
-    Boost::${BOOST_STACKTRACE}
     ebroschin::core
     ebroschin::utility
     ebroschin::network
