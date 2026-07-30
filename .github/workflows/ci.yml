@@ -29,6 +29,13 @@ jobs:
             compiler: gcc
             preset: linux-gcc-x86-test-all
 
+          - name: linux-arm64-gcc
+            runner: ubuntu-24.04-arm
+            os: linux
+            arch: arm64
+            compiler: gcc
+            preset: linux-gcc-arm64-test-all
+
           - name: linux-x64-clang
             runner: ubuntu-24.04
             os: linux
@@ -48,7 +55,6 @@ jobs:
             os: windows
             arch: x64
             compiler: msvc
-            msvc_arch: x64
             preset: windows-msvc-test-all
 
           - name: windows-x86-msvc
@@ -56,15 +62,20 @@ jobs:
             os: windows
             arch: x86
             compiler: msvc
-            msvc_arch: x86
             preset: windows-msvc-x86-test-all
+
+          - name: windows-arm64-msvc
+            runner: windows-11-arm
+            os: windows
+            arch: arm64
+            compiler: msvc
+            preset: windows-msvc-arm64-test-all
 
           - name: windows-x64-clang-cl
             runner: windows-latest
             os: windows
             arch: x64
             compiler: clang-cl
-            msvc_arch: x64
             preset: windows-clang-test-all
 
           - name: windows-x86-clang-cl
@@ -72,7 +83,6 @@ jobs:
             os: windows
             arch: x86
             compiler: clang-cl
-            msvc_arch: x86
             preset: windows-clang-x86-test-all
 
           - name: windows-x64-mingw
@@ -122,7 +132,7 @@ jobs:
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: ${{ matrix.msvc_arch }}
+          arch: ${{ matrix.arch }}
 
       - name: Install Windows dependencies (msvc)
         if: matrix.compiler == 'msvc'

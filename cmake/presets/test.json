@@ -42,12 +42,20 @@
       "inherits": ["linux-debug", "linux-x86", "gcc", "test-all"]
     },
     {
+      "name": "linux-gcc-arm64-test-all",
+      "inherits": ["linux-debug", "linux-arm64", "gcc", "test-all"]
+    },
+    {
       "name": "windows-msvc-test-all",
       "inherits": ["windows-release", "windows-x64", "msvc", "test-all"]
     },
     {
       "name": "windows-msvc-x86-test-all",
       "inherits": ["windows-release", "windows-x86", "msvc", "test-all"]
+    },
+    {
+      "name": "windows-msvc-arm64-test-all",
+      "inherits": ["windows-release", "windows-arm64", "msvc", "test-all"]
     },
     {
       "name": "windows-clang-test-all",
