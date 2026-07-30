@@ -1,24 +1,24 @@
 # chatcore | Multi-Threaded Chat System in C++23
 
-[![CI Builds and Tests (Linux, Windows)](https://github.com/ebroschin/chatcore/actions/workflows/ci.yml/badge.svg)](https://github.com/PIXCLDEV/ChatCore/actions/workflows/ci.yml)
+[![CI Builds and Tests (Linux, Windows)](https://github.com/ebroschin/chatcore/actions/workflows/ci.yml/badge.svg)](https://github.com/ebroschin/chatcore/actions/workflows/ci.yml)
 
-`chatcore` is an educational networking/multi-threading project built in C++23. The codebase provides the core architecture for:
-- a TCP server with a custom protocol
-- a client application which implements the custom protocol
-- a load tester to evaluate the performance and correctness of the server under load
+**chatcore** is a multi-threaded C++23 chat system: a TCP server with a length-prefixed JSON protocol, a terminal client (FTXUI), and a load tester for latency under concurrent clients.
 
-The project is built and tested on Linux and Windows in CI, compiles with strict warning flags, and includes unit tests (gtest).
+Built and tested in CI on Linux and Windows (GCC, Clang, MSVC/clang-cl, MinGW; x64, x86, and arm64).
+
+Shared infrastructure (networking, scheduling, persistence, logging) lives in the [`ebroschin-sdk`](ebroschin-sdk) submodule.
 
 ## Demo
 ![Demo screenshot](docs/images/demo.png)
 
 ### Docker Quick-Start
-The source code can be built and run using docker, including a `demo.sh` script to start two clients, the server and the load tester in a tmux session.
+The source code can be built and run using Docker, including a `demo.sh` script that starts two clients, the server, and the load tester in a tmux session.
+
 #### Linux
 
 ```bash
-sudo -E docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "git@github.com:ebroschin/chatcore.git#master" \
-&& sudo docker run --rm -it -p 1338:1338 chatcore-demo bash -lc '/workspace/src/scripts/docker/demo.sh' 
+sudo -E docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "https://github.com/ebroschin/chatcore.git#master" \
+&& sudo docker run --rm -it -p 1338:1338 chatcore-demo bash -lc '/workspace/src/scripts/docker/demo.sh'
 ```
 
 #### Windows
@@ -29,16 +29,17 @@ docker build -t chatcore-demo -f scripts/docker/Dockerfile.linux "https://github
 
 ### Manual Build (Linux)
 Manual build instructions are currently provided for Linux only.
-Windows compatibility is validated in CI and via Visual Studio builds with MSVC.
+Windows builds are validated in CI (MSVC, clang-cl, MinGW).
 
 #### Install required dependencies
 
 ```bash
-apt-get update
-apt-get install -y \
+sudo apt-get update
+sudo apt-get install -y \
   git curl ca-certificates zip unzip \
   build-essential pkg-config \
   cmake ninja-build \
+  autoconf autoconf-archive automake libtool \
   tmux
 ```
 
@@ -49,6 +50,8 @@ git clone --recurse-submodules https://github.com/ebroschin/chatcore.git
 cd chatcore
 ./scripts/linux/build-all.sh
 ```
+
+`build-all.sh` defaults to the `linux-gcc-release` presets. Pass another shared prefix to override, for example `./scripts/linux/build-all.sh linux-clang-release`.
 
 #### Run Demo (tmux session)
 ```bash
@@ -81,36 +84,33 @@ The feature scope of the project is intentionally constrained with known [limita
 
 ## Project Structure
 
-The source code of the repository is structured into `apps` (executables) and `libs` (modules) folders. 
-Third party dependencies are managed via Microsoft's package manager tool **vcpkg**, which is included to the repository as a submodule. The repository uses the following third party dependencies:
+The repository is structured into `apps/` (executables) and the [`ebroschin-sdk`](ebroschin-sdk) git submodule (shared library modules). Third-party dependencies are managed with **vcpkg** (also a submodule).
 
-`boost-stacktrace, boost-asio, boost-bimap, boost-multi-index, nlohmann-json, sqlitecpp, spdlog, gtest`
+Core dependencies: `boost-asio`, `boost-stacktrace`, `boost-bimap`, `boost-multi-index`, `nlohmann-json`, `sqlitecpp`, `spdlog`
 
-### Applications/Executables
+Optional vcpkg features: `ftxui` (client), `gtest` (tests)
 
-| Path                                             | Purpose                                                                                                                               |  
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |  
-| [`apps/server`](apps/server)           | TCP chat server, binds to an IP address, handles incoming network messages and manages connections, users, chat channels and messages |  
-| [`apps/client`](apps/client)           | FTXUI terminal client, allowing users to receive and send network messages to the chat server via commands                            |  
-| [`apps/load-tester`](apps/load-tester) | CLI tool, spawns test clients to simulate high traffic and creates a latency/error report (p50, p95, p99, max)                        |  
+### Applications
 
-### Internal Libraries
+| Path | Purpose |
+| --- | --- |
+| [`apps/server`](apps/server) | TCP chat server: connections, users, chat channels, and messages |
+| [`apps/client`](apps/client) | FTXUI terminal client for interactive use of the chat protocol |
+| [`apps/load-tester`](apps/load-tester) | CLI load generator with latency/error reporting (p50, p95, p99, max) |
 
-The bundled library modules are extracted from my personal codebase and are intentionally reduced to include only code which is used by this repository.
+### ebroschin-sdk
 
-| Path                                 | Purpose                                                                                                                             |  
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |  
-| `libs/chatcore-api`                  | Shared protocol message DTO's and RPC call definitions                                                                              |  
-| `libs/ebroschin-core`                | Application lifecycle and dependency context                                                                                        |  
-| `libs/ebroschin-network`             | Transport-agnostic TCP/RPC abstractions                                                                                             |  
-| `libs/ebroschin-network-modules`     | Concrete implementations for `ebroschin-network`:  <br>> `boost-asio` connections, acceptor and resolver<br>> `nlohmann-json` message codec |  
-| `libs/ebroschin-scheduling`          | Task/Job scheduler running on a dedicated thread                                                                                    |  
-| `libs/ebroschin-persistence`         | Database/Storage-agnostic persistence abstractions                                                                                  |  
-| `libs/ebroschin-persistence-modules` | Concrete implementations for `ebroschin-persistence`:<br>> `sqlitecpp` database                                                     |  
-| `libs/ebroschin-commands`            | Compile-time command registry and dispatcher                                                                                        |  
-| `libs/ebroschin-utility`             | Reusable utility for helpers, static functions and template code                                                                    |  
-| `libs/ebroschin-logging`             | Technology-agnostic abstraction for a global logger with runtime-replaceable logger backends                                        |  
-| `libs/ebroschin-logging-modules`     | Concrete implementations for `ebroschin-logging` :<br>> `spdlog` logger                                                             |  
+The applications are built on libraries from my reusable codebase, which provide:
+- application lifecycle
+- asynchronous networking with TCP/RPC
+- task scheduling
+- data persistence with SQLite
+- logging with spdlog
+- utilities and helper classes/datastructures
+
+Shared chat protocol DTOs currently live in `ebroschin-sdk/chatcore-api`. (will move to separate repository later)
+
+See [`ebroschin-sdk/README.md`](ebroschin-sdk/README.md) for the full module list and usage.
 
 ## Threading/Concurrency Model
 
@@ -149,7 +149,7 @@ using ChatServerTcpSystem = network::tcp::TcpSystemBuilder<
 
 The `TcpSystem` provides an abstraction for sending and receiving network messages as application-specific data transfer objects (DTO).
 
-`[libs/chatcore-api] api.hpp`
+`[ebroschin-sdk/chatcore-api] api.hpp`
 ```cpp  
 struct ReceiveChatMessage {    
   static constexpr std::uint64_t TypeId = 103;    
@@ -237,25 +237,9 @@ The server uses a 1:1 message handling model. Each incoming network message has 
 
 To facilitate higher throughput, the server therefore uses the much faster `DirectMessageHandler` from `ebroschin-network-modules` which offers only a single callback per network message type and avoids signals/subscriptions overhead.
 
-## Software Design and Principles
+## Software Design
 
-The source code needs to compile with the provided compiler flags (root `CMakeLists.txt`) and pass static analysis using clang-tidy. During development, address sanitizers are enabled to detect memory access bugs and prevent undefined behavior.
-### Principles
-
-- strictly avoid using `new/delete` keywords in high-level application code, use smart pointers/RAII instead (`std::unique_ptr, std::shared_ptr`)
-- raw pointer member variables are non-owning by definition
-- use references for mandatory dependencies
-- use `const` keyword on local variables to express immutability intent
-- prefer using `auto` keyword, always explicitly define ownership/mutability qualifiers `(const, auto&, auto*)`
-- when passing ownership to another function, pass the parameter by value and use `std::move()`
-- use `std::shared_ptr` and `shared_from_this()` when passing objects that may outlive their scope to asynchronous callbacks in order to prevent use-after-free bugs
-- use compile-time checks where applicable (`concept, require, if constexpr`)
-- prefer static polymorphism using templates and C++20 concepts over runtime polymorphism via pure virtual interfaces where applicable
-
-Output from a coding agent must be critically reviewed and refactored to maintain consistent code style, correctness and architectural ownership of the codebase.
-### Core Patterns
-
-Each application is structured using the same, recognizable pattern: a composition of sub-systems within a system context owned by the application (composition root). Each system implements a single responsibility of its applications specification, manages its own data and offers public functions to interface with other sub-systems.
+Each application is structured using the same pattern: a composition of sub-systems within a system context owned by the application (composition root). Each system implements a single responsibility, manages its own data, and exposes public functions for other sub-systems.
 
 `[apps/server] chat_server_application.cpp`
 ```cpp  
@@ -271,11 +255,11 @@ ctx_.Register<UserServerSystem>(); //manages users, sessions and auth
 ctx_.Register<ChatServerSystem>(); //manages chat channels and chat messages  
 ```  
 
-The order of system registration matters. Low-level systems are registered/initialized first, high-level systems are registered/initialized last. This ensures a clean dependency graph between systems without circular dependencies.
+The order of system registration matters. Low-level systems are registered/initialized first, high-level systems are registered/initialized last. This keeps a clean dependency graph between systems without circular dependencies.
 
-Each thread is managed by its own system (thread-affinity). The codebase uses modern STL tools for concurrency (`std::jthread std::scoped_lock ...`).
+Each thread is managed by its own system (thread-affinity). The codebase uses modern STL concurrency primitives (`std::jthread`, `std::scoped_lock`, ...).
 
-Each internal library implements an isolated system which can be reused in all kinds of applications using the `ebroschin-core` application pattern. An internal library is only allowed to have dependencies to other internal libraries and cannot depend on external third party code. An exception for this rule are "modules" libraries (for example `ebroschin-network-modules`) which offer concrete implementations that a developer can use or reference to implement their own classes.
+SDK libraries follow the same application pattern from `ebroschin-core`. Abstract libraries stay free of third-party dependencies; concrete backends live in `*-modules` packages (for example Boost.Asio networking or SQLite persistence).
 
 ## Benchmarks
 Server Test Device Hardware:
