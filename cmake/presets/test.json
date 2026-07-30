@@ -34,6 +34,13 @@
       }
     },
     {
+      "name": "linux-clang-arm64-test-all",
+      "inherits": ["linux-debug", "linux-arm64", "clang", "test-all"],
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      }
+    },
+    {
       "name": "linux-gcc-test-all",
       "inherits": ["linux-debug", "linux-x64", "gcc", "test-all"]
     },
@@ -64,6 +71,10 @@
     {
       "name": "windows-clang-x86-test-all",
       "inherits": ["windows-release", "windows-x86", "windows-clang", "test-all"]
+    },
+    {
+      "name": "windows-clang-arm64-test-all",
+      "inherits": ["windows-release", "windows-arm64", "windows-clang", "test-all"]
     },
     {
       "name": "windows-mingw-test-all",

@@ -50,6 +50,13 @@ jobs:
             compiler: clang
             preset: linux-clang-x86-test-all
 
+          - name: linux-arm64-clang
+            runner: ubuntu-24.04-arm
+            os: linux
+            arch: arm64
+            compiler: clang
+            preset: linux-clang-arm64-test-all
+
           - name: windows-x64-msvc
             runner: windows-latest
             os: windows
@@ -84,6 +91,13 @@ jobs:
             arch: x86
             compiler: clang-cl
             preset: windows-clang-x86-test-all
+
+          - name: windows-arm64-clang-cl
+            runner: windows-11-arm
+            os: windows
+            arch: arm64
+            compiler: clang-cl
+            preset: windows-clang-arm64-test-all
 
           - name: windows-x64-mingw
             runner: windows-latest
