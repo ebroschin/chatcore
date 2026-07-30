@@ -36,6 +36,13 @@ jobs:
             compiler: clang
             preset: linux-clang-test-all
 
+          - name: linux-x86-clang
+            runner: ubuntu-24.04
+            os: linux
+            arch: x86
+            compiler: clang
+            preset: linux-clang-x86-test-all
+
           - name: windows-x64-msvc
             runner: windows-latest
             os: windows
@@ -59,6 +66,14 @@ jobs:
             compiler: clang-cl
             msvc_arch: x64
             preset: windows-clang-test-all
+
+          - name: windows-x86-clang-cl
+            runner: windows-latest
+            os: windows
+            arch: x86
+            compiler: clang-cl
+            msvc_arch: x86
+            preset: windows-clang-x86-test-all
 
           - name: windows-x64-mingw
             runner: windows-latest
