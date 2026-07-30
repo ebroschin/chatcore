@@ -18,30 +18,52 @@ jobs:
           - name: linux-x64-gcc
             runner: ubuntu-24.04
             os: linux
+            arch: x64
             compiler: gcc
             preset: linux-gcc-test-all
+
+          - name: linux-x86-gcc
+            runner: ubuntu-24.04
+            os: linux
+            arch: x86
+            compiler: gcc
+            preset: linux-gcc-x86-test-all
 
           - name: linux-x64-clang
             runner: ubuntu-24.04
             os: linux
+            arch: x64
             compiler: clang
             preset: linux-clang-test-all
 
           - name: windows-x64-msvc
             runner: windows-latest
             os: windows
+            arch: x64
             compiler: msvc
+            msvc_arch: x64
             preset: windows-msvc-test-all
+
+          - name: windows-x86-msvc
+            runner: windows-latest
+            os: windows
+            arch: x86
+            compiler: msvc
+            msvc_arch: x86
+            preset: windows-msvc-x86-test-all
 
           - name: windows-x64-clang-cl
             runner: windows-latest
             os: windows
+            arch: x64
             compiler: clang-cl
+            msvc_arch: x64
             preset: windows-clang-test-all
 
           - name: windows-x64-mingw
             runner: windows-latest
             os: windows
+            arch: x64
             compiler: mingw
             preset: windows-mingw-test-all
 
@@ -61,6 +83,15 @@ jobs:
             autoconf autoconf-archive automake libtool \
             zip unzip curl ca-certificates git
 
+      - name: Install Linux x86 multilib
+        if: matrix.os == 'linux' && matrix.arch == 'x86'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-multilib g++-multilib \
+            libc6-dev-i386
+
       - name: Install Linux dependencies (clang)
         if: matrix.os == 'linux' && matrix.compiler == 'clang'
         run: |
@@ -75,6 +106,8 @@ jobs:
       - name: Setup MSVC
         if: matrix.compiler == 'msvc' || matrix.compiler == 'clang-cl'
         uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
 
       - name: Install Windows dependencies (msvc)
         if: matrix.compiler == 'msvc'

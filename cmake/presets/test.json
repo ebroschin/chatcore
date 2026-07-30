@@ -2,6 +2,7 @@
   "version": 6,
   "include": [
     "base.json",
+    "arch.json",
     "gcc.json",
     "clang.json",
     "msvc.json"
@@ -20,22 +21,30 @@
     },
     {
       "name": "linux-clang-test-all",
-      "inherits": ["linux-debug", "clang", "test-all"],
+      "inherits": ["linux-debug", "linux-x64", "clang", "test-all"],
       "cacheVariables": {
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       }
     },
     {
       "name": "linux-gcc-test-all",
-      "inherits": ["linux-debug", "gcc", "test-all"]
+      "inherits": ["linux-debug", "linux-x64", "gcc", "test-all"]
+    },
+    {
+      "name": "linux-gcc-x86-test-all",
+      "inherits": ["linux-debug", "linux-x86", "gcc", "test-all"]
     },
     {
       "name": "windows-msvc-test-all",
-      "inherits": ["windows-release", "msvc", "test-all"]
+      "inherits": ["windows-release", "windows-x64", "msvc", "test-all"]
+    },
+    {
+      "name": "windows-msvc-x86-test-all",
+      "inherits": ["windows-release", "windows-x86", "msvc", "test-all"]
     },
     {
       "name": "windows-clang-test-all",
-      "inherits": ["windows-release", "windows-clang", "test-all"]
+      "inherits": ["windows-release", "windows-x64", "windows-clang", "test-all"]
     },
     {
       "name": "windows-mingw-test-all",
