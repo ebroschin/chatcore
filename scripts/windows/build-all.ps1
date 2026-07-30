@@ -1,3 +1,7 @@
+param(
+    [string]$PresetPrefix = "windows-msvc-release"
+)
+
 $ErrorActionPreference = "Stop"
 
 $SCRIPT_DIR = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -7,11 +11,8 @@ $REPO_ROOT = Resolve-Path (Join-Path $SCRIPT_DIR "..\..") | Select-Object -Expan
 
 Set-Location $REPO_ROOT
 
-cmake --preset windows-msvc-release-client
-cmake --build "$REPO_ROOT\build\windows-msvc-release-client"
-
-cmake --preset windows-msvc-release-load-tester
-cmake --build "$REPO_ROOT\build\windows-msvc-release-load-tester"
-
-cmake --preset windows-msvc-release-server
-cmake --build "$REPO_ROOT\build\windows-msvc-release-server"
+foreach ($app in @("client", "load-tester", "server")) {
+    $preset = "$PresetPrefix-$app"
+    cmake --preset $preset
+    cmake --build "$REPO_ROOT\build\$preset"
+}

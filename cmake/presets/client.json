@@ -2,6 +2,7 @@
   "version": 6,
   "include": [
     "base.json",
+    "arch.json",
     "gcc.json",
     "clang.json",
     "msvc.json"
@@ -19,43 +20,43 @@
     },
     {
       "name": "linux-clang-debug-client",
-      "inherits": ["linux-debug", "clang", "app-client"]
+      "inherits": ["linux-debug", "linux-x64", "clang", "app-client"]
     },
     {
       "name": "linux-clang-debug-thread-client",
-      "inherits": ["linux-debug-thread", "clang", "app-client"]
+      "inherits": ["linux-debug-thread", "linux-x64", "clang", "app-client"]
     },
     {
       "name": "linux-clang-release-client",
-      "inherits": ["linux-release", "clang", "app-client"]
+      "inherits": ["linux-release", "linux-x64", "clang", "app-client"]
     },
     {
       "name": "linux-gcc-debug-client",
-      "inherits": ["linux-debug", "gcc", "app-client"]
+      "inherits": ["linux-debug", "linux-x64", "gcc", "app-client"]
     },
     {
       "name": "linux-gcc-debug-thread-client",
-      "inherits": ["linux-debug-thread", "gcc", "app-client"]
+      "inherits": ["linux-debug-thread", "linux-x64", "gcc", "app-client"]
     },
     {
       "name": "linux-gcc-release-client",
-      "inherits": ["linux-release", "gcc", "app-client"]
+      "inherits": ["linux-release", "linux-x64", "gcc", "app-client"]
     },
     {
       "name": "windows-msvc-debug-client",
-      "inherits": ["windows-debug", "msvc", "app-client"]
+      "inherits": ["windows-debug", "windows-x64", "msvc", "app-client"]
     },
     {
       "name": "windows-msvc-release-client",
-      "inherits": ["windows-release", "msvc", "app-client"]
+      "inherits": ["windows-release", "windows-x64", "msvc", "app-client"]
     },
     {
       "name": "windows-clang-debug-client",
-      "inherits": ["windows-debug", "windows-clang", "app-client"]
+      "inherits": ["windows-debug", "windows-x64", "windows-clang", "app-client"]
     },
     {
       "name": "windows-clang-release-client",
-      "inherits": ["windows-release", "windows-clang", "app-client"]
+      "inherits": ["windows-release", "windows-x64", "windows-clang", "app-client"]
     },
     {
       "name": "windows-mingw-debug-client",

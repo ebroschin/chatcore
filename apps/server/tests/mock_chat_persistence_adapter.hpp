@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <nlohmann/detail/meta/type_traits.hpp>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -80,7 +81,7 @@ public:
 
     std::ranges::sort(result, {}, &api::ChatMessage::id);
     if (result.size() > limit) {
-      result.erase(result.begin(), result.end() - limit);
+      result.erase(result.begin(), result.end() - static_cast<decltype(result)::difference_type>(limit));
     }
 
     return result;
@@ -114,4 +115,3 @@ private:
 };
 
 }
-

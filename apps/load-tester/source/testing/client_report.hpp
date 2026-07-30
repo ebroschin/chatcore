@@ -22,7 +22,7 @@ struct ClientReport {
 
     const auto fractional_index = std::floor(normalized_percentage * static_cast<double>(latencies.size() - 1));
     const auto index = static_cast<std::size_t>(fractional_index);
-    const auto n = latencies.begin() + static_cast<long>(fractional_index);
+    const auto n = latencies.begin() + static_cast<decltype(latencies)::difference_type>(fractional_index);
     std::ranges::nth_element(latencies, n);
 
     return latencies[index];

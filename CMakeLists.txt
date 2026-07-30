@@ -4,10 +4,12 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT MSVC)
     include(cmake/flags/clang.cmake)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     include(cmake/flags/gcc.cmake)
+elseif(MSVC)
+    include(cmake/flags/msvc.cmake)
 endif()
 
 if(BUILD_TESTING)

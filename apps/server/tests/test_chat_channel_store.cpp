@@ -44,22 +44,13 @@ TEST(ChatChannelStoreTests, GetConnectionsForChannel) {
   store.AssignConnection(connection_id3, channel2.id);
   store.AssignConnection(connection_id4, channel1.id);
 
-  auto range_size = []<typename TRange>(TRange&& range) {
-    std::size_t result = 0;
-    for (const auto& _ : range) {
-      result ++;
-    }
-
-    return result;
-  };
-
   auto connections_range = store.GetConnections(channel1.id);
   ASSERT_TRUE(connections_range.has_value());
-  EXPECT_EQ(range_size(*connections_range), 1);
+  EXPECT_EQ(std::ranges::distance(*connections_range), 1);
 
   connections_range = store.GetConnections(channel2.id);
   ASSERT_TRUE(connections_range.has_value());
-  EXPECT_EQ(range_size(*connections_range), 3);
+  EXPECT_EQ(std::ranges::distance(*connections_range), 3);
 }
 
 }

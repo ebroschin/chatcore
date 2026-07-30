@@ -38,17 +38,9 @@ add_executable(chatcore-client
     source/session/session_store.hpp
 )
 
-if(WIN32)
-    set(BOOST_STACKTRACE stacktrace_windbg)
-else()
-    set(BOOST_STACKTRACE stacktrace_backtrace)
-endif()
-
-find_package(Boost REQUIRED COMPONENTS ${BOOST_STACKTRACE})
 find_package(ftxui CONFIG REQUIRED)
 
 target_link_libraries(chatcore-client PRIVATE
-    Boost::${BOOST_STACKTRACE}
     ebroschin::core
     ebroschin::utility
     ebroschin::network

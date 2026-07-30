@@ -6,6 +6,9 @@ add_compile_options(
     -Wdouble-promotion -Wformat=2
     -Wundef -Wextra-semi -Wimplicit-fallthrough
     -fno-common -fstrict-aliasing -fno-omit-frame-pointer
+
     -Wno-error=null-dereference
     -Wno-error=tsan
+    -Wno-error=ignored-qualifiers
+    -Wno-error=extra-semi
 )
