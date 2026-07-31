@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "master", "ci/**" ]
+    branches: [ "master", "develop", "ci/**" ]
   pull_request:
-    branches: [ "master", "ci/**" ]
+    branches: [ "master", "develop", "ci/**" ]
   workflow_dispatch:
 
 jobs:
@@ -199,3 +199,51 @@ jobs:
         run: |
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
           .\scripts\windows\test-all.ps1 -Preset ${{ matrix.preset }}
+
+  integration-test:
+    name: linux-x64-gcc-integration-test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ninja-build cmake \
+            build-essential pkg-config \
+            autoconf autoconf-archive automake libtool \
+            zip unzip curl ca-certificates git
+
+      - name: Prepare vcpkg cache
+        run: |
+          echo "VCPKG_DOWNLOADS=${{ github.workspace }}/.vcpkg-downloads" >> "$GITHUB_ENV"
+          echo "VCPKG_DEFAULT_BINARY_CACHE=${{ github.workspace }}/.vcpkg-cache" >> "$GITHUB_ENV"
+          echo "VCPKG_FEATURE_FLAGS=binarycaching" >> "$GITHUB_ENV"
+          mkdir -p "${{ github.workspace }}/.vcpkg-downloads"
+          mkdir -p "${{ github.workspace }}/.vcpkg-cache"
+
+      - name: Apply vcpkg cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.VCPKG_DOWNLOADS }}
+            ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-linux-x64-gcc-integration-test-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: |
+            vcpkg-linux-x64-gcc-integration-test-
+
+      - name: Build TSan server and load-tester
+        run: |
+          bash scripts/linux/bootstrap_vcpkg.sh -disableMetrics
+          cmake --preset linux-gcc-debug-thread-server
+          cmake --build build/linux-gcc-debug-thread-server
+          cmake --preset linux-gcc-debug-thread-load-tester
+          cmake --build build/linux-gcc-debug-thread-load-tester
+
+      - name: Run integration test
+        run: setarch "$(uname -m)" -R bash scripts/linux/integration-test.sh
