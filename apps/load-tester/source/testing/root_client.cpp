@@ -1,7 +1,7 @@
 #include "root_client.hpp"
 
-#include "../application/application_system.hpp"
 #include "test_client.hpp"
+#include "../application/load_tester_application.hpp"
 
 #include <chrono>
 
@@ -9,13 +9,9 @@ using namespace std::chrono_literals;
 
 namespace ebroschin::chatcore::tester {
 
-RootClient::RootClient(ApplicationSystem& app_system,
-  ClientTcpSystem& tcp_system,
-  ClientRpcSystem& rpc_system,
-  scheduling::SchedulingSystem& scheduling_system,
-  const std::string& name) noexcept:
-  Client{app_system, tcp_system, rpc_system, name},
-  scheduling_system_{scheduling_system}
+RootClient::RootClient(LoadTesterApplication& app, core::SystemContext& ctx, const std::string& name) noexcept:
+  Client{app, ctx, name},
+  scheduling_system_{ctx.Require<scheduling::SchedulingSystem>()}
 {}
 
 void RootClient::OnPrepared() {
@@ -33,12 +29,10 @@ void RootClient::OnPrepared() {
 }
 
 void RootClient::HandleRootClientReady() {
-  const auto client_count = app_system_.GetArguments().GetClientCount();
+  const auto client_count = app_.GetArguments().GetClientCount();
   for (unsigned int i = 0; i < client_count; i++) {
-    clients_.emplace_back(std::make_unique<TestClient>(app_system_,
-      tcp_system_,
-      rpc_system_,
-      scheduling_system_,
+    clients_.emplace_back(std::make_unique<TestClient>(app_,
+      ctx_,
       *this,
       "tester" + std::to_string(i),
       test_channel_id_));
@@ -87,7 +81,7 @@ void RootClient::Evaluate() {
   logging::Log::Info() << "p99: " << to_us(ClientReport::CalculatePercentile(latencies, 0.99)) << "us";
   logging::Log::Info() << "max: " << to_us(ClientReport::CalculatePercentile(latencies, 1.0)) << "us";
 
-  app_system_.Quit();
+  app_.Quit();
 }
 
 void RootClient::SetClientReady(network::ConnectionId id) {

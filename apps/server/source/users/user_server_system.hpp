@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../application/chat_tcp_system.hpp"
-#include "../application/application_system.hpp"
 #include "user_store.hpp"
 
 #include <ebroschin/chat/api.hpp>
@@ -13,10 +12,11 @@ namespace ebroschin::chatcore::server {
 
 class UserPersistenceAdapter;
 class ChatServerSystem;
+class ChatServerApplication;
 
 class UserServerSystem final : public core::System {
 public:
-  explicit UserServerSystem(const core::SystemContext& ctx) noexcept;
+  explicit UserServerSystem(const core::SystemContext& ctx, ChatServerApplication& app) noexcept;
 
   void Initialize() override;
 
@@ -32,7 +32,7 @@ private:
   void HandleGetUsers(network::ConnectionId, const api::GetUsersRequestMessage&);
   void HandleGetUser(network::ConnectionId, const api::GetUserRequestMessage&);
 
-  ApplicationSystem& app_system_;
+  ChatServerApplication& app_;
   UserPersistenceAdapter& adapter_;
   ChatServerTcpSystem& tcp_system_;
 

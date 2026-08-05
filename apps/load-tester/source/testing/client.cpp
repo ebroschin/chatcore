@@ -1,25 +1,23 @@
 #include "client.hpp"
 
-#include "../application/application_system.hpp"
+#include "../application/load_tester_application.hpp"
 
 namespace ebroschin::chatcore::tester {
 
-Client::Client(ApplicationSystem& app_system,
-  ClientTcpSystem& tcp_system,
-  ClientRpcSystem& rpc_system,
-  std::string name) noexcept:
-  app_system_{app_system},
-  tcp_system_{tcp_system},
-  rpc_system_{rpc_system},
+Client::Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name) noexcept:
+  app_{app},
+  ctx_{ctx},
+  tcp_system_{ctx.Require<ClientTcpSystem>()},
+  rpc_system_{ctx.Require<ClientRpcSystem>()},
   name_{std::move(name)}
 {}
 
 void Client::Quit() const {
-  app_system_.Quit();
+  app_.Quit();
 }
 
 void Client::Prepare() {
-  const auto& arguments = app_system_.GetArguments();
+  const auto& arguments = app_.GetArguments();
   tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, this);
 }
 

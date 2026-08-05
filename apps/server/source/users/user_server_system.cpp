@@ -1,7 +1,7 @@
 #include "user_server_system.hpp"
 
 #include "../application/chat_persistence_system.hpp"
-#include "../application/application_system.hpp"
+#include "../application/chat_server_application.hpp"
 #include "adapters/sqlite_user_persistence_adapter.hpp"
 
 #include <ebroschin/network/tcp/tcp_system.hpp>
@@ -9,18 +9,18 @@
 
 namespace ebroschin::chatcore::server {
 
-UserServerSystem::UserServerSystem(const core::SystemContext& ctx) noexcept:
+UserServerSystem::UserServerSystem(const core::SystemContext& ctx, ChatServerApplication& app) noexcept:
   System{ctx},
-  app_system_{ctx_.Require<ApplicationSystem>()},
+  app_{app},
   adapter_{ctx_.Require<ChatPersistenceSystem>().Require<UserPersistenceAdapter>()},
   tcp_system_{ctx_.Require<ChatServerTcpSystem>()}
 {}
 
 void UserServerSystem::Initialize() {
-  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleCreateUser);
-  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleAuthenticateUser);
-  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUsers);
-  app_system_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUser);
+  app_.RegisterMessageHandler(this, &UserServerSystem::HandleCreateUser);
+  app_.RegisterMessageHandler(this, &UserServerSystem::HandleAuthenticateUser);
+  app_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUsers);
+  app_.RegisterMessageHandler(this, &UserServerSystem::HandleGetUser);
 
   user_store_.Prewarm();
 }
@@ -28,7 +28,7 @@ void UserServerSystem::Initialize() {
 bool UserServerSystem::ValidateSession(network::RequestId request_id, network::ConnectionId connection_id) const {
   const auto result = user_store_.HasSession(connection_id);
   if (!result) {
-    app_system_.HandleRpcError(connection_id, request_id, "Not authorized.");
+    app_.HandleRpcError(connection_id, request_id, "Not authorized.");
   }
 
   return result;
@@ -58,13 +58,13 @@ std::optional<std::reference_wrapper<const api::User>> UserServerSystem::GetSess
 
 void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, const api::CreateUserRequestMessage& message) {
   if (user_store_.HasUser(message.name)) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "User already exists.");
+    app_.HandleRpcError(connection_id, message.request_id, "User already exists.");
     return;
   }
 
   const auto result = adapter_.CreateUser(message.name, message.password);
   if (!result) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "User already exists.");
+    app_.HandleRpcError(connection_id, message.request_id, "User already exists.");
     return;
   }
 
@@ -73,19 +73,19 @@ void UserServerSystem::HandleCreateUser(network::ConnectionId connection_id, con
 
 void UserServerSystem::HandleAuthenticateUser(network::ConnectionId connection_id, const api::AuthenticateUserRequestMessage& message) {
   if (user_store_.HasSession(connection_id)) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "Already logged in.");
+    app_.HandleRpcError(connection_id, message.request_id, "Already logged in.");
     return;
   }
 
   const auto result = adapter_.MatchUserCredentials(message.name, message.password);
   if (!result) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "Wrong username or password");
+    app_.HandleRpcError(connection_id, message.request_id, "Wrong username or password");
     return;
   }
 
   const auto& user = *result;
   if (user_store_.HasSession(user.id)) {
-    app_system_.HandleRpcError(connection_id, message.request_id, message.name + " is already logged in.");
+    app_.HandleRpcError(connection_id, message.request_id, message.name + " is already logged in.");
     return;
   }
 
@@ -106,9 +106,10 @@ void UserServerSystem::HandleGetUser(network::ConnectionId connection_id, const 
 
   const auto result = user_store_.GetUser(message.name);
   if (!result) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "User with name " + message.name + " not found");
+    app_.HandleRpcError(connection_id, message.request_id, "User with name " + message.name + " not found");
     return;
   }
+  
   tcp_system_.Send<api::GetUserResponseMessage>(connection_id, {message.request_id, result->get()});
 }
 

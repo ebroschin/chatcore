@@ -1,17 +1,17 @@
 #include "exit_command.hpp"
 
-#include "../application/application_system.hpp"
+#include "../session/session_system.hpp"
 
 #include <ebroschin/core/system_context.hpp>
 
 namespace ebroschin::chatcore::client {
 
 ExitCommand::ExitCommand(const core::SystemContext& ctx) noexcept:
-  application_system_{ctx.Require<ApplicationSystem>()}
+  session_system_{ctx.Require<SessionSystem>()}
 {}
 
 void ExitCommand::Execute(std::span<std::string_view>) const {
-  application_system_.Quit();
+  session_system_.Quit();
 }
 
 }

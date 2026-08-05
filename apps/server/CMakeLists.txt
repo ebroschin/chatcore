@@ -1,33 +1,10 @@
+file(GLOB_RECURSE SRC CONFIGURE_DEPENDS
+    source/*.cpp
+    source/*.hpp
+)
+
 add_executable(chatcore-server
-    source/main.cpp
-    source/application/chat_server_application.cpp
-    source/application/chat_server_application.hpp
-    source/chat/adapters/chat_persistence_adapter.hpp
-    source/chat/adapters/sqlite_chat_persistence_adapter.cpp
-    source/chat/adapters/sqlite_chat_persistence_adapter.hpp
-    source/chat/chat_server_system.cpp
-    source/chat/chat_server_system.hpp
-    source/application/chat_tcp_system.hpp
-    source/application/chat_persistence_system.hpp
-    source/users/user_server_system.cpp
-    source/users/user_server_system.hpp
-    source/users/adapters/user_persistence_adapter.hpp
-    source/users/adapters/sqlite_user_persistence_adapter.cpp
-    source/users/adapters/sqlite_user_persistence_adapter.hpp
-    source/chat/chat_channel_store.cpp
-    source/chat/chat_channel_store.hpp
-    source/chat/chat_message_store.cpp
-    source/chat/chat_message_store.hpp
-    source/chat/chat_channel_message_log.cpp
-    source/chat/chat_channel_message_log.hpp
-    source/application/application_system.cpp
-    source/application/application_system.hpp
-    source/application/chat_server_arguments.cpp
-    source/application/chat_server_arguments.hpp
-    source/application/connection_event_handler.cpp
-    source/application/connection_event_handler.hpp
-    source/users/user_store.cpp
-    source/users/user_store.hpp
+    ${SRC}
 )
 
 find_package(SQLiteCpp CONFIG REQUIRED)

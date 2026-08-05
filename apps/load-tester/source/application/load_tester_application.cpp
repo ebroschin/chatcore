@@ -1,6 +1,5 @@
 #include "load_tester_application.hpp"
 
-#include "application_system.hpp"
 #include "client_rpc_system.hpp"
 #include "client_tcp_system.hpp"
 
@@ -15,17 +14,33 @@ LoadTesterApplication::LoadTesterApplication(LoadTesterArguments arguments) noex
   arguments_{std::move(arguments)}
 {}
 
-void LoadTesterApplication::Initialize() {
+void LoadTesterApplication::PrepareContext() {
   logging::Log::SetLogger<logging::modules::SpdlogLogger>();
   logging::Log::SetLogLevel(arguments_.GetLogLevel());
   logging::Log::Info("Starting initialization");
 
-  ctx_.Register<ClientTcpSystem>();
+  ctx_.Register<ClientTcpSystem>(executor_);
 
   auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ClientRpcSystem>(*scheduling_system);
+}
 
-  ctx_.Register<ApplicationSystem>(*this);
+void LoadTesterApplication::OnContextInitialized() {
+  application_thread_ = std::jthread{[this]
+  (const std::stop_token& st)
+  {
+    while (!st.stop_requested()) {
+      executor_.ProcessBlocking();
+    }
+  }};
+
+  root_client_ = std::make_unique<RootClient>(*this, ctx_, "root-tester");
+  root_client_->Prepare();
+}
+
+void LoadTesterApplication::OnContextDeinitialized() {
+  executor_.Stop();
+  application_thread_ = {};
 }
 
 void LoadTesterApplication::HandleTerminate() {

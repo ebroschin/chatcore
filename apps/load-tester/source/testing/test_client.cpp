@@ -1,26 +1,24 @@
 #include "test_client.hpp"
 
-#include "../application/application_system.hpp"
+#include "../application/load_tester_application.hpp"
 
 using namespace std::chrono_literals;
 
 namespace ebroschin::chatcore::tester {
 
-TestClient::TestClient(ApplicationSystem& app_system,
-  ClientTcpSystem& tcp_system,
-  ClientRpcSystem& rpc_system,
-  scheduling::SchedulingSystem& scheduling_system,
+TestClient::TestClient(LoadTesterApplication& app,
+  core::SystemContext& ctx,
   RootClient& root_client,
   const std::string& name,
   api::PersistenceId channel_id) noexcept:
-  Client{app_system, tcp_system, rpc_system, name},
-  scheduling_system_{scheduling_system},
+  Client{app, ctx, name},
+  scheduling_system_{ctx.Require<scheduling::SchedulingSystem>()},
   root_client_{root_client},
   channel_id_{channel_id}
 {}
 
 void TestClient::OnPrepared() {
-  auto& message_handler = app_system_.GetMessageHandler();
+  auto& message_handler = app_.GetMessageHandler();
 
   receive_chat_signal_handle_ = message_handler.Subscribe<api::ReceiveChatMessage>([this]
   (network::ConnectionId connection_id, const api::ReceiveChatMessage& message)

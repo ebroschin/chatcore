@@ -3,8 +3,6 @@
 #include "client.hpp"
 #include "test_client.hpp"
 
-#include <ebroschin/scheduling/scheduling_system.hpp>
-
 #include <unordered_set>
 #include <vector>
 
@@ -12,10 +10,8 @@ namespace ebroschin::chatcore::tester {
 
 class RootClient final : public Client {
 public:
-  explicit RootClient(ApplicationSystem& app_system,
-    ClientTcpSystem& tcp_system,
-    ClientRpcSystem& rpc_system,
-    scheduling::SchedulingSystem& scheduling_system,
+  explicit RootClient(LoadTesterApplication& app,
+    core::SystemContext& ctx,
     const std::string& name) noexcept;
 
   void SetClientReady(network::ConnectionId id);

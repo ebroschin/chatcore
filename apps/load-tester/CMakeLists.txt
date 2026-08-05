@@ -1,20 +1,10 @@
+file(GLOB_RECURSE SRC CONFIGURE_DEPENDS
+    source/*.cpp
+    source/*.hpp
+)
+
 add_executable(chatcore-load-tester
-    source/main.cpp
-    source/application/client_tcp_system.hpp
-    source/application/load_tester_application.cpp
-    source/application/load_tester_application.hpp
-    source/application/application_system.cpp
-    source/application/application_system.hpp
-    source/testing/client.cpp
-    source/testing/client.hpp
-    source/testing/root_client.cpp
-    source/testing/root_client.hpp
-    source/testing/test_client.cpp
-    source/testing/test_client.hpp
-    source/testing/client_report.hpp
-    source/application/load_tester_arguments.cpp
-    source/application/load_tester_arguments.hpp
-    source/application/client_rpc_system.hpp
+    ${SRC}
 )
 
 target_link_libraries(chatcore-load-tester PRIVATE

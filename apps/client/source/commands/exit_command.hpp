@@ -7,7 +7,7 @@
 
 namespace ebroschin::chatcore::client {
 
-class ApplicationSystem;
+class SessionSystem;
 
 class ExitCommand {
 public:
@@ -18,7 +18,7 @@ public:
   void Execute(std::span<std::string_view> arguments) const;
 
 private:
-  ApplicationSystem& application_system_;
+  SessionSystem& session_system_;
 };
 
 }

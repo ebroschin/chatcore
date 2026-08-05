@@ -3,6 +3,7 @@
 #include "../application/client_rpc_system.hpp"
 #include "../application/client_tcp_system.hpp"
 
+#include <ebroschin/core/system_context.hpp>
 #include <ebroschin/network/commons.hpp>
 #include <ebroschin/logging/log.hpp>
 
@@ -11,16 +12,13 @@
 
 namespace ebroschin::chatcore::tester {
 
-class ApplicationSystem;
+class LoadTesterApplication;
 
 class Client : ClientTcpSystem::ConnectionEventHandler {
 public:
   using PrepareCallback = std::function<void(network::ConnectionId)>;
 
-  explicit Client(ApplicationSystem& app_system,
-    ClientTcpSystem& tcp_system,
-    ClientRpcSystem& rpc_system,
-    std::string name) noexcept;
+  explicit Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name) noexcept;
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
@@ -53,7 +51,8 @@ protected:
     });
   }
 
-  ApplicationSystem& app_system_;
+  LoadTesterApplication& app_;
+  core::SystemContext& ctx_;
   ClientTcpSystem& tcp_system_;
   ClientRpcSystem& rpc_system_;
   std::string name_;

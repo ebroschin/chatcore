@@ -2,6 +2,12 @@
 
 [![CI Builds and Tests (Linux, Windows)](https://github.com/ebroschin/chatcore/actions/workflows/ci.yml/badge.svg)](https://github.com/ebroschin/chatcore/actions/workflows/ci.yml)
 
+> [!IMPORTANT]
+> This document is a work in progress. A new version is being developed:
+> - (ebroschin-sdk) Several data races were found with TSan
+> - (ebroschin-sdk) Potentially unsafe use of boost::async_read
+> - Introduction of a chatcore-sdk for native clients (ftxui, qt)
+
 **chatcore** is a multi-threaded C++23 chat system: a TCP server with a length-prefixed JSON protocol, a terminal client (FTXUI), and a load tester for latency under concurrent clients.
 
 Built and tested in CI on Linux and Windows (GCC, Clang, MSVC/clang-cl, MinGW; x64, x86, and arm64).
@@ -113,6 +119,10 @@ Shared chat protocol DTOs currently live in `ebroschin-sdk/chatcore-api`. (will 
 See [`ebroschin-sdk/README.md`](ebroschin-sdk/README.md) for the full module list and usage.
 
 ## Threading/Concurrency Model
+
+> [!NOTE]
+> Add documentation on the new executor pattern (multi producer, single consumer queue)  
+> Executor interface offers control over "which concurrent work is serialized to which queue", allowing multiple processors
 
 Each application uses the same threading model and thread-affine systems.
 

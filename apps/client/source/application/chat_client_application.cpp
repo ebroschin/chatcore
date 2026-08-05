@@ -4,7 +4,6 @@
 #include "../model/model_system.hpp"
 #include "../session/session_system.hpp"
 #include "../ui/ui_system.hpp"
-#include "application_system.hpp"
 #include "client_rpc_system.hpp"
 #include "client_tcp_system.hpp"
 
@@ -13,19 +12,33 @@
 
 namespace ebroschin::chatcore::client {
 
-void ChatClientApplication::Initialize() {
+void ChatClientApplication::PrepareContext() {
   logging::Log::SetLogger<logging::modules::SpdlogLogger>();
   logging::Log::Info("Starting initialization");
 
   auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
-  ctx_.Register<ClientTcpSystem>();
-  ctx_.Register<ApplicationSystem>(*this);
+  ctx_.Register<ClientTcpSystem>(executor_);
 
   ctx_.Register<ClientRpcSystem>(*scheduling_system);
   ctx_.Register<ModelSystem>();
-  ctx_.Register<SessionSystem>();
+  ctx_.Register<SessionSystem>(*this);
   ctx_.Register<ClientCommandsSystem>();
   ctx_.Register<UiSystem>();
+}
+
+void ChatClientApplication::OnContextInitialized() {
+  application_thread_ = std::jthread{[this]
+  (const std::stop_token& st)
+  {
+    while (!st.stop_requested()) {
+      executor_.ProcessBlocking();
+    }
+  }};
+}
+
+void ChatClientApplication::OnContextDeinitialized() {
+  executor_.Stop();
+  application_thread_ = {};
 }
 
 void ChatClientApplication::HandleTerminate() {

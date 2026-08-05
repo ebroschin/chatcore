@@ -1,12 +1,13 @@
 #include "session_store.hpp"
 
 #include "session_system.hpp"
+#include "../application/chat_client_application.hpp"
 
 namespace ebroschin::chatcore::client {
 
-SessionStore::SessionStore(SessionSystem& session_system, ClientRpcSystem& rpc_system) noexcept:
-  session_system_{session_system},
-  rpc_system_{rpc_system}
+SessionStore::SessionStore(ClientRpcSystem& rpc_system, ChatClientApplication& app) noexcept:
+  rpc_system_{rpc_system},
+  app_{app}
 {}
 
 const api::User& SessionStore::CacheUser(const api::User& user) {
@@ -52,8 +53,8 @@ void SessionStore::LoadUsers(network::ConnectionId connection_id,
     callback(users_cache_);
   });
 
-  session_system_.RegisterDefaultErrorHandler(get_user_rpc);
-  session_system_.RegisterDefaultTimeoutHandler(get_user_rpc, "Timed out requesting user");
+  app_.RegisterDefaultErrorHandler(get_user_rpc);
+  app_.RegisterDefaultTimeoutHandler(get_user_rpc, "Timed out requesting user");
   get_user_rpc.Call();
 }
 
@@ -103,8 +104,8 @@ void SessionStore::LoadChannel(network::ConnectionId connection_id,
     callback(cached_channel);
   });
 
-  session_system_.RegisterDefaultErrorHandler(get_channel_rpc);
-  session_system_.RegisterDefaultTimeoutHandler(get_channel_rpc, "Timed out requesting channel");
+  app_.RegisterDefaultErrorHandler(get_channel_rpc);
+  app_.RegisterDefaultTimeoutHandler(get_channel_rpc, "Timed out requesting channel");
   get_channel_rpc.Call();
 }
 

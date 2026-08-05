@@ -1,41 +1,10 @@
+file(GLOB_RECURSE SRC CONFIGURE_DEPENDS
+        source/*.cpp
+        source/*.hpp
+)
+
 add_executable(chatcore-client
-    source/main.cpp
-    source/application/chat_client_application.cpp
-    source/application/chat_client_application.hpp
-    source/application/application_system.cpp
-    source/application/application_system.hpp
-    source/ui/ui_system.cpp
-    source/ui/ui_system.hpp
-    source/commands/connect_command.cpp
-    source/commands/connect_command.hpp
-    source/commands/add_user_command.cpp
-    source/commands/add_user_command.hpp
-    source/session/session_system.cpp
-    source/session/session_system.hpp
-    source/commands/client_commands_system.hpp
-    source/commands/login_command.cpp
-    source/model/model_system.cpp
-    source/model/model_system.hpp
-    source/commands/join_channel_command.cpp
-    source/commands/join_channel_command.hpp
-    source/application/client_tcp_system.hpp
-    source/application/client_rpc_system.hpp
-    source/commands/get_channels_command.cpp
-    source/commands/get_channels_command.hpp
-    source/commands/add_channel_command.hpp
-    source/commands/add_channel_command.cpp
-    source/session/connection_event_handler.cpp
-    source/session/connection_event_handler.hpp
-    source/commands/logout_command.hpp
-    source/commands/logout_command.cpp
-    source/commands/exit_command.hpp
-    source/commands/exit_command.cpp
-    source/commands/help_command.cpp
-    source/commands/help_command.hpp
-    source/ui/ftxui_logger.cpp
-    source/ui/ftxui_logger.hpp
-    source/session/session_store.cpp
-    source/session/session_store.hpp
+        ${SRC}
 )
 
 find_package(ftxui CONFIG REQUIRED)

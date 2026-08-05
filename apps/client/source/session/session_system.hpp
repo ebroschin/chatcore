@@ -1,12 +1,11 @@
 #pragma once
 
-#include "../application/application_system.hpp"
 #include "../application/client_rpc_system.hpp"
 #include "../model/model_system.hpp"
+#include "../application/chat_client_application.hpp"
 #include "connection_event_handler.hpp"
 #include "session_store.hpp"
 
-#include <ebroschin/logging/log.hpp>
 #include <ebroschin/chat/api.hpp>
 #include <ebroschin/core/system.hpp>
 
@@ -16,7 +15,7 @@ namespace ebroschin::chatcore::client {
 
 class SessionSystem final : public core::System {
 public:
-  explicit SessionSystem(const core::SystemContext& ctx) noexcept;
+  explicit SessionSystem(const core::SystemContext& ctx, ChatClientApplication& app) noexcept;
 
   void Initialize() override;
 
@@ -28,13 +27,14 @@ public:
   void JoinChannel(api::PersistenceId id);
   void CreateChannel(std::string name);
   void GetChannels();
+  void Quit() const;
 
 private:
   bool ValidateSession() const;
 
   void LoadLatestChatLog(api::PersistenceId channel_id);
-  void HandleErrorEvent(const api::ErrorMessage& message);
-  void HandlePrintEvent(const api::PrintMessage& message);
+  void HandleErrorEvent(const api::ErrorMessage& message) const;
+  void HandlePrintEvent(const api::PrintMessage& message) const;
   void HandleUserLogoutEvent(const api::UserLogoutEventMessage& message);
   void HandleUserLoginEvent(const api::UserLoginEventMessage& message);
   void HandleChannelCreateEvent(const api::ChannelCreateEventMessage& message);
@@ -44,45 +44,15 @@ private:
 
   void ProcessChatMessage(const api::User& user, const std::string& content) const;
 
-  template <typename TMessage>
-  void RegisterEventMessageHandler(void(SessionSystem::*method)(const TMessage&)) {
-    auto& signals = app_system_.GetMessageHandler();
-    auto subscription = signals.Subscribe<TMessage>([this, method]
-    (network::ConnectionId, const TMessage& message)
-    {
-      (this->*method)(message);
-    });
-
-    subscriptions_.emplace_back(std::move(subscription));
-  }
-
-  template <typename RpcCall>
-  void RegisterDefaultErrorHandler(RpcCall&& rpcCall) const {
-    rpcCall.OnError([](const api::ErrorResponseMessage& response) {
-      logging::Log::Error() << response.value;
-    });
-  }
-
-  template <typename RpcCall>
-  void RegisterDefaultTimeoutHandler(RpcCall&& rpcCall, const std::string& message) const {
-    using namespace std::chrono_literals;
-
-    rpcCall.SetTimeoutDuration(5s);
-    rpcCall.OnTimeout([message] {
-      logging::Log::Error() << message;
-    });
-  }
-
+  ChatClientApplication& app_;
   ClientTcpSystem& tcp_system_;
-  ApplicationSystem& app_system_;
   ModelSystem& model_system_;
   ClientRpcSystem& rpc_system_;
 
   std::optional<network::ConnectionId> connection_id_{std::nullopt};
   std::optional<api::User> user_{std::nullopt};
-  std::vector<utility::SignalSubscription> subscriptions_{};
 
-  SessionStore store_{*this, rpc_system_};
+  SessionStore store_{rpc_system_, app_};
   ConnectionEventHandler connection_event_handler_{*this};
 
   friend class ConnectionEventHandler;

@@ -1,6 +1,6 @@
 #include "session_system.hpp"
 
-#include "../application/application_system.hpp"
+#include "../application/chat_client_application.hpp"
 #include "../model/model_system.hpp"
 #include "../ui/ui_system.hpp"
 
@@ -9,23 +9,23 @@
 
 namespace ebroschin::chatcore::client {
 
-SessionSystem::SessionSystem(const core::SystemContext& ctx) noexcept:
+SessionSystem::SessionSystem(const core::SystemContext& ctx, ChatClientApplication& app) noexcept:
   System{ctx},
+  app_{app},
   tcp_system_{ctx.Require<ClientTcpSystem>()},
-  app_system_{ctx.Require<ApplicationSystem>()},
   model_system_{ctx.Require<ModelSystem>()},
   rpc_system_{ctx.Require<ClientRpcSystem>()}
 { }
 
 void SessionSystem::Initialize() {
-  RegisterEventMessageHandler(&SessionSystem::HandleErrorEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandlePrintEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandleUserLoginEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandleUserLogoutEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandleReceiveChatEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandleChannelCreateEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandleChannelJoinEvent);
-  RegisterEventMessageHandler(&SessionSystem::HandleChannelLeaveEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleErrorEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandlePrintEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleUserLoginEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleUserLogoutEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleReceiveChatEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleChannelCreateEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleChannelJoinEvent);
+  app_.RegisterEventMessageHandler(this, &SessionSystem::HandleChannelLeaveEvent);
 }
 
 bool SessionSystem::ValidateSession() const {
@@ -48,8 +48,8 @@ void SessionSystem::Login(std::string name, std::string password) {
     model_system_.AddLine("[Client] Logged in as " + user_->name);
   });
 
-  RegisterDefaultErrorHandler(authenticate_user_rpc);
-  RegisterDefaultTimeoutHandler(authenticate_user_rpc, "Timed out authenticating user");
+  app_.RegisterDefaultErrorHandler(authenticate_user_rpc);
+  app_.RegisterDefaultTimeoutHandler(authenticate_user_rpc, "Timed out authenticating user");
   authenticate_user_rpc.Call();
 }
 
@@ -67,8 +67,8 @@ void SessionSystem::Logout() {
     model_system_.AddLine("[Client] Logged out as " + user_copy.name);
   });
 
-  RegisterDefaultErrorHandler(logout_rpc);
-  RegisterDefaultTimeoutHandler(logout_rpc, "Timed out logging out user");
+  app_.RegisterDefaultErrorHandler(logout_rpc);
+  app_.RegisterDefaultTimeoutHandler(logout_rpc, "Timed out logging out user");
   logout_rpc.Call();
 }
 
@@ -88,8 +88,8 @@ void SessionSystem::AddUser(std::string name, std::string password) {
     model_system_.AddLine("[Client] User successfully created: " + response.user.name);
   });
 
-  RegisterDefaultErrorHandler(create_user_rpc);
-  RegisterDefaultTimeoutHandler(create_user_rpc, "Timed out creating user");
+  app_.RegisterDefaultErrorHandler(create_user_rpc);
+  app_.RegisterDefaultTimeoutHandler(create_user_rpc, "Timed out creating user");
   create_user_rpc.Call();
 }
 
@@ -110,8 +110,8 @@ void SessionSystem::GetChannels() {
     model_system_.AddLine("[Client] " + stream.str());
   });
 
-  RegisterDefaultErrorHandler(get_channels_rpc);
-  RegisterDefaultTimeoutHandler(get_channels_rpc, "Timed out requesting channels");
+  app_.RegisterDefaultErrorHandler(get_channels_rpc);
+  app_.RegisterDefaultTimeoutHandler(get_channels_rpc, "Timed out requesting channels");
   get_channels_rpc.Call();
 }
 
@@ -126,8 +126,8 @@ void SessionSystem::CreateChannel(std::string name) {
     model_system_.AddLine("[Client] Created channel:\n" + std::to_string(response.channel.id) + ": " + response.channel.name);
   });
 
-  RegisterDefaultErrorHandler(create_channel_rpc);
-  RegisterDefaultTimeoutHandler(create_channel_rpc, "Timed out creating channel");
+  app_.RegisterDefaultErrorHandler(create_channel_rpc);
+  app_.RegisterDefaultTimeoutHandler(create_channel_rpc, "Timed out creating channel");
   create_channel_rpc.Call();
 }
 
@@ -151,8 +151,8 @@ void SessionSystem::JoinChannel(api::PersistenceId id) {
     });
   });
 
-  RegisterDefaultErrorHandler(join_channel_rpc);
-  RegisterDefaultTimeoutHandler(join_channel_rpc, "Timed out joining channel");
+  app_.RegisterDefaultErrorHandler(join_channel_rpc);
+  app_.RegisterDefaultTimeoutHandler(join_channel_rpc, "Timed out joining channel");
   join_channel_rpc.Call();
 }
 
@@ -196,17 +196,21 @@ void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
     });
   });
 
-  RegisterDefaultErrorHandler(get_chats_rpc);
-  RegisterDefaultTimeoutHandler(get_chats_rpc, "Timed out requesting chatlog");
+  app_.RegisterDefaultErrorHandler(get_chats_rpc);
+  app_.RegisterDefaultTimeoutHandler(get_chats_rpc, "Timed out requesting chatlog");
   get_chats_rpc.Call();
 }
 
-void SessionSystem::HandleErrorEvent(const api::ErrorMessage& message) {
+void SessionSystem::Quit() const {
+  app_.Quit();
+}
+
+void SessionSystem::HandleErrorEvent(const api::ErrorMessage& message) const {
   if (!connection_id_) return;
   logging::Log::Error() << message.value;
 }
 
-void SessionSystem::HandlePrintEvent(const api::PrintMessage& message) {
+void SessionSystem::HandlePrintEvent(const api::PrintMessage& message) const {
   if (!connection_id_) return;
   model_system_.AddLine("[Client] Server says: " + message.value);
 }

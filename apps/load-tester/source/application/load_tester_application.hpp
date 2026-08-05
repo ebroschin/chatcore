@@ -1,8 +1,11 @@
 #pragma once
 
+#include "client_tcp_system.hpp"
 #include "load_tester_arguments.hpp"
+#include "../testing/root_client.hpp"
 
 #include <ebroschin/core/application.hpp>
+#include <ebroschin/core/synchronization/queued_executor.hpp>
 
 namespace ebroschin::chatcore::tester {
 
@@ -13,12 +16,21 @@ public:
   [[nodiscard]] const LoadTesterArguments& GetArguments() const noexcept
   { return arguments_; }
 
+  [[nodiscard]] ClientTcpSystem::MessageHandler& GetMessageHandler() const noexcept
+  { return ctx_.Require<ClientTcpSystem>().GetMessageHandler(); }
+
 protected:
-  void Initialize() override;
+  void PrepareContext() override;
+  void OnContextInitialized() override;
+  void OnContextDeinitialized() override;
   void HandleTerminate() override;
 
 private:
   LoadTesterArguments arguments_;
+
+  core::QueuedExecutor executor_{};
+  std::jthread application_thread_{};
+  std::unique_ptr<RootClient> root_client_{};
 };
 
 }

@@ -1,6 +1,5 @@
 #include "add_user_command.hpp"
 
-#include "../application/application_system.hpp"
 #include "../session/session_system.hpp"
 
 #include <ebroschin/core/system_context.hpp>

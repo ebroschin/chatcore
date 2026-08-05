@@ -1,6 +1,6 @@
 #include "chat_server_system.hpp"
 
-#include "../application/application_system.hpp"
+#include "../application/chat_server_application.hpp"
 #include "../application/chat_persistence_system.hpp"
 #include "../users/user_server_system.hpp"
 #include "adapters/chat_persistence_adapter.hpp"
@@ -13,9 +13,9 @@ using namespace std::chrono_literals;
 
 namespace ebroschin::chatcore::server {
 
-ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx) noexcept:
+ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx, ChatServerApplication& app) noexcept:
   System{ctx},
-  app_system_{ctx_.Require<ApplicationSystem>()},
+  app_{app},
   adapter_{ctx_.Require<ChatPersistenceSystem>().Require<ChatPersistenceAdapter>()},
   tcp_system_{ctx_.Require<ChatServerTcpSystem>()},
   user_system_{ctx_.Require<UserServerSystem>()},
@@ -23,14 +23,14 @@ ChatServerSystem::ChatServerSystem(const core::SystemContext& ctx) noexcept:
 {}
 
 void ChatServerSystem::Initialize() {
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleWriteChatMessage);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleCreateChatChannel);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleJoinChatChannel);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChats);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannels);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannel);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleShutdown);
-  app_system_.RegisterMessageHandler(this, &ChatServerSystem::HandleLogout);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleWriteChatMessage);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleCreateChatChannel);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleJoinChatChannel);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChats);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannels);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleGetChatChannel);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleShutdown);
+  app_.RegisterMessageHandler(this, &ChatServerSystem::HandleLogout);
 
   channel_store_.Prewarm();
   message_store_.Prewarm();
@@ -51,7 +51,7 @@ void ChatServerSystem::HandleJoinChatChannel(network::ConnectionId connection_id
 
   const auto potential_channel = channel_store_.GetChannel(message.channel_id);
   if (!potential_channel) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "Channel not found.");
+    app_.HandleRpcError(connection_id, message.request_id, "Channel not found.");
     return;
   }
 
@@ -104,7 +104,7 @@ void ChatServerSystem::HandleCreateChatChannel(network::ConnectionId connection_
   if (!channel) {
     const auto cached_channel = channel_store_.GetChannel(message.name);
     if (!cached_channel) {
-      app_system_.HandleRpcError(connection_id, message.request_id, "Unable to create channel.");
+      app_.HandleRpcError(connection_id, message.request_id, "Unable to create channel.");
       return;
     }
 
@@ -120,7 +120,7 @@ void ChatServerSystem::HandleCreateChatChannel(network::ConnectionId connection_
 
 void ChatServerSystem::HandleShutdown(network::ConnectionId connection_id, const api::ShutdownMessage&) {
   if (!user_system_.ValidateSession(connection_id)) return;
-  app_system_.Shutdown();
+  app_.Quit();
 }
 
 void ChatServerSystem::HandleGetChats(network::ConnectionId connection_id, const api::GetChatsRequestMessage& message) {
@@ -143,7 +143,7 @@ void ChatServerSystem::HandleGetChatChannel(network::ConnectionId connection_id,
 
   const auto channel = channel_store_.GetChannel(message.channel_id);
   if (!channel) {
-    app_system_.HandleRpcError(connection_id, message.request_id, "Channel not found.");
+    app_.HandleRpcError(connection_id, message.request_id, "Channel not found.");
     return;
   }
 

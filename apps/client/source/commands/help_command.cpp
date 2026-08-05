@@ -1,6 +1,5 @@
 #include "help_command.hpp"
 
-#include "../application/application_system.hpp"
 #include "client_commands_system.hpp"
 
 #include <ebroschin/core/system_context.hpp>

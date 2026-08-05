@@ -12,15 +12,12 @@
 
 namespace ebroschin::chatcore::tester {
 
-class ApplicationSystem;
 class RootClient;
 
 class TestClient final : public Client {
 public:
-  explicit TestClient(ApplicationSystem& app_system,
-    ClientTcpSystem& tcp_system,
-    ClientRpcSystem& rpc_system,
-    scheduling::SchedulingSystem& scheduling_system,
+  explicit TestClient(LoadTesterApplication& app,
+    core::SystemContext& ctx,
     RootClient& root_client,
     const std::string& name,
     api::PersistenceId channel_id) noexcept;
