@@ -14,11 +14,12 @@ namespace ebroschin::chatcore::tester {
 
 class LoadTesterApplication;
 
-class Client : ClientTcpSystem::ConnectionEventHandler {
+class Client {
 public:
   using PrepareCallback = std::function<void(network::ConnectionId)>;
 
   explicit Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name) noexcept;
+  virtual ~Client() = default;
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
@@ -63,10 +64,7 @@ protected:
 private:
   static constexpr std::string_view TestPassword = "123";
 
-  void OnConnected(network::ConnectionId connection_id) override;
-  void OnConnectionFailed(const network::modules::BoostTcpResolverParameters&) override {}
-  void OnDisconnected(network::ConnectionId) override {}
-
+  void OnConnected(network::ConnectionId connection_id);
   void OnUserEnsured();
 };
 

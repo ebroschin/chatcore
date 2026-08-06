@@ -29,17 +29,17 @@ void SessionSystem::Initialize() {
 }
 
 bool SessionSystem::ValidateSession() const {
-  return connection_id_ && user_;
+  return app_.GetConnectionId() && user_;
 }
 
-void SessionSystem::Connect(std::string address, std::string port) {
-  tcp_system_.Connect({std::move(address), std::move(port)}, &connection_event_handler_);
+void SessionSystem::Connect(std::string address, std::string port) const {
+  tcp_system_.Connect({std::move(address), std::move(port)});
 }
 
 void SessionSystem::Login(std::string name, std::string password) {
-  if (!connection_id_) return;
+  if (!app_.GetConnectionId()) return;
 
-  auto authenticate_user_rpc = rpc_system_.Prepare<api::AuthenticateUserRequestMessage>(*connection_id_, std::move(name), std::move(password));
+  auto authenticate_user_rpc = rpc_system_.Prepare<api::AuthenticateUserRequestMessage>(*app_.GetConnectionId(), std::move(name), std::move(password));
   authenticate_user_rpc.OnSuccess([this]
   (const api::AuthenticateUserResponseMessage& response)
   {
@@ -60,7 +60,7 @@ void SessionSystem::Logout() {
   user_.reset();
   model_system_.SetChannelName(std::nullopt);
 
-  auto logout_rpc = rpc_system_.Prepare<api::LogoutRequestMessage>(*connection_id_);
+  auto logout_rpc = rpc_system_.Prepare<api::LogoutRequestMessage>(*app_.GetConnectionId());
   logout_rpc.OnSuccess([this, user_copy]
   (const api::LogoutResponseMessage&)
   {
@@ -73,14 +73,14 @@ void SessionSystem::Logout() {
 }
 
 void SessionSystem::Send(std::string message) const {
-  if (!connection_id_) return;
-  tcp_system_.Send<api::WriteChatMessage>(*connection_id_, {std::move(message)});
+  if (!app_.GetConnectionId()) return;
+  tcp_system_.Send<api::WriteChatMessage>(*app_.GetConnectionId(), {std::move(message)});
 }
 
 void SessionSystem::AddUser(std::string name, std::string password) {
-  if (!connection_id_) return;
+  if (!app_.GetConnectionId()) return;
 
-  auto create_user_rpc = rpc_system_.Prepare<api::CreateUserRequestMessage>(*connection_id_, std::move(name), std::move(password));
+  auto create_user_rpc = rpc_system_.Prepare<api::CreateUserRequestMessage>(*app_.GetConnectionId(), std::move(name), std::move(password));
   create_user_rpc.OnSuccess([this]
   (const api::CreateUserResponseMessage& response)
   {
@@ -94,9 +94,9 @@ void SessionSystem::AddUser(std::string name, std::string password) {
 }
 
 void SessionSystem::GetChannels() {
-  if (!connection_id_) return;
+  if (!app_.GetConnectionId()) return;
 
-  auto get_channels_rpc = rpc_system_.Prepare<api::GetChatChannelsRequestMessage>(*connection_id_);
+  auto get_channels_rpc = rpc_system_.Prepare<api::GetChatChannelsRequestMessage>(*app_.GetConnectionId());
   get_channels_rpc.OnSuccess([this]
   (const api::GetChatChannelsResponseMessage& response)
   {
@@ -118,7 +118,7 @@ void SessionSystem::GetChannels() {
 void SessionSystem::CreateChannel(std::string name) {
   if (!ValidateSession()) return;
 
-  auto create_channel_rpc = rpc_system_.Prepare<api::CreateChannelRequestMessage>(*connection_id_, std::move(name));
+  auto create_channel_rpc = rpc_system_.Prepare<api::CreateChannelRequestMessage>(*app_.GetConnectionId(), std::move(name));
   create_channel_rpc.OnSuccess([this]
   (const api::CreateChannelResponseMessage& response)
   {
@@ -134,13 +134,13 @@ void SessionSystem::CreateChannel(std::string name) {
 void SessionSystem::JoinChannel(api::PersistenceId id) {
   if (!ValidateSession()) return;
 
-  auto join_channel_rpc = rpc_system_.Prepare<api::JoinChatChannelRequestMessage>(*connection_id_, id);
+  auto join_channel_rpc = rpc_system_.Prepare<api::JoinChatChannelRequestMessage>(*app_.GetConnectionId(), id);
   join_channel_rpc.OnSuccess([this]
   (const api::JoinChatChannelResponseMessage& response)
   {
     if (!ValidateSession()) return;
 
-    store_.LoadChannel(*connection_id_, response.channel_id, [this]
+    store_.LoadChannel(*app_.GetConnectionId(), response.channel_id, [this]
     (std::optional<std::reference_wrapper<const api::ChatChannel>> channel)
     {
       if (!channel) return;
@@ -168,7 +168,7 @@ void SessionSystem::ProcessChatMessage(const api::User& user, const std::string&
 void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
   if (!ValidateSession()) return;
 
-  auto get_chats_rpc = rpc_system_.Prepare<api::GetChatsRequestMessage>(*connection_id_, channel_id, 20u);
+  auto get_chats_rpc = rpc_system_.Prepare<api::GetChatsRequestMessage>(*app_.GetConnectionId(), channel_id, 20u);
   get_chats_rpc.OnSuccess([this]
   (const api::GetChatsResponseMessage& response)
   {
@@ -184,7 +184,7 @@ void SessionSystem::LoadLatestChatLog(api::PersistenceId channel_id) {
     std::ranges::sort(user_ids);
     user_ids.erase(std::ranges::unique(user_ids).begin(), user_ids.end());
 
-    store_.LoadUsers(*connection_id_, user_ids, [this, messages = response.messages]
+    store_.LoadUsers(*app_.GetConnectionId(), user_ids, [this, messages = response.messages]
     (SessionStore::UsersView view)
     {
       for (const auto& chat_message : messages) {
@@ -205,13 +205,17 @@ void SessionSystem::Quit() const {
   app_.Quit();
 }
 
+void SessionSystem::ResetUser() {
+  user_.reset();
+}
+
 void SessionSystem::HandleErrorEvent(const api::ErrorMessage& message) const {
-  if (!connection_id_) return;
+  if (!app_.GetConnectionId()) return;
   logging::Log::Error() << message.value;
 }
 
 void SessionSystem::HandlePrintEvent(const api::PrintMessage& message) const {
-  if (!connection_id_) return;
+  if (!app_.GetConnectionId()) return;
   model_system_.AddLine("[Client] Server says: " + message.value);
 }
 
@@ -219,7 +223,7 @@ void SessionSystem::HandleUserLogoutEvent(const api::UserLogoutEventMessage& mes
   if (!ValidateSession()) return;
   if (user_->id == message.user_id) return;
 
-  store_.LoadUser(*connection_id_, message.user_id, [this]
+  store_.LoadUser(*app_.GetConnectionId(), message.user_id, [this]
   (std::optional<std::reference_wrapper<const api::User>> user)
   {
     if (!user) return;
@@ -231,7 +235,7 @@ void SessionSystem::HandleUserLoginEvent(const api::UserLoginEventMessage& messa
   if (!ValidateSession()) return;
   if (user_->id == message.user_id) return;
 
-  store_.LoadUser(*connection_id_, message.user_id, [this]
+  store_.LoadUser(*app_.GetConnectionId(), message.user_id, [this]
   (std::optional<std::reference_wrapper<const api::User>> user)
   {
     if (!user) return;
@@ -242,7 +246,7 @@ void SessionSystem::HandleUserLoginEvent(const api::UserLoginEventMessage& messa
 void SessionSystem::HandleReceiveChatEvent(const api::ReceiveChatMessage& message) {
   if (!ValidateSession()) return;
 
-  store_.LoadUser(*connection_id_, message.user_id, [this, content = message.content]
+  store_.LoadUser(*app_.GetConnectionId(), message.user_id, [this, content = message.content]
   (std::optional<std::reference_wrapper<const api::User>> user)
   {
     if (!user) return;
@@ -255,7 +259,7 @@ void SessionSystem::HandleChannelCreateEvent(const api::ChannelCreateEventMessag
   if (user_->id == message.user_id) return;
 
   store_.CacheChannel(message.channel);
-  store_.LoadUser(*connection_id_, message.user_id, [this, channel = message.channel]
+  store_.LoadUser(*app_.GetConnectionId(), message.user_id, [this, channel = message.channel]
   (std::optional<std::reference_wrapper<const api::User>> user)
   {
     if (!user) return;
@@ -267,13 +271,13 @@ void SessionSystem::HandleChannelJoinEvent(const api::ChannelJoinEventMessage& m
   if (!ValidateSession()) return;
   if (user_->id == message.user_id) return;
 
-  store_.LoadChannel(*connection_id_, message.channel_id, [this, user_id = message.user_id]
+  store_.LoadChannel(*app_.GetConnectionId(), message.channel_id, [this, user_id = message.user_id]
   (std::optional<std::reference_wrapper<const api::ChatChannel>> channel)
   {
     if (!ValidateSession()) return;
     if (!channel) return;
 
-    store_.LoadUser(*connection_id_, user_id, [this, channel_name = channel->get().name]
+    store_.LoadUser(*app_.GetConnectionId(), user_id, [this, channel_name = channel->get().name]
     (std::optional<std::reference_wrapper<const api::User>> user)
     {
       if (!user) return;
@@ -286,13 +290,13 @@ void SessionSystem::HandleChannelLeaveEvent(const api::ChannelLeaveEventMessage&
   if (!ValidateSession()) return;
   if (user_->id == message.user_id) return;
 
-  store_.LoadChannel(*connection_id_, message.channel_id, [this, user_id = message.user_id]
+  store_.LoadChannel(*app_.GetConnectionId(), message.channel_id, [this, user_id = message.user_id]
   (std::optional<std::reference_wrapper<const api::ChatChannel>> channel)
   {
     if (!ValidateSession()) return;
     if (!channel) return;
 
-    store_.LoadUser(*connection_id_, user_id, [this, channel_name = channel->get().name]
+    store_.LoadUser(*app_.GetConnectionId(), user_id, [this, channel_name = channel->get().name]
     (std::optional<std::reference_wrapper<const api::User>> user)
     {
       if (!user) return;

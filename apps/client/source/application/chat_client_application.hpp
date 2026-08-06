@@ -18,6 +18,10 @@ public:
   void OnContextDeinitialized() override;
   void HandleTerminate() override;
 
+  [[nodiscard]] std::optional<network::ConnectionId> GetConnectionId() const noexcept {
+    return connection_id_;
+  }
+
   template <typename TInstance, typename TMessage>
   void RegisterEventMessageHandler(TInstance* instance, void(TInstance::*method)(const TMessage&) const) {
     RegisterEventMessageHandlerImpl<TMessage>(instance, method);
@@ -48,8 +52,7 @@ public:
 private:
   template <typename TMessage, typename TInstance, typename TMethod>
   void RegisterEventMessageHandlerImpl(TInstance* instance, TMethod method) {
-    auto& signals = ctx_.Require<ClientTcpSystem>().GetMessageHandler(); //TODO store ref
-    auto subscription = signals.Subscribe<TMessage>([instance, method]
+    auto subscription = ctx_.Require<ClientTcpSystem>().Subscribe<TMessage>([instance, method]
     (const network::NetworkEvent<TMessage>& event)
     {
       (instance->*method)(event.data);
@@ -61,6 +64,7 @@ private:
   core::QueuedExecutor executor_{};
   std::jthread application_thread_{};
   std::vector<utility::SignalSubscription> subscriptions_{};
+  std::optional<network::ConnectionId> connection_id_{std::nullopt};
 };
 
 }

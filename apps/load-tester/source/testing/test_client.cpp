@@ -18,9 +18,7 @@ TestClient::TestClient(LoadTesterApplication& app,
 {}
 
 void TestClient::OnPrepared() {
-  auto& message_handler = app_.GetMessageHandler();
-
-  receive_chat_signal_handle_ = message_handler.Subscribe<api::ReceiveChatMessage>([this]
+  receive_chat_signal_handle_ = tcp_system_.Subscribe<api::ReceiveChatMessage>([this]
   (const network::NetworkEvent<api::ReceiveChatMessage>& event)
   {
     if (!event.connection_id) return;

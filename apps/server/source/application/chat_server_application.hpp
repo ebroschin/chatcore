@@ -1,10 +1,12 @@
 #pragma once
 
 #include "chat_server_arguments.hpp"
-#include "connection_event_handler.hpp"
+#include "chat_tcp_system.hpp"
 
 #include <ebroschin/core/application.hpp>
 #include <ebroschin/core/synchronization/queued_executor.hpp>
+#include <ebroschin/network/commons.hpp>
+#include <ebroschin/utility/signal.hpp>
 
 #include <thread>
 
@@ -29,6 +31,12 @@ public:
     subscriptions_.emplace_back(std::move(subscription));
   }
 
+  template <typename TEvent>
+  void RegisterMessageHandler(std::function<void(const network::NetworkEvent<TEvent>&)> handler) {
+    auto subscription = ctx_.Require<ChatServerTcpSystem>().Subscribe<TEvent>(std::move(handler));
+    subscriptions_.emplace_back(std::move(subscription));
+  }
+
 protected:
   void PrepareContext() override;
   void OnContextInitialized() override;
@@ -39,7 +47,6 @@ private:
   ChatServerArguments arguments_;
   core::QueuedExecutor executor_{};
   std::jthread application_thread_{};
-  std::unique_ptr<ConnectionEventHandler> connection_event_handler_{};
   std::vector<utility::SignalSubscription> subscriptions_{};
 };
 

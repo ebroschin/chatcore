@@ -16,9 +16,6 @@ public:
   [[nodiscard]] const LoadTesterArguments& GetArguments() const noexcept
   { return arguments_; }
 
-  [[nodiscard]] ClientTcpSystem::EventHandler& GetMessageHandler() const noexcept
-  { return ctx_.Require<ClientTcpSystem>().GetMessageHandler(); }
-
 protected:
   void PrepareContext() override;
   void OnContextInitialized() override;

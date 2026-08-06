@@ -18,7 +18,15 @@ void Client::Quit() const {
 
 void Client::Prepare() {
   const auto& arguments = app_.GetArguments();
-  tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, this);
+  tcp_system_.Connect({arguments.GetIp(), arguments.GetPort()}, [this](network::tcp::ConnectionResult result) {
+    if (!result.Ok()) {
+      logging::Log::Error() << "[Client][" << name_ << "] " << result.error;
+      Quit();
+      return;
+    }
+
+    OnConnected(*result.connection_id);
+  });
 }
 
 void Client::OnConnected(network::ConnectionId connection_id) {

@@ -70,7 +70,7 @@
     },
     {
       "name": "windows-clang-x86-test-all",
-      "inherits": ["windows-release", "windows-x86", "windows-clang", "test-all"]
+      "inherits": ["windows-release", "windows-x86", "windows-clang-x86", "test-all"]
     },
     {
       "name": "windows-clang-arm64-test-all",

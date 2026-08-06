@@ -34,6 +34,31 @@ void ChatClientApplication::OnContextInitialized() {
       executor_.ProcessBlocking();
     }
   }};
+
+  auto& tcp_system = ctx_.Require<ClientTcpSystem>();
+  auto subscription = tcp_system.Subscribe<network::tcp::ConnectionCreated>([this](const auto& event) {
+    if (!event.connection_id) {
+      logging::Log::Info() << "Connection to chat server failed.";
+      return;
+    }
+
+    connection_id_.emplace(*event.connection_id);
+    logging::Log::Info() << "Successfully connected to chat server.";
+  });
+  subscriptions_.emplace_back(std::move(subscription));
+
+  subscription = tcp_system.Subscribe<network::tcp::ConnectionFailed>([](const auto& event) {
+    logging::Log::Error() << "Connection to chat server failed: " << event.data.error;
+  });
+  subscriptions_.emplace_back(std::move(subscription));
+
+  subscription = tcp_system.Subscribe<network::tcp::ConnectionRemoved>([this](const auto&) {
+    connection_id_.reset();
+    ctx_.Require<SessionSystem>().ResetUser();
+    logging::Log::Info() << "Lost connection to chat server.";
+    ctx_.Require<ModelSystem>().SetChannelName(std::nullopt);
+  });
+  subscriptions_.emplace_back(std::move(subscription));
 }
 
 void ChatClientApplication::OnContextDeinitialized() {

@@ -44,9 +44,17 @@ void ChatServerApplication::OnContextInitialized() {
     }
   }};
 
-  connection_event_handler_ = std::make_unique<ConnectionEventHandler>(ctx_.Require<UserServerSystem>());
-  ctx_.Require<ChatServerTcpSystem>().Connect({arguments_.GetIp(), arguments_.GetPort()}, connection_event_handler_.get());
+  RegisterMessageHandler<network::tcp::ConnectionCreated>([](const auto& event) {
+    logging::Log::Verbose() << "X Client with id " << *event.connection_id << " has connected";
+  });
 
+  RegisterMessageHandler<network::tcp::ConnectionRemoved>([this](const auto& event) {
+    auto connection_id = *event.connection_id;
+    logging::Log::Verbose() << "X Client with id " << connection_id << " has disconnected";
+    ctx_.Require<UserServerSystem>().RemoveSession(connection_id);
+  });
+
+  ctx_.Require<ChatServerTcpSystem>().Connect({arguments_.GetIp(), arguments_.GetPort()});
   logging::Log::Info("Accepting clients");
 }
 

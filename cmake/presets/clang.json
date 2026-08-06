@@ -27,6 +27,15 @@
         "CMAKE_CXX_COMPILER": "clang-cl",
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>"
       }
+    },
+    {
+      "name": "windows-clang-x86",
+      "hidden": true,
+      "inherits": "windows-clang",
+      "cacheVariables": {
+        "CMAKE_C_FLAGS": "-m32",
+        "CMAKE_CXX_FLAGS": "/EHsc -m32"
+      }
     }
   ]
 }

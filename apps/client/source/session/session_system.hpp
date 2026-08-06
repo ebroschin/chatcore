@@ -3,7 +3,6 @@
 #include "../application/client_rpc_system.hpp"
 #include "../model/model_system.hpp"
 #include "../application/chat_client_application.hpp"
-#include "connection_event_handler.hpp"
 #include "session_store.hpp"
 
 #include <ebroschin/chat/api.hpp>
@@ -19,7 +18,7 @@ public:
 
   void Initialize() override;
 
-  void Connect(std::string address, std::string port);
+  void Connect(std::string address, std::string port) const;
   void Login(std::string name, std::string password);
   void Logout();
   void Send(std::string message) const;
@@ -28,6 +27,8 @@ public:
   void CreateChannel(std::string name);
   void GetChannels();
   void Quit() const;
+
+  void ResetUser();
 
 private:
   bool ValidateSession() const;
@@ -49,13 +50,9 @@ private:
   ModelSystem& model_system_;
   ClientRpcSystem& rpc_system_;
 
-  std::optional<network::ConnectionId> connection_id_{std::nullopt};
   std::optional<api::User> user_{std::nullopt};
-
   SessionStore store_{rpc_system_, app_};
-  ConnectionEventHandler connection_event_handler_{*this};
 
-  friend class ConnectionEventHandler;
   friend class SessionStore;
 };
 
