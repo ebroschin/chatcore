@@ -50,9 +50,9 @@ private:
   void RegisterEventMessageHandlerImpl(TInstance* instance, TMethod method) {
     auto& signals = ctx_.Require<ClientTcpSystem>().GetMessageHandler(); //TODO store ref
     auto subscription = signals.Subscribe<TMessage>([instance, method]
-    (network::ConnectionId, const TMessage& message)
+    (const network::NetworkEvent<TMessage>& event)
     {
-      (instance->*method)(message);
+      (instance->*method)(event.data);
     });
 
     subscriptions_.emplace_back(std::move(subscription));

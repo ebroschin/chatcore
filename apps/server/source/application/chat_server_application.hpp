@@ -22,9 +22,11 @@ public:
   template <typename TSystem, typename TMessage>
   void RegisterMessageHandler(TSystem* system, void(TSystem::*method)(network::ConnectionId, const TMessage&)) {
     if (system == nullptr) return;
-    ctx_.Require<ChatServerTcpSystem>().GetMessageHandler().Register<TMessage>([system, method](network::ConnectionId id, const TMessage& message) {
-      (system->*method)(id, message);
+    auto subscription = ctx_.Require<ChatServerTcpSystem>().Subscribe<TMessage>([system, method](const network::NetworkEvent<TMessage>& event) {
+      (system->*method)(event.connection_id.value_or(0), event.data); //TODO refactor later, pass NetworkEvent directly
     });
+
+    subscriptions_.emplace_back(std::move(subscription));
   }
 
 protected:
@@ -38,6 +40,7 @@ private:
   core::QueuedExecutor executor_{};
   std::jthread application_thread_{};
   std::unique_ptr<ConnectionEventHandler> connection_event_handler_{};
+  std::vector<utility::SignalSubscription> subscriptions_{};
 };
 
 }

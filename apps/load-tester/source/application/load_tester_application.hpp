@@ -16,7 +16,7 @@ public:
   [[nodiscard]] const LoadTesterArguments& GetArguments() const noexcept
   { return arguments_; }
 
-  [[nodiscard]] ClientTcpSystem::MessageHandler& GetMessageHandler() const noexcept
+  [[nodiscard]] ClientTcpSystem::EventHandler& GetMessageHandler() const noexcept
   { return ctx_.Require<ClientTcpSystem>().GetMessageHandler(); }
 
 protected:

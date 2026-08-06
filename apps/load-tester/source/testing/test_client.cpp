@@ -21,13 +21,14 @@ void TestClient::OnPrepared() {
   auto& message_handler = app_.GetMessageHandler();
 
   receive_chat_signal_handle_ = message_handler.Subscribe<api::ReceiveChatMessage>([this]
-  (network::ConnectionId connection_id, const api::ReceiveChatMessage& message)
+  (const network::NetworkEvent<api::ReceiveChatMessage>& event)
   {
-    if (connection_id_ != connection_id) return;
-    if (message.channel_id != channel_id_) return;
-    if (message.user_id != user_->id) return;
+    if (!event.connection_id) return;
+    if (connection_id_ != *event.connection_id) return;
+    if (event.data.channel_id != channel_id_) return;
+    if (event.data.user_id != user_->id) return;
 
-    const auto message_id = std::stoull(message.content);
+    const auto message_id = std::stoull(event.data.content);
     incoming_messages_.try_emplace(message_id, TrackedMessage{ steady_clock::now(), message_id });
   });
 
