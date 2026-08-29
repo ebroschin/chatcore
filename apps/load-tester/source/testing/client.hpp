@@ -18,7 +18,7 @@ class Client {
 public:
   using PrepareCallback = std::function<void(network::ConnectionId)>;
 
-  explicit Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name) noexcept;
+  explicit Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name, core::Executor& executor) noexcept;
   virtual ~Client() = default;
 
   Client(const Client&) = delete;
@@ -54,6 +54,7 @@ protected:
 
   LoadTesterApplication& app_;
   core::SystemContext& ctx_;
+  core::Executor& executor_;
   ClientTcpSystem& tcp_system_;
   ClientRpcSystem& rpc_system_;
   std::string name_;

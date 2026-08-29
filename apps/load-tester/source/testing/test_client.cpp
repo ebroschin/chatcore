@@ -8,10 +8,11 @@ namespace ebroschin::chatcore::tester {
 
 TestClient::TestClient(LoadTesterApplication& app,
   core::SystemContext& ctx,
+  core::Executor& executor,
   RootClient& root_client,
   const std::string& name,
   api::PersistenceId channel_id) noexcept:
-  Client{app, ctx, name},
+  Client{app, ctx, name, executor},
   scheduling_system_{ctx.Require<scheduling::SchedulingSystem>()},
   root_client_{root_client},
   channel_id_{channel_id}
@@ -44,7 +45,7 @@ void TestClient::OnPrepared() {
 
 void TestClient::Start(steady_clock::duration phase) {
   phase_ = phase;
-  current_send_task_id_ = scheduling_system_.ScheduleAfter(phase, [this] { Send(); });
+  current_send_task_id_ = scheduling_system_.ScheduleAfter(phase, [this] { Send(); }, &executor_);
 }
 
 void TestClient::Stop() const {
@@ -72,7 +73,7 @@ void TestClient::Send() {
   const auto message_id = next_id++;
   tcp_system_.Send<api::WriteChatMessage>(*connection_id_, {std::to_string(message_id)});
   outgoing_messages_.try_emplace(message_id, TrackedMessage{steady_clock::now(), message_id});
-  current_send_task_id_ = scheduling_system_.ScheduleAfter(phase_, [this] { Send(); });
+  current_send_task_id_ = scheduling_system_.ScheduleAfter(phase_, [this] { Send(); }, &executor_);
 }
 
 }

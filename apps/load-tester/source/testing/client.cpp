@@ -4,9 +4,10 @@
 
 namespace ebroschin::chatcore::tester {
 
-Client::Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name) noexcept:
+Client::Client(LoadTesterApplication& app, core::SystemContext& ctx, std::string name, core::Executor& executor) noexcept:
   app_{app},
   ctx_{ctx},
+  executor_{executor},
   tcp_system_{ctx.Require<ClientTcpSystem>()},
   rpc_system_{ctx.Require<ClientRpcSystem>()},
   name_{std::move(name)}

@@ -9,8 +9,11 @@ using namespace std::chrono_literals;
 
 namespace ebroschin::chatcore::tester {
 
-RootClient::RootClient(LoadTesterApplication& app, core::SystemContext& ctx, const std::string& name) noexcept:
-  Client{app, ctx, name},
+RootClient::RootClient(LoadTesterApplication& app,
+  core::SystemContext& ctx,
+  const std::string& name,
+  core::QueuedExecutor& executor) noexcept:
+  Client{app, ctx, name, executor},
   scheduling_system_{ctx.Require<scheduling::SchedulingSystem>()}
 {}
 
@@ -33,6 +36,7 @@ void RootClient::HandleRootClientReady() {
   for (unsigned int i = 0; i < client_count; i++) {
     clients_.emplace_back(std::make_unique<TestClient>(app_,
       ctx_,
+      executor_,
       *this,
       "tester" + std::to_string(i),
       test_channel_id_));
@@ -95,10 +99,10 @@ void RootClient::SetClientReady(network::ConnectionId id) {
   for (std::size_t i = 0; i < clients_.size(); i++) {
     scheduling_system_.ScheduleAfter(stagger_duration * i, [this, i, phase] {
       clients_[i]->Start(phase);
-    });
+    }, &executor_);
   }
 
-  scheduling_system_.ScheduleAfter(10s, [this] { Evaluate(); });
+  scheduling_system_.ScheduleAfter(10s, [this] { Evaluate(); }, &executor_);
 }
 
 }

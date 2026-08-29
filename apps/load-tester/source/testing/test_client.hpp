@@ -18,6 +18,7 @@ class TestClient final : public Client {
 public:
   explicit TestClient(LoadTesterApplication& app,
     core::SystemContext& ctx,
+    core::Executor& executor,
     RootClient& root_client,
     const std::string& name,
     api::PersistenceId channel_id) noexcept;

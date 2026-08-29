@@ -19,7 +19,7 @@ void ChatClientApplication::PrepareContext() {
   auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
   ctx_.Register<ClientTcpSystem>(executor_);
 
-  ctx_.Register<ClientRpcSystem>(*scheduling_system);
+  ctx_.Register<ClientRpcSystem>(*scheduling_system, executor_);
   ctx_.Register<ModelSystem>();
   ctx_.Register<SessionSystem>(*this);
   ctx_.Register<ClientCommandsSystem>();

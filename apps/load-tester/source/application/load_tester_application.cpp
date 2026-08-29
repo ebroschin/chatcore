@@ -22,7 +22,7 @@ void LoadTesterApplication::PrepareContext() {
   ctx_.Register<ClientTcpSystem>(executor_);
 
   auto* scheduling_system = ctx_.Register<scheduling::SchedulingSystem>();
-  ctx_.Register<ClientRpcSystem>(*scheduling_system);
+  ctx_.Register<ClientRpcSystem>(*scheduling_system, executor_);
 }
 
 void LoadTesterApplication::OnContextInitialized() {
@@ -34,7 +34,7 @@ void LoadTesterApplication::OnContextInitialized() {
     }
   }};
 
-  root_client_ = std::make_unique<RootClient>(*this, ctx_, "root-tester");
+  root_client_ = std::make_unique<RootClient>(*this, ctx_, "root-tester", executor_);
   root_client_->Prepare();
 }
 
